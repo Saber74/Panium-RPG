@@ -12,11 +12,10 @@ NimbusStats = [5,       10,      12]
 DingusStats = [2,       7,       6]
 curChar = "Lindus"
 running = True
-from pygame import * 
 size=(800,600)
 screen = display.set_mode(size)
 screen.fill((255,255,255)) 
-enemy = ""                     
+enemy = ""
 running = True
 def hardEnemy():
 	if curChar == "Lindus":
@@ -25,7 +24,23 @@ def hardEnemy():
 		EXPupdate = obtainedEXP + CHARexp[charInd]
 		CHARexp[0] = EXPupdate
 		print(CHARexp[0])
-		# CHARexp[0] + EXPupdate
+def amateurEnemy():
+	if curChar == "Lindus":
+		charInd = CHAR.index("Lindus")
+		obtainedEXP = CHARexp[charInd]/(80/CHARlevels[charInd])
+		EXPupdate = obtainedEXP + CHARexp[charInd]
+		CHARexp[0] = EXPupdate
+		print(CHARexp[0])
+def easyEnemy():
+	if curChar == "Lindus":
+		charInd = CHAR.index("Lindus")
+		obtainedEXP = CHARexp[charInd]/(90/CHARlevels[charInd])
+		EXPupdate = obtainedEXP + CHARexp[charInd]
+		CHARexp[0] = EXPupdate
+		print(CHARexp[0])
+hardRect=Rect(0,0,80,80)
+mediumRect=Rect(100,0,80,80)
+easyRect=Rect(200,0,80,80)		
 while running:
 	for evt in event.get(): 
 		if evt.type == QUIT:
@@ -37,18 +52,17 @@ while running:
 
 			if evt.button == 1:
 				if enemy == "Hard":
-					# time.delay(100)
 					print("Hard")
 					hardEnemy()
-		
+				elif enemy == "Medium":
+					print("Amateur")
+					amateurEnemy()
+				elif enemy == "Easy":		
+					print("Easy")
+					easyEnemy()
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
-				running=False       
-	####
-
-	hardRect=Rect(0,0,80,80)
-	mediumRect=Rect(100,0,80,80)
-	easyRect=Rect(200,0,80,80)
+				running=False      
 	####
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
@@ -64,18 +78,5 @@ while running:
 	draw.rect(screen, (255,0,0), hardRect)
 	draw.rect(screen, (255,255,0), mediumRect)
 	draw.rect(screen, (0,255,0), easyRect)
-
-	# if mb[0]:
-	# 	if enemy == "Hard":
-	# 		time.delay(100)
-	# 		print("Hard")
-	# 		hardEnemy()
-	# 	if enemy == "Medium":
-	# 		time.delay(100)
-	# 		print("Medium")
-	# 	if enemy == "Easy":
-	# 		time.delay(100)
-	# 		print("Easy")		
-
 	display.flip() 
 quit() 

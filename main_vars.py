@@ -14,3 +14,6 @@ counter = 0
 moving = False
 frame = 0
 pressed = "NULL"
+speed = 2
+invisSurface = Surface(size,SRCALPHA)
+invisSurface.fill((0,0,0,255))

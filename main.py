@@ -27,22 +27,22 @@ while running:
 	moving = False	
 	U = R = D = L = moving = False
 	if kp[K_UP]:
-		sy -= 2
+		sy -= speed
 		U = True
 		pressed = "UP"
 		moving = True
 	elif kp[K_RIGHT]:
-		sx += 2
+		sx += speed
 		R = True
 		pressed = "RIGHT"
 		moving = True	
 	elif kp[K_DOWN]:
-		sy += 2
+		sy += speed
 		D = True	
 		pressed = "DOWN"
 		moving = True	
 	elif kp[K_LEFT]:
-		sx -= 2
+		sx -= speed
 		L = True
 		pressed = "LEFT"
 		moving = True	
@@ -54,14 +54,21 @@ while running:
 			if frame >= len(crowWalkForward):
 				frame = 0	
 	screen.fill((255,255,255))				
+	# draw.polygon
 	alpha.filled_polygon(screen,every,(0,0,0,1))
 	try:
 		ccol = screen.get_at((sx,sy))
 	except:
 		pass	
-	if ccol == (254,254,254,255):
-		sx += 0 ; sy += 0
-		print("HIT")
+	if ccol == (254,254,254,255) and U:
+		speed = 0
+		sy += 1
+	elif ccol == (254,254,254,255) and R:
+		speed = 0
+		sx -= 1
+			
+	else:
+		speed = 2	
 	try:
 		print(screen.get_at((sx,sy)))
 	except:

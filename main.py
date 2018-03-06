@@ -5,6 +5,7 @@ for i in range(9):
 	crowWalkRight.append(image.load("SPRITES/Crow/Walk/Right/Right-%i.png" % (i + 1)).convert_alpha())	
 	crowWalkDown.append(image.load("SPRITES/Crow/Walk/Back/Back-%i.png" % (i + 1)).convert_alpha())	
 	crowWalkLeft.append(image.load("SPRITES/Crow/Walk/Left/Left-%i.png" % (i + 1)).convert_alpha())	
+back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)	
 while running:
 	# screen.fill((255,255,255))
 	for evt in event.get(): 
@@ -12,11 +13,7 @@ while running:
 			running = False
 		if evt.type == MOUSEBUTTONDOWN:
 			if evt.button == 1:
-				ccol = screen.get_at((sx,sy))
-				print(ccol)
-				alpha.filled_polygon(screen,every,(0,0,0,1))
-				if ccol == (254,254,254,255):
-					print("poop")
+				print(invisSurface.get_at((mx,my)))
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
 				running = False
@@ -54,30 +51,32 @@ while running:
 			if frame >= len(crowWalkForward):
 				frame = 0	
 	screen.fill((255,255,255))				
-	# draw.polygon
-	alpha.filled_polygon(screen,every,(0,0,0,1))
+	alpha.filled_polygon(invisSurface,every,(0,0,0,1))
+	screen.blit(back,(0,0))
+	draw.polygon(screen,(0,255,0),every)
+	screen.blit(invisSurface,(0,0))
 	try:
-		ccol = screen.get_at((sx,sy))
+		ccol = invisSurface.get_at((sx,sy))
 	except:
 		pass	
-	if ccol == (254,254,254,255) and U:
+	if ccol == (0,0,0,0) and U:
 		speed = 0
-		sy += 1
-	elif ccol == (254,254,254,255) and R:
+		sy += 5
+	elif ccol == (0,0,0,0) and R:
 		speed = 0
-		sx -= 1
-			
+		sx -= 5
+	elif ccol == (0,0,0,0) and L:
+		speed = 0	
+		sx += 5
+	elif ccol == (0,0,0,0) and D:
+		speed = 0	
+		sy -= 5
 	else:
 		speed = 2	
-	try:
-		print(screen.get_at((sx,sy)))
-	except:
-		pass	
 	if U:
 		screen.blit(crowWalkForward[frame], (sx,sy))
 	elif R:
 		screen.blit(crowWalkRight[frame], (sx,sy))
-	
 	elif D:
 		screen.blit(crowWalkDown[frame], (sx,sy))
 	elif L:

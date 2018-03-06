@@ -8,8 +8,11 @@ myClock = time.Clock()
 # screen.fill((255,255,255))
 running = True
 every = [(0,0),(800,0),(800,600),(750,600),(750,50),(0,50)]
+every1 = [(0,0),(0,800),(600,800),(600,750),(50,750),(50,0)]
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
-sx, sy = 0, 500
+ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
+cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
+sx, sy = 100, 500
 ccol = 0
 counter = 0
 moving = False

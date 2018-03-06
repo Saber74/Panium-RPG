@@ -5,6 +5,11 @@ for i in range(9):
 	crowWalkRight.append(image.load("SPRITES/Crow/Walk/Right/Right-%i.png" % (i + 1)).convert_alpha())	
 	crowWalkDown.append(image.load("SPRITES/Crow/Walk/Back/Back-%i.png" % (i + 1)).convert_alpha())	
 	crowWalkLeft.append(image.load("SPRITES/Crow/Walk/Left/Left-%i.png" % (i + 1)).convert_alpha())	
+	########
+	ravenWalkForward.append(image.load("SPRITES/Raven/Walk/Up/%i.png" % i).convert_alpha())
+	ravenWalkRight.append(image.load("SPRITES/Raven/Walk/Right/%i.png" % i).convert_alpha())
+	ravenWalkDown.append(image.load("SPRITES/Raven/Walk/Down/%i.png" % i).convert_alpha())
+	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
 back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)	
 while running:
 	# screen.fill((255,255,255))
@@ -17,6 +22,10 @@ while running:
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
 				running = False
+			if evt.key == K_1:
+				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
+			if evt.key == K_2:
+				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 	####
 	mx,my = mouse.get_pos()
 	mb = mouse.get_pressed()
@@ -50,10 +59,10 @@ while running:
 			frame += 1
 			if frame >= len(crowWalkForward):
 				frame = 0	
-	screen.fill((255,255,255))				
 	alpha.filled_polygon(invisSurface,every,(0,0,0,1))
+	alpha.filled_polygon(invisSurface,every1,(0,0,0,1))
 	screen.blit(back,(0,0))
-	draw.polygon(screen,(0,255,0),every)
+	# draw.polygon(screen,(0,255,0),every)
 	screen.blit(invisSurface,(0,0))
 	try:
 		ccol = invisSurface.get_at((sx,sy))
@@ -74,22 +83,22 @@ while running:
 	else:
 		speed = 2	
 	if U:
-		screen.blit(crowWalkForward[frame], (sx,sy))
+		screen.blit(cf[frame], (sx,sy))
 	elif R:
-		screen.blit(crowWalkRight[frame], (sx,sy))
+		screen.blit(cr[frame], (sx,sy))
 	elif D:
-		screen.blit(crowWalkDown[frame], (sx,sy))
+		screen.blit(cd[frame], (sx,sy))
 	elif L:
-		screen.blit(crowWalkLeft[frame], (sx,sy))
+		screen.blit(cl[frame], (sx,sy))
 	else:
 		if pressed == "UP" or pressed == "NULL":
-			screen.blit(crowWalkForward[0], (sx,sy))
+			screen.blit(cf[0], (sx,sy))
 		elif pressed == "DOWN":
-			screen.blit(crowWalkDown[0], (sx,sy))
+			screen.blit(cd[0], (sx,sy))
 		elif pressed == "LEFT":
-			screen.blit(crowWalkLeft[0], (sx,sy))
+			screen.blit(cl[0], (sx,sy))
 		elif pressed == "RIGHT":
-			screen.blit(crowWalkRight[0], (sx,sy))
+			screen.blit(cr[0], (sx,sy))
 	display.flip() 
-	myClock.tick(60)
+	myClock.tick(600)
 quit()

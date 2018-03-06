@@ -10,15 +10,16 @@ for i in range(9):
 	ravenWalkRight.append(image.load("SPRITES/Raven/Walk/Right/%i.png" % i).convert_alpha())
 	ravenWalkDown.append(image.load("SPRITES/Raven/Walk/Down/%i.png" % i).convert_alpha())
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
-back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)	
+back = transform.scale(image.load("SPRITES/Background/rpg-maker-mv-08-07-15-13.jpg").convert_alpha(),size)	
 while running:
-	# screen.fill((255,255,255))
 	for evt in event.get(): 
 		if evt.type == QUIT:
 			running = False
 		if evt.type == MOUSEBUTTONDOWN:
 			if evt.button == 1:
-				print(invisSurface.get_at((mx,my)))
+				# print(mx,my)
+				# riverBank2.append((mx,my))
+				pass
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
 				running = False
@@ -59,25 +60,32 @@ while running:
 			frame += 1
 			if frame >= len(crowWalkForward):
 				frame = 0	
-	alpha.filled_polygon(invisSurface,every,(0,0,0,1))
-	alpha.filled_polygon(invisSurface,every1,(0,0,0,1))
-	screen.blit(back,(0,0))
-	# draw.polygon(screen,(0,255,0),every)
-	screen.blit(invisSurface,(0,0))
+	alpha.filled_polygon(invisSurface,riverBank,(0,0,0,1))
+	alpha.filled_polygon(invisSurface,riverBank2,(0,0,0,1))
 	try:
-		ccol = invisSurface.get_at((sx,sy))
+		# alpha.polygon(invisSurface,riverBank2,(0,0,0,255))
+		pass
 	except:
 		pass	
-	if ccol == (0,0,0,0) and U:
+	screen.blit(back,(0,0))
+	screen.blit(invisSurface,(0,0))
+	try:
+		col = invisSurface.get_at((sx,sy))
+		ccol = invisSurface.get_at((sx + 35,sy + 45))
+		cccol = invisSurface.get_at((sx,sy + 45))
+		ccccol = invisSurface.get_at((sx + 35,sy))
+	except:
+		pass	
+	if ccol == (0,0,0,0) and U or cccol == (0,0,0,0) and U or col == (0,0,0,0) and U or ccccol == (0,0,0,0) and U:
 		speed = 0
 		sy += 5
-	elif ccol == (0,0,0,0) and R:
+	elif ccol == (0,0,0,0) and R or cccol == (0,0,0,0) and R or col == (0,0,0,0) and R or ccccol == (0,0,0,0) and R:
 		speed = 0
 		sx -= 5
-	elif ccol == (0,0,0,0) and L:
+	elif ccol == (0,0,0,0) and L or cccol == (0,0,0,0) and L or col == (0,0,0,0) and L or ccccol == (0,0,0,0) and L:
 		speed = 0	
 		sx += 5
-	elif ccol == (0,0,0,0) and D:
+	elif ccol == (0,0,0,0) and D or cccol == (0,0,0,0) and D or col == (0,0,0,0) and D or ccccol == (0,0,0,0) and D:
 		speed = 0	
 		sy -= 5
 	else:
@@ -101,4 +109,5 @@ while running:
 			screen.blit(cr[0], (sx,sy))
 	display.flip() 
 	myClock.tick(600)
+# print("riverBank2 =",riverBank2)	
 quit()

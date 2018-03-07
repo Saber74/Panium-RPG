@@ -12,11 +12,8 @@ for i in range(2):
 for i in range(27):
 	voldeAnimation.append(image.load("SPRITES/Animation/%i.png" % (i + 1)).convert_alpha())
 for i in range(23):
-<<<<<<< HEAD
 	transitionIntoBattle.append(image.load("SPRITES/gif/%i.gif" % (i + 1)).convert_alpha())
-=======
 	transitionIntoBattle.append(transform.scale(image.load("SPRITES/gif/%i.gif" % (i + 1)).convert_alpha(), size))
->>>>>>> 8f9c26f8461be8d927a87bf7c8947dd69c4bc8a5
 
 back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)  
 voldeRect=Rect(350,250,100,100)
@@ -124,7 +121,6 @@ while running:
 			screen.blit(voldeAnimation[i],(135,200))
 			screen.blit(voldeAnimation[i],(535,200))
 			screen.blit(voldeAnimation[i],(335,400))
-<<<<<<< HEAD
 			time.wait(100)
 			display.flip()
 
@@ -132,8 +128,7 @@ while running:
 			screen.blit(transform.scale(transitionIntoBattle[i],size),(0,0))
 			time.wait(100)
 			display.flip()
-		check=True
-=======
+			check=True
 			time.wait(75)
 			display.flip()
 		
@@ -144,10 +139,6 @@ while running:
 		activateAnimation=False
 		check = True
 		print(check)
-
->>>>>>> 8f9c26f8461be8d927a87bf7c8947dd69c4bc8a5
-
-
 	display.flip() 
 	pic=screen.copy()
 	myClock.tick(600)

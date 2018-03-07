@@ -107,5 +107,7 @@ while running:
 	display.flip() 
 	myClock.tick(600)
 	print("This is a test")
+	print("This is a test again")
+	
 # print("test =",test)	
 quit()

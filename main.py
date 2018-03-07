@@ -10,7 +10,6 @@ for i in range(9):
 	ravenWalkRight.append(image.load("SPRITES/Raven/Walk/Right/%i.png" % i).convert_alpha())
 	ravenWalkDown.append(image.load("SPRITES/Raven/Walk/Down/%i.png" % i).convert_alpha())
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
-back = transform.scale(image.load("SPRITES/Background/rpg-maker-mv-08-07-15-13.jpg").convert_alpha(),size)	
 while running:
 	for evt in event.get(): 
 		if evt.type == QUIT:
@@ -60,15 +59,12 @@ while running:
 			frame += 1
 			if frame >= len(crowWalkForward):
 				frame = 0	
-	alpha.filled_polygon(invisSurface,riverBank,(0,0,0,1))
-	alpha.filled_polygon(invisSurface,riverBank2,(0,0,0,1))
-	alpha.filled_polygon(invisSurface,test,(0,0,0,1))
 	try:
 		# alpha.polygon(invisSurface,test,(0,0,0,255))
 		pass
 	except:
 		pass	
-	screen.blit(back,(0,0))
+	# screen.blit(back,(0,0)) # COMPULSORY
 	screen.blit(invisSurface,(0,0))
 	try:
 		col = invisSurface.get_at((sx,sy))
@@ -110,5 +106,5 @@ while running:
 			screen.blit(cr[0], (sx,sy))
 	display.flip() 
 	myClock.tick(600)
-print("test =",test)	
+# print("test =",test)	
 quit()

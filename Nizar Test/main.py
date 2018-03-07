@@ -11,8 +11,8 @@ for i in range(2):
 	voldeWalkBack.append(image.load("SPRITES/Volde/Move/Down/%i.png" % (i + 1)).convert_alpha())
 for i in range(27):
 	voldeAnimation.append(image.load("SPRITES/Animation/%i.png" % (i + 1)).convert_alpha())
-for i in range(23):
-	transitionIntoBattle.append(image.load("SPRITES/gif/%i.gif" % (i + 1)).convert_alpha())
+# for i in range(23):
+# 	transitionIntoBattle.append(image.load("SPRITES/gif/%i.gif" % (i + 1)).convert_alpha())
 
 back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)  
 voldeRect=Rect(350,250,100,100)
@@ -120,10 +120,10 @@ while running:
 			time.wait(300)
 			display.flip()
 		
-	for i in range(22):
-		screen.blit(transitionIntoBattle[i],(400,400))
-		time.wait(100)
-		display.flip()
+	# for i in range(22):
+	# 	screen.blit(transitionIntoBattle[i],(400,400))
+	# 	time.wait(100)
+	# 	display.flip()
 	activateAnimation=False
 
 

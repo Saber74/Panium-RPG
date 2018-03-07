@@ -15,6 +15,7 @@ voldeAnimation=[]
 voldeAnimation2=[]
 transitionIntoBattle=[]
 activateAnimation=False
+check = False
 ani=0
 selectedChar=0
 sx, sy = 0, 500

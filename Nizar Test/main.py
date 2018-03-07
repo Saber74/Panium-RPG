@@ -110,24 +110,25 @@ while running:
 	screen.blit(voldeWalkBack[0],(400,300))
 	if voldeRect.collidepoint(sx,sy):
 		activateAnimation=True
-	if activateAnimation:
+	if activateAnimation and check == False:
 		for i in range(27):
 			screen.blit(pic,(0,0))
 			screen.blit(voldeAnimation[i],(335,125))
 			screen.blit(voldeAnimation[i],(135,200))
 			screen.blit(voldeAnimation[i],(535,200))
 			screen.blit(voldeAnimation[i],(335,400))
-			time.wait(300)
+			time.wait(10)
 			display.flip()
+		check = True	
 		
-	# for i in range(22):
-	# 	screen.blit(transitionIntoBattle[i],(400,400))
-	# 	time.wait(100)
-	# 	display.flip()
+	for i in range(22):
+		screen.blit(transitionIntoBattle[i],(400,400))
+		time.wait(100)
+		display.flip()
 	activateAnimation=False
 
 
 	display.flip() 
 	pic=screen.copy()
-	myClock.tick(60)
+	myClock.tick(600)
 quit()

@@ -17,9 +17,9 @@ while running:
 			running = False
 		if evt.type == MOUSEBUTTONDOWN:
 			if evt.button == 1:
-				# print(mx,my)
-				# riverBank2.append((mx,my))
-				pass
+				print(mx,my)
+				test.append((mx,my))
+				# pass
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
 				running = False
@@ -62,8 +62,9 @@ while running:
 				frame = 0	
 	alpha.filled_polygon(invisSurface,riverBank,(0,0,0,1))
 	alpha.filled_polygon(invisSurface,riverBank2,(0,0,0,1))
+	alpha.filled_polygon(invisSurface,test,(0,0,0,1))
 	try:
-		# alpha.polygon(invisSurface,riverBank2,(0,0,0,255))
+		# alpha.polygon(invisSurface,test,(0,0,0,255))
 		pass
 	except:
 		pass	
@@ -109,5 +110,5 @@ while running:
 			screen.blit(cr[0], (sx,sy))
 	display.flip() 
 	myClock.tick(600)
-# print("riverBank2 =",riverBank2)	
+print("test =",test)	
 quit()

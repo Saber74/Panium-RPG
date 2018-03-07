@@ -104,7 +104,7 @@ while running:
 			screen.blit(cl[0], (sx,sy))
 		elif pressed == "RIGHT":
 			screen.blit(cr[0], (sx,sy))
-	display.flip() 
+##	display.flip() 
 	myClock.tick(600)
 	print("This is a test")
 	print("This is a test again")

@@ -14,6 +14,7 @@ voldeWalkBack=[]
 voldeAnimation=[]
 voldeAnimation2=[]
 transitionIntoBattle=[]
+check=False
 activateAnimation=False
 ani=0
 selectedChar=0

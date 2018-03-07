@@ -24,5 +24,5 @@ moving = False
 check = False
 frame = 0
 pressed = "NULL"
-speed = 2
+speed = 5
 invisSurface.fill((255,255,255,0))

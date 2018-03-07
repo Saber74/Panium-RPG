@@ -108,6 +108,7 @@ while running:
 	myClock.tick(600)
 	print("This is a test")
 	print("This is a test again")
+	print("This is for nizar edits")
 	
 # print("test =",test)	
 quit()

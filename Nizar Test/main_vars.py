@@ -21,6 +21,7 @@ sx, sy = 0, 500
 ccol = 0
 counter = 0
 moving = False
+check = False
 frame = 0
 pressed = "NULL"
 speed = 2

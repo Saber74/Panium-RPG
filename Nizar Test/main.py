@@ -19,7 +19,7 @@ voldeRect=Rect(350,250,100,100)
 while running:
 	# screen.fill((255,255,255))
 	character=characterList[selectedChar]
-	print(selectedChar)
+	# print(selectedChar)
 	for evt in event.get(): 
 		if evt.type == QUIT:
 			running = False
@@ -29,6 +29,9 @@ while running:
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
 				running = False
+			if evt.key == K_SPACE:
+				check = False	
+				print(check)
 	####
 	mx,my = mouse.get_pos()
 	mb = mouse.get_pressed()
@@ -108,7 +111,7 @@ while running:
 			elif pressed == "RIGHT":
 				screen.blit(crowWalkRight[0], (sx,sy))
 	screen.blit(voldeWalkBack[0],(400,300))
-	if voldeRect.collidepoint(sx,sy):
+	if voldeRect.collidepoint(sx,sy) and check == False:
 		activateAnimation=True
 	if activateAnimation:
 		for i in range(27):
@@ -117,17 +120,20 @@ while running:
 			screen.blit(voldeAnimation[i],(135,200))
 			screen.blit(voldeAnimation[i],(535,200))
 			screen.blit(voldeAnimation[i],(335,400))
-			time.wait(300)
+			time.wait(10)
 			display.flip()
+		activateAnimation=False
+		check = True
+		print(check)
 		
 	# for i in range(22):
-	# 	screen.blit(transitionIntoBattle[i],(400,400))
+	# 	screen.blit(transitionIntoBattle[i],(400,400))	
 	# 	time.wait(100)
 	# 	display.flip()
-	activateAnimation=False
+
 
 
 	display.flip() 
 	pic=screen.copy()
-	myClock.tick(60)
+	myClock.tick(600)
 quit()

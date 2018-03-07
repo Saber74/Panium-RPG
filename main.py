@@ -106,5 +106,6 @@ while running:
 			screen.blit(cr[0], (sx,sy))
 	display.flip() 
 	myClock.tick(600)
+	print("This is a test")
 # print("test =",test)	
 quit()

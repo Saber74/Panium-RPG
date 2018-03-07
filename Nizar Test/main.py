@@ -1,4 +1,4 @@
-# main.py
+#main.pygame
 from main_vars import *
 characterList=["Crow"]
 character=characterList[selectedChar]
@@ -11,8 +11,8 @@ for i in range(2):
 	voldeWalkBack.append(image.load("SPRITES/Volde/Move/Down/%i.png" % (i + 1)).convert_alpha())
 for i in range(27):
 	voldeAnimation.append(image.load("SPRITES/Animation/%i.png" % (i + 1)).convert_alpha())
-# for i in range(23):
-# 	transitionIntoBattle.append(image.load("SPRITES/gif/%i.gif" % (i + 1)).convert_alpha())
+for i in range(23):
+	transitionIntoBattle.append(image.load("SPRITES/gif/%i.gif" % (i + 1)).convert_alpha())
 
 back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)  
 voldeRect=Rect(350,250,100,100)
@@ -110,21 +110,21 @@ while running:
 	screen.blit(voldeWalkBack[0],(400,300))
 	if voldeRect.collidepoint(sx,sy):
 		activateAnimation=True
-	if activateAnimation:
+	if activateAnimation and check==False:
 		for i in range(27):
 			screen.blit(pic,(0,0))
 			screen.blit(voldeAnimation[i],(335,125))
 			screen.blit(voldeAnimation[i],(135,200))
 			screen.blit(voldeAnimation[i],(535,200))
 			screen.blit(voldeAnimation[i],(335,400))
-			time.wait(300)
+			time.wait(100)
 			display.flip()
-		
-	# for i in range(22):
-	# 	screen.blit(transitionIntoBattle[i],(400,400))
-	# 	time.wait(100)
-	# 	display.flip()
-	activateAnimation=False
+
+		for i in range(22):
+			screen.blit(transform.scale(transitionIntoBattle[i],size),(0,0))
+			time.wait(100)
+			display.flip()
+		check=True
 
 
 	display.flip() 

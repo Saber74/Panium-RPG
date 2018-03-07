@@ -10,6 +10,7 @@ for i in range(9):
 	ravenWalkRight.append(image.load("SPRITES/Raven/Walk/Right/%i.png" % i).convert_alpha())
 	ravenWalkDown.append(image.load("SPRITES/Raven/Walk/Down/%i.png" % i).convert_alpha())
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
+back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)	
 while running:
 	for evt in event.get(): 
 		if evt.type == QUIT:
@@ -59,12 +60,14 @@ while running:
 			frame += 1
 			if frame >= len(crowWalkForward):
 				frame = 0	
+	# alpha.filled_polygon(invisSurface,test,(0,0,0,1))
 	try:
-		# alpha.polygon(invisSurface,test,(0,0,0,255))
-		pass
+		invisSurface.fill((255,255,255,0))
+		alpha.polygon(invisSurface,test,(0,0,0,255))
+		# pass
 	except:
 		pass	
-	# screen.blit(back,(0,0)) # COMPULSORY
+	screen.blit(back,(0,0)) # COMPULSORY
 	screen.blit(invisSurface,(0,0))
 	try:
 		col = invisSurface.get_at((sx,sy))
@@ -104,10 +107,7 @@ while running:
 			screen.blit(cl[0], (sx,sy))
 		elif pressed == "RIGHT":
 			screen.blit(cr[0], (sx,sy))
-##	display.flip() 
+	display.flip() 
 	myClock.tick(600)
-	print("This is a test")
-	print("This is a test again")
-	
-# print("test =",test)	
+print("test =",test)	
 quit()

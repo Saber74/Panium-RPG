@@ -22,7 +22,13 @@ sx, sy = 0, 500
 ccol = 0
 counter = 0
 moving = False
+check = False
 frame = 0
 pressed = "NULL"
+<<<<<<< HEAD
 speed = 2
 invisSurface.fill((255,255,255,0))
+=======
+speed = 5
+invisSurface.fill((255,255,255,0))
+>>>>>>> 8f9c26f8461be8d927a87bf7c8947dd69c4bc8a5

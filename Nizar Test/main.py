@@ -12,14 +12,18 @@ for i in range(2):
 for i in range(27):
 	voldeAnimation.append(image.load("SPRITES/Animation/%i.png" % (i + 1)).convert_alpha())
 for i in range(23):
+<<<<<<< HEAD
 	transitionIntoBattle.append(image.load("SPRITES/gif/%i.gif" % (i + 1)).convert_alpha())
+=======
+	transitionIntoBattle.append(transform.scale(image.load("SPRITES/gif/%i.gif" % (i + 1)).convert_alpha(), size))
+>>>>>>> 8f9c26f8461be8d927a87bf7c8947dd69c4bc8a5
 
 back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)  
 voldeRect=Rect(350,250,100,100)
 while running:
 	# screen.fill((255,255,255))
 	character=characterList[selectedChar]
-	print(selectedChar)
+	# print(selectedChar)
 	for evt in event.get(): 
 		if evt.type == QUIT:
 			running = False
@@ -29,6 +33,9 @@ while running:
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
 				running = False
+			if evt.key == K_SPACE:
+				check = False	
+				print(check)
 	####
 	mx,my = mouse.get_pos()
 	mb = mouse.get_pressed()
@@ -108,7 +115,7 @@ while running:
 			elif pressed == "RIGHT":
 				screen.blit(crowWalkRight[0], (sx,sy))
 	screen.blit(voldeWalkBack[0],(400,300))
-	if voldeRect.collidepoint(sx,sy):
+	if voldeRect.collidepoint(sx,sy) and check == False:
 		activateAnimation=True
 	if activateAnimation and check==False:
 		for i in range(27):
@@ -117,6 +124,7 @@ while running:
 			screen.blit(voldeAnimation[i],(135,200))
 			screen.blit(voldeAnimation[i],(535,200))
 			screen.blit(voldeAnimation[i],(335,400))
+<<<<<<< HEAD
 			time.wait(100)
 			display.flip()
 
@@ -125,9 +133,22 @@ while running:
 			time.wait(100)
 			display.flip()
 		check=True
+=======
+			time.wait(75)
+			display.flip()
+		
+		for i in range(22):
+			screen.blit(transitionIntoBattle[i],(0,0))	
+			time.wait(100)
+			display.flip()
+		activateAnimation=False
+		check = True
+		print(check)
+
+>>>>>>> 8f9c26f8461be8d927a87bf7c8947dd69c4bc8a5
 
 
 	display.flip() 
 	pic=screen.copy()
-	myClock.tick(60)
+	myClock.tick(600)
 quit()

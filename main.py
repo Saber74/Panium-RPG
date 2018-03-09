@@ -60,10 +60,10 @@ while running:
 			frame += 1
 			if frame >= len(crowWalkForward):
 				frame = 0	
-	# alpha.filled_polygon(invisSurface,test,(0,0,0,1))
+	# alpha.filled_polygon(invisSurface,test,(0,0,0,255))
 	try:
 		invisSurface.fill((255,255,255,0))
-		alpha.polygon(invisSurface,test,(0,0,0,255))
+		alpha.filled_polygon(invisSurface,test,(0,0,0,255))
 		# pass
 	except:
 		pass	

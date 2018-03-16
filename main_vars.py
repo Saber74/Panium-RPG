@@ -1,5 +1,5 @@
 # main_vars.py
-from pygame import * ; from pygame import gfxdraw as alpha ; from main_vars import * ; import os
+from pygame import * ; from pygame import gfxdraw as alpha ; from main_vars import * ; import os ; from pytmx import *
 size = (800,600)
 invisSurface = Surface(size,SRCALPHA)
 os.environ['SDL_VIDEO_WINDOW_POS'] = 'FULLSCREEN'
@@ -8,9 +8,9 @@ myClock = time.Clock()
 # screen.set_alpha(0)
 # screen.fill((255,255,255))
 running = True
-riverBank = [(577,234), (694,233), (696,331), (740,331), (743,358), (697,361), (692,448), (652,452), (649,488), (630,498), (603,497), (591,546), (556,544), (555,596), (290,596), (298,524), (339,514), (349,476), (382,473), (397,433), (480,428), (491,388), (518,388), (535,353), (529,328), (529,311), (537,302), (551,297), (566,294), (577,283), (579,258), (576,238)]
-riverBank2 = [(580, -80), (579, 131), (695, 137), (696, -80)]
-test = []
+test = [[438, 245], [436, 330], [490, 331], [493, 245]]
+test2 = [[628, 371], [628, 396], [685, 396], [683, 372]]
+lists = [test,test2]
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
@@ -20,5 +20,7 @@ counter = 0
 moving = False
 frame = 0
 pressed = "NULL"
-speed = 2
+speed = 10
 invisSurface.fill((255,255,255,0))
+x_diff = y_diff = 0
+x = y = 0

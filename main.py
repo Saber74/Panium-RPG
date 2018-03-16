@@ -11,6 +11,7 @@ for i in range(9):
 	ravenWalkDown.append(image.load("SPRITES/Raven/Walk/Down/%i.png" % i).convert_alpha())
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
 back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)	
+fname = load_pygame("desert.tmx")
 while running:
 	for evt in event.get(): 
 		if evt.type == QUIT:
@@ -18,7 +19,8 @@ while running:
 		if evt.type == MOUSEBUTTONDOWN:
 			if evt.button == 1:
 				print(mx,my)
-				test.append((mx,my))
+				test2.append((mx,my))
+				# print(invisSurface.get_at((mx,my)))
 				# pass
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
@@ -26,7 +28,25 @@ while running:
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 			if evt.key == K_2:
-				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
+				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft	
+			if evt.key == K_RIGHT:
+				x += 1	
+			if evt.key == K_LEFT:
+				x -= 1
+			if evt.key == K_UP:
+				y -= 1
+			if evt.key == K_DOWN:
+				y += 1	
+				
+		if evt.type == KEYUP:
+			if evt.key == K_RIGHT:
+				x = 0		
+			if evt.key == K_LEFT:
+				x = 0	
+			if evt.key == K_UP:
+				y = 0
+			if evt.key == K_DOWN:
+				y = 0			
 	####
 	mx,my = mouse.get_pos()
 	mb = mouse.get_pressed()
@@ -34,25 +54,41 @@ while running:
 	moving = False	
 	U = R = D = L = moving = False
 	if kp[K_UP]:
+		y_diff += 10
+		# y += 10
 		sy -= speed
 		U = True
 		pressed = "UP"
 		moving = True
 	elif kp[K_RIGHT]:
+		x_diff -= 10
+		# x -= 10
 		sx += speed
 		R = True
 		pressed = "RIGHT"
 		moving = True	
 	elif kp[K_DOWN]:
+		y_diff -= 10
+		# y -= 10
 		sy += speed
 		D = True	
 		pressed = "DOWN"
 		moving = True	
 	elif kp[K_LEFT]:
+		x_diff += 10
+		# x += 10
 		sx -= speed
 		L = True
 		pressed = "LEFT"
 		moving = True	
+	# else:
+		# x = y = 0
+	for f in lists:
+		for i in range(len(f)):
+			f[i][0] += x_diff
+			for n in range(2):
+				f[i][1] += y_diff		
+
 	if moving:
 		counter += 1
 		if counter > 5:
@@ -60,14 +96,24 @@ while running:
 			frame += 1
 			if frame >= len(crowWalkForward):
 				frame = 0	
-	# alpha.filled_polygon(invisSurface,test,(0,0,0,255))
+	###############
+	for layer in fname.visible_layers:
+		for x, y, gid, in layer:
+			tile = fname.get_tile_image_by_gid(gid)
+			screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
+
+	###############			
+	
+
+	alpha.filled_polygon(invisSurface,test,(0,0,0,255))
+	alpha.filled_polygon(invisSurface,test2,(0,0,0,255))
 	try:
-		invisSurface.fill((255,255,255,0))
-		alpha.filled_polygon(invisSurface,test,(0,0,0,255))
-		# pass
+		# invisSurface.fill((255,255,255,0))
+		# alpha.filled_polygon(invisSurface,test,(0,0,0,255))
+		pass
 	except:
 		pass	
-	screen.blit(back,(0,0)) # COMPULSORY
+	# screen.blit(back,(0,0)) # COMPULSORY
 	screen.blit(invisSurface,(0,0))
 	try:
 		col = invisSurface.get_at((sx,sy))
@@ -109,5 +155,5 @@ while running:
 			screen.blit(cr[0], (sx,sy))
 	display.flip() 
 	myClock.tick(600)
-print("test =",test)	
+print("test =",test2)	
 quit()

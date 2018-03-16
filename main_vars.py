@@ -1,6 +1,7 @@
 # main_vars.py
 from pygame import * ; from pygame import gfxdraw as alpha ; from main_vars import * ; import os ; from pytmx import *
-size = (800,600)
+from pyscroll import * #; from pyscroll import 
+size = (1366,768)
 invisSurface = Surface(size,SRCALPHA)
 os.environ['SDL_VIDEO_WINDOW_POS'] = 'FULLSCREEN'
 screen = display.set_mode(size)
@@ -14,7 +15,7 @@ lists = [test,test2]
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
-sx, sy = 100, 500
+sx, sy = 683, 384
 ccol = 0
 counter = 0
 moving = False

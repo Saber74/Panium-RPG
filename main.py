@@ -11,7 +11,8 @@ for i in range(9):
 	ravenWalkDown.append(image.load("SPRITES/Raven/Walk/Down/%i.png" % i).convert_alpha())
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
 back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)	
-fname = load_pygame("desert.tmx")
+fname = load_pygame("grasslands.tmx", pixelalpha = True)
+
 while running:
 	for evt in event.get(): 
 		if evt.type == QUIT:
@@ -29,24 +30,23 @@ while running:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 			if evt.key == K_2:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft	
-			if evt.key == K_RIGHT:
-				x += 1	
-			if evt.key == K_LEFT:
-				x -= 1
-			if evt.key == K_UP:
-				y -= 1
-			if evt.key == K_DOWN:
-				y += 1	
-				
-		if evt.type == KEYUP:
-			if evt.key == K_RIGHT:
-				x = 0		
-			if evt.key == K_LEFT:
-				x = 0	
-			if evt.key == K_UP:
-				y = 0
-			if evt.key == K_DOWN:
-				y = 0			
+			# if evt.key == K_RIGHT:
+			# 	x += 1	
+			# if evt.key == K_LEFT:
+			# 	x -= 1
+			# if evt.key == K_UP:
+			# 	y -= 1
+			# if evt.key == K_DOWN:
+			# 	y += 1	
+		# if evt.type == KEYUP:
+		# 	if evt.key == K_RIGHT:
+		# 		x = 0		
+		# 	if evt.key == K_LEFT:
+		# 		x = 0	
+		# 	if evt.key == K_UP:
+		# 		y = 0
+		# 	if evt.key == K_DOWN:
+		# 		y = 0			
 	####
 	mx,my = mouse.get_pos()
 	mb = mouse.get_pressed()
@@ -83,30 +83,45 @@ while running:
 		moving = True	
 	# else:
 		# x = y = 0
-	for f in lists:
-		for i in range(len(f)):
-			f[i][0] += x_diff
-			for n in range(2):
-				f[i][1] += y_diff		
+	# for f in lists:
+	# 	invisSurface.fill(0)
+	# 	for i in range(len(f)):
+	# 		invisSurface.fill(0)
+	# 		f[i][0] += x_diff / 2
+	# 		for n in range(2):
+	# 			invisSurface.fill(0)
+	# 			f[i][1] += y_diff / 2		
 
 	if moving:
 		counter += 1
-		if counter > 5:
+		if counter > 10:
 			counter = 0
 			frame += 1
 			if frame >= len(crowWalkForward):
 				frame = 0	
 	###############
-	for layer in fname.visible_layers:
-		for x, y, gid, in layer:
-			tile = fname.get_tile_image_by_gid(gid)
-			screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
 
+	# for layer in fname.visible_object_groups:
+	# 	for x, y, gid, in layer:
+	# 		tile = fname.get_tile_image_by_gid(gid)
+	# 		screen.blit(tile, (x * fname.tilewidth, y * fname.tileheight))
+
+	for layer in fname.visible_layers:
+		if isinstance(layer, TiledTileLayer):
+			for x, y, gid, in layer:
+				tile = fname.get_tile_image_by_gid(gid)
+				if tile:
+					screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
+
+	# for layer in fname.visible_tile_layers:
+	# 	for x, y, gid, in layer:
+	# 		tile = fname.get_tile_image_by_gid(gid)
+	# 		screen.blit(tile, (x * fname.tilewidth, y * fname.tileheight))		
 	###############			
 	
 
-	alpha.filled_polygon(invisSurface,test,(0,0,0,255))
-	alpha.filled_polygon(invisSurface,test2,(0,0,0,255))
+	# alpha.filled_polygon(invisSurface,test,(0,0,0,255))
+	# alpha.filled_polygon(invisSurface,test2,(0,0,0,255))
 	try:
 		# invisSurface.fill((255,255,255,0))
 		# alpha.filled_polygon(invisSurface,test,(0,0,0,255))
@@ -137,22 +152,22 @@ while running:
 	else:
 		speed = 2	
 	if U:
-		screen.blit(cf[frame], (sx,sy))
+		invisSurface.blit(cf[frame], (sx,sy))
 	elif R:
-		screen.blit(cr[frame], (sx,sy))
+		invisSurface.blit(cr[frame], (sx,sy))
 	elif D:
-		screen.blit(cd[frame], (sx,sy))
+		invisSurface.blit(cd[frame], (sx,sy))
 	elif L:
-		screen.blit(cl[frame], (sx,sy))
+		invisSurface.blit(cl[frame], (sx,sy))
 	else:
 		if pressed == "UP" or pressed == "NULL":
-			screen.blit(cf[0], (sx,sy))
+			invisSurface.blit(cf[0], (sx,sy))
 		elif pressed == "DOWN":
-			screen.blit(cd[0], (sx,sy))
+			invisSurface.blit(cd[0], (sx,sy))
 		elif pressed == "LEFT":
-			screen.blit(cl[0], (sx,sy))
+			invisSurface.blit(cl[0], (sx,sy))
 		elif pressed == "RIGHT":
-			screen.blit(cr[0], (sx,sy))
+			invisSurface.blit(cr[0], (sx,sy))
 	display.flip() 
 	myClock.tick(600)
 print("test =",test2)	

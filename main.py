@@ -11,8 +11,7 @@ for i in range(9):
 	ravenWalkDown.append(image.load("SPRITES/Raven/Walk/Down/%i.png" % i).convert_alpha())
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
 back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)	
-fname = load_pygame("grasslands.tmx", pixelalpha = True)
-
+fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
 while running:
 	for evt in event.get(): 
 		if evt.type == QUIT:
@@ -51,7 +50,6 @@ while running:
 	mx,my = mouse.get_pos()
 	mb = mouse.get_pressed()
 	kp = key.get_pressed()
-	moving = False	
 	U = R = D = L = moving = False
 	if kp[K_UP]:
 		y_diff += 10
@@ -94,7 +92,7 @@ while running:
 
 	if moving:
 		counter += 1
-		if counter > 10:
+		if counter > 2:
 			counter = 0
 			frame += 1
 			if frame >= len(crowWalkForward):
@@ -112,11 +110,6 @@ while running:
 				tile = fname.get_tile_image_by_gid(gid)
 				if tile:
 					screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
-
-	# for layer in fname.visible_tile_layers:
-	# 	for x, y, gid, in layer:
-	# 		tile = fname.get_tile_image_by_gid(gid)
-	# 		screen.blit(tile, (x * fname.tilewidth, y * fname.tileheight))		
 	###############			
 	
 
@@ -150,24 +143,24 @@ while running:
 		speed = 0	
 		sy -= 5
 	else:
-		speed = 2	
+		speed = 5	
 	if U:
-		invisSurface.blit(cf[frame], (sx,sy))
+		screen.blit(cf[frame], (sx,sy))
 	elif R:
-		invisSurface.blit(cr[frame], (sx,sy))
+		screen.blit(cr[frame], (sx,sy))
 	elif D:
-		invisSurface.blit(cd[frame], (sx,sy))
+		screen.blit(cd[frame], (sx,sy))
 	elif L:
-		invisSurface.blit(cl[frame], (sx,sy))
+		screen.blit(cl[frame], (sx,sy))
 	else:
 		if pressed == "UP" or pressed == "NULL":
-			invisSurface.blit(cf[0], (sx,sy))
+			screen.blit(cf[0], (sx,sy))
 		elif pressed == "DOWN":
-			invisSurface.blit(cd[0], (sx,sy))
+			screen.blit(cd[0], (sx,sy))
 		elif pressed == "LEFT":
-			invisSurface.blit(cl[0], (sx,sy))
+			screen.blit(cl[0], (sx,sy))
 		elif pressed == "RIGHT":
-			invisSurface.blit(cr[0], (sx,sy))
+			screen.blit(cr[0], (sx,sy))
 	display.flip() 
 	myClock.tick(600)
 print("test =",test2)	

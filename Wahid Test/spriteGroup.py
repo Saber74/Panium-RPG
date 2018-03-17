@@ -1,8 +1,10 @@
 from pygame import * 
+from random import *
+from pytmx import *
 size=(800,600)
 screen = display.set_mode(size) 
 myClock = time.Clock()
-FPS = 30
+FPS = 60
 x = y = 0
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
@@ -10,8 +12,11 @@ cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 pressed = "NULL"
 frame = 0
 counter = 0
+x_diff = y_diff = 0
+speed = 0
+pan = 10
 cm = image.load("SPRITES/Crow/Walk/Forward/Forward-0.png").convert_alpha()
-
+fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
 for i in range(9):
 	crowWalkForward.append(image.load("SPRITES/Crow/Walk/Forward/Forward-%i.png" % (i + 1)).convert_alpha())
 	crowWalkRight.append(image.load("SPRITES/Crow/Walk/Right/Right-%i.png" % (i + 1)).convert_alpha())	
@@ -44,9 +49,31 @@ class Player(sprite.Sprite):
 			self.rect.top = 600	
 		elif self.rect.top > 600:
 			self.rect.bottom = 0	
+class Mob(sprite.Sprite):
+	def __init__(self):
+		sprite.Sprite.__init__(self)
+		self.image = Surface((30,40))		
+		self.image.fill((255,0,0))
+		self.rect = self.image.get_rect()
+		self.rect.x = randint(0, 800 - self.rect.width)
+		self.rect.y = randint(-100,-40)
+		self.speedy = randint(1,8)
+		self.speedx = randint(-3,3)
+	def update(self):
+		self.rect.y += self.speedy
+		self.rect.x += self.speedx
+		if self.rect.top > 600 + 10 or self.rect.left < -25 or self.rect.right > 800 + 20:
+			self.rect.x = randint(0 ,800 - self.rect.width)
+			self.rect.y = randint(-100,-40)	
+			self.speedy = randint(5,8)
 all_sprites = sprite.Group()                                 
+mobs = sprite.Group()
 player = Player()
 all_sprites.add(player)
+for i in range(8):
+	m = Mob()
+	all_sprites.add(m)
+	mobs.add(m)
 running = True
 while running:
 	for evt in event.get():  
@@ -63,43 +90,59 @@ while running:
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
-
 	# KEYBOARD MOVEMENT
 	if kp[K_RIGHT]:
-		x = 5
+		x_diff -= pan
+		x = speed
 		R = True
 		moving = True
 		pressed = "RIGHT"
 	elif kp[K_LEFT]:
-		x = -5
+		x_diff += pan
+		x = -speed
 		L = True
 		moving = True
 		pressed = "LEFT"
 	elif kp[K_UP]:
-		y = -5
+		y_diff += pan
+		y = -speed
 		U = True
 		moving = True
 		pressed = "UP"
 	elif kp[K_DOWN]:
-		y = 5
+		y_diff -= pan
+		y = speed
 		D = True
 		moving = True
 		pressed = "DOWN"
 	else:
 		x = y = 0			
 		U = R = D = L = moving = False
+
+	# UPDATE
+	all_sprites.update()
+	# check to see if the mob hit the player
+	hits = sprite.spritecollide(player, mobs, True)
+	# if hits:
+	# 	running = False
+
 	# ANIMATION CONTROL
 	if moving:
 		counter += 1
 		if counter > 2:
 			counter = 0
 			frame += 1
-			print(frame)
 			if frame >= len(crowWalkDown):
 				frame = 0
 
-	# UPDATE
-	all_sprites.update()
+	# Map Loading
+	screen.fill(0)
+	for layer in fname.visible_layers:
+		if isinstance(layer, TiledTileLayer):
+			for x, y, gid, in layer:
+				tile = fname.get_tile_image_by_gid(gid)
+				if tile:
+					screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
 
 	# MOVEMENT ANIMATION
 	if U:
@@ -119,9 +162,9 @@ while running:
 			cm = cl[0]
 		elif pressed == "RIGHT":
 			cm = cr[0]
-	print(pressed)		
+	print(x_diff,y_diff)		
 	# DRAW / RENDER         
-	screen.fill(0)
+	# screen.fill(0)
 	all_sprites.draw(screen)
 	display.flip() 
 	myClock.tick(FPS)

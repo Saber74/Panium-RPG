@@ -1,7 +1,11 @@
 from pygame import * 
 from random import *
 from pytmx import *
-size=(800,600)
+import os
+size=(1366,768)
+invisSurface = Surface(size,SRCALPHA)
+invisSurface.fill((255,255,255,0))
+os.environ['SDL_VIDEO_WINDOW_POS'] = 'FULLSCREEN'
 screen = display.set_mode(size) 
 myClock = time.Clock()
 FPS = 60
@@ -13,8 +17,8 @@ pressed = "NULL"
 frame = 0
 counter = 0
 x_diff = y_diff = 0
-speed = 0
-pan = 10
+speed = 5
+# pan = 10
 cm = image.load("SPRITES/Crow/Walk/Forward/Forward-0.png").convert_alpha()
 fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
 for i in range(9):
@@ -29,12 +33,11 @@ for i in range(9):
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
 class Player(sprite.Sprite):
 	# sprite for the player
-	def __init__(self):
+	def __init__(self, x, y):
 		sprite.Sprite.__init__(self)
 		self.image = cm
-		# self.image.fill((0,255,0))
 		self.rect = self.image.get_rect()
-		self.rect.center = (400,300)
+		self.rect.center = (x,y)
 	def update(self):
 		self.image = cm
 		if pressed == "LEFT" or pressed == "RIGHT":
@@ -66,19 +69,40 @@ class Mob(sprite.Sprite):
 			self.rect.x = randint(0 ,800 - self.rect.width)
 			self.rect.y = randint(-100,-40)	
 			self.speedy = randint(5,8)
+class Obstacle(sprite.Sprite):
+	def __init__(self, x, y, w, h):
+		sprite.Sprite.__init__(self)
+		self.image = Surface((x, y), SRCALPHA)
+		self.image.fill((255,255,255,0))
+		self.rect = Rect(x, y, w, h)
+		self.x = x
+		self.y = y
+		self.rect.x = x
+		self.rect.y = y
+		print("HIT")
+
+# for i in range(8):
+# 	m = Mob()
+# 	all_sprites.add(m)
+# 	mobs.add(m)
 all_sprites = sprite.Group()                                 
 mobs = sprite.Group()
-player = Player()
+walls = sprite.Group()
+player = Player(1366 / 2, 768 / 2)
 all_sprites.add(player)
-for i in range(8):
-	m = Mob()
-	all_sprites.add(m)
-	mobs.add(m)
+for tile_object in fname.objects:
+	if tile_object.name == 'wall':
+		obs = Obstacle(tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+		walls.add(obs)
+		print("hit")
 running = True
 while running:
 	for evt in event.get():  
 		if evt.type == QUIT: 
 			running = False
+		if evt.type == MOUSEBUTTONDOWN:
+			if evt.button == 1:
+				print((mx,my))	
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
 				running = False    	
@@ -92,25 +116,25 @@ while running:
 	U = R = D = L = moving = False
 	# KEYBOARD MOVEMENT
 	if kp[K_RIGHT]:
-		x_diff -= pan
+		# x_diff -= pan
 		x = speed
 		R = True
 		moving = True
 		pressed = "RIGHT"
 	elif kp[K_LEFT]:
-		x_diff += pan
+		# x_diff += pan
 		x = -speed
 		L = True
 		moving = True
 		pressed = "LEFT"
 	elif kp[K_UP]:
-		y_diff += pan
+		# y_diff += pan
 		y = -speed
 		U = True
 		moving = True
 		pressed = "UP"
 	elif kp[K_DOWN]:
-		y_diff -= pan
+		# y_diff -= pan
 		y = speed
 		D = True
 		moving = True
@@ -122,7 +146,10 @@ while running:
 	# UPDATE
 	all_sprites.update()
 	# check to see if the mob hit the player
-	hits = sprite.spritecollide(player, mobs, True)
+	hit = sprite.spritecollide(player, walls, False)
+	if hit:
+		running = False
+	# hits = sprite.spritecollide(player, mobs, True)
 	# if hits:
 	# 	running = False
 
@@ -143,7 +170,7 @@ while running:
 				tile = fname.get_tile_image_by_gid(gid)
 				if tile:
 					screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
-
+	screen.blit(invisSurface, (0 + x_diff,0 + y_diff))				
 	# MOVEMENT ANIMATION
 	if U:
 		cm = cf[frame]
@@ -162,10 +189,11 @@ while running:
 			cm = cl[0]
 		elif pressed == "RIGHT":
 			cm = cr[0]
-	print(x_diff,y_diff)		
+	# print(fname.get_rect())		
 	# DRAW / RENDER         
 	# screen.fill(0)
 	all_sprites.draw(screen)
+	walls.draw(screen)
 	display.flip() 
 	myClock.tick(FPS)
 quit()

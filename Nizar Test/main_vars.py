@@ -14,6 +14,12 @@ voldeWalkBack=[]
 voldeAnimation=[]
 voldeAnimation2=[]
 transitionIntoBattle=[]
+chest1=[]
+chest2=[]
+chest3=[]
+openseseme1=False
+openseseme2=False
+openseseme3=False
 check=False
 activateAnimation=False
 ani=0
@@ -25,10 +31,8 @@ moving = False
 check = False
 frame = 0
 pressed = "NULL"
-<<<<<<< HEAD
 speed = 2
 invisSurface.fill((255,255,255,0))
-=======
 speed = 5
 invisSurface.fill((255,255,255,0))
->>>>>>> 8f9c26f8461be8d927a87bf7c8947dd69c4bc8a5
+

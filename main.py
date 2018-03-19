@@ -12,6 +12,7 @@ for i in range(9):
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
 back = transform.scale(image.load("SPRITES/Background/DemonCastle1.png").convert_alpha(),size)	
 fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
+
 while running:
 	for evt in event.get(): 
 		if evt.type == QUIT:
@@ -50,6 +51,7 @@ while running:
 	mx,my = mouse.get_pos()
 	mb = mouse.get_pressed()
 	kp = key.get_pressed()
+	moving = False	
 	U = R = D = L = moving = False
 	if kp[K_UP]:
 		y_diff += 10
@@ -104,12 +106,12 @@ while running:
 	# 		tile = fname.get_tile_image_by_gid(gid)
 	# 		screen.blit(tile, (x * fname.tilewidth, y * fname.tileheight))
 
-	for layer in fname.visible_layers:
-		if isinstance(layer, TiledTileLayer):
-			for x, y, gid, in layer:
-				tile = fname.get_tile_image_by_gid(gid)
-				if tile:
-					screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
+	# for layer in fname.visible_layers:
+	# 	if isinstance(layer, TiledTileLayer):
+	# 		for x, y, gid, in layer:
+	# 			tile = fname.get_tile_image_by_gid(gid)
+	# 			if tile:
+	# 				screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
 	###############			
 	
 
@@ -121,7 +123,7 @@ while running:
 		pass
 	except:
 		pass	
-	# screen.blit(back,(0,0)) # COMPULSORY
+	screen.blit(back,(0,0)) # COMPULSORY
 	screen.blit(invisSurface,(0,0))
 	try:
 		col = invisSurface.get_at((sx,sy))

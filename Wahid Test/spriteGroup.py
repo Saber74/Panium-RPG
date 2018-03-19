@@ -2,7 +2,9 @@ from pygame import *
 from random import *
 from pytmx import *
 import os
-size=(1366,768)
+import sys
+WIDTH, HEIGHT = 800, 600 
+size=(WIDTH, HEIGHT)
 invisSurface = Surface(size,SRCALPHA)
 invisSurface.fill((255,255,255,0))
 os.environ['SDL_VIDEO_WINDOW_POS'] = 'FULLSCREEN'
@@ -17,8 +19,8 @@ pressed = "NULL"
 frame = 0
 counter = 0
 x_diff = y_diff = 0
-speed = 5
-# pan = 10
+speed = 0
+pan = 10
 cm = image.load("SPRITES/Crow/Walk/Forward/Forward-0.png").convert_alpha()
 fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
 for i in range(9):
@@ -31,15 +33,50 @@ for i in range(9):
 	ravenWalkRight.append(image.load("SPRITES/Raven/Walk/Right/%i.png" % i).convert_alpha())
 	ravenWalkDown.append(image.load("SPRITES/Raven/Walk/Down/%i.png" % i).convert_alpha())
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
+# class Camera:
+	# def __init__(self, width, height):
+		# self.camera = Rect(0, 0, width, height)
+	# 	self.width = width
+	# 	self.height = height
+
+	# def apply(self, entity):
+		# return entity.rect.move(self.camera.topleft)
+
+	# def update(self, target):
+	# 	x = -target.rect.x + int(WIDTH / 2)
+	# 	y = -target.rect.y + int(HEIGHT / 2)	
+		# self.camera = Rect(x, y, self.width, self.height)
 class Player(sprite.Sprite):
 	# sprite for the player
-	def __init__(self, x, y):
+	def __init__(self, x, y, s):
 		sprite.Sprite.__init__(self)
 		self.image = cm
 		self.rect = self.image.get_rect()
-		self.rect.center = (x,y)
+		self.x = x
+		self.y = y
+		self.speed = s
+		self.rect.center = (self.x,self.y)
 	def update(self):
 		self.image = cm
+		# if h:
+		# 	if pressed == "UP" and hit:
+		# 		self.speed = 3
+		# 		self.rect.y += self.speed
+		# 		self.y = 0
+		# 	elif pressed == "DOWN" and hit:
+		# 		self.speed = 3
+		# 		self.rect.y -= self.speed	
+		# 		self.y = 0
+		# 	elif pressed == "RIGHT" and hit:
+		# 		self.speed = 3
+		# 		self.rect.x -= self.speed	
+		# 		self.x = 0
+		# 	elif pressed == 'LEFT' and hit:
+		# 		self.speed = 3
+		# 		self.rect.x += self.speed	
+		# 		self.x = 0
+		# 	else:
+		# 		self.x, self.y, self.speed = x, y, 10 	
 		if pressed == "LEFT" or pressed == "RIGHT":
 			self.rect.x += x
 		elif pressed == "UP" or pressed == "DOWN":	
@@ -73,22 +110,26 @@ class Obstacle(sprite.Sprite):
 	def __init__(self, x, y, w, h):
 		sprite.Sprite.__init__(self)
 		self.image = Surface((x, y), SRCALPHA)
-		self.image.fill((255,255,255,0))
+		self.image.fill((0,0,0,0))
 		self.rect = Rect(x, y, w, h)
 		self.x = x
 		self.y = y
 		self.rect.x = x
 		self.rect.y = y
-		print("HIT")
 
-# for i in range(8):
-# 	m = Mob()
-# 	all_sprites.add(m)
-# 	mobs.add(m)
+	def update(self):
+		self.rect.topleft = self.x + x_diff, self.y + y_diff
+
 all_sprites = sprite.Group()                                 
 mobs = sprite.Group()
+for i in range(8):
+	m = Mob()
+	all_sprites.add(m)
+	mobs.add(m)
 walls = sprite.Group()
-player = Player(1366 / 2, 768 / 2)
+player = Player(400, 300 + 50, speed)
+# camera = Camera(fname.width * 32, fname.height * 32)
+print("ss",fname.width * 32, fname.height * 32)
 all_sprites.add(player)
 for tile_object in fname.objects:
 	if tile_object.name == 'wall':
@@ -116,25 +157,25 @@ while running:
 	U = R = D = L = moving = False
 	# KEYBOARD MOVEMENT
 	if kp[K_RIGHT]:
-		# x_diff -= pan
+		x_diff -= pan
 		x = speed
 		R = True
 		moving = True
 		pressed = "RIGHT"
 	elif kp[K_LEFT]:
-		# x_diff += pan
+		x_diff += pan
 		x = -speed
 		L = True
 		moving = True
 		pressed = "LEFT"
 	elif kp[K_UP]:
-		# y_diff += pan
+		y_diff += pan
 		y = -speed
 		U = True
 		moving = True
 		pressed = "UP"
 	elif kp[K_DOWN]:
-		# y_diff -= pan
+		y_diff -= pan
 		y = speed
 		D = True
 		moving = True
@@ -145,11 +186,14 @@ while running:
 
 	# UPDATE
 	all_sprites.update()
+	walls.update()
+	# camera.update(player)
 	# check to see if the mob hit the player
 	hit = sprite.spritecollide(player, walls, False)
 	if hit:
-		running = False
-	# hits = sprite.spritecollide(player, mobs, True)
+		# running = False
+		print("HIT THE WALL")
+	hits = sprite.spritecollide(player, mobs, True)
 	# if hits:
 	# 	running = False
 
@@ -171,6 +215,7 @@ while running:
 				if tile:
 					screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
 	screen.blit(invisSurface, (0 + x_diff,0 + y_diff))				
+	screen.blit(invisSurface, (0,0))				
 	# MOVEMENT ANIMATION
 	if U:
 		cm = cf[frame]
@@ -192,6 +237,8 @@ while running:
 	# print(fname.get_rect())		
 	# DRAW / RENDER         
 	# screen.fill(0)
+	# for sprite in all_sprites:
+	# 	# screen.blit(sprite.image, camera.apply(sprite))
 	all_sprites.draw(screen)
 	walls.draw(screen)
 	display.flip() 

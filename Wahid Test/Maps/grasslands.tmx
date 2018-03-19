@@ -90,6 +90,5 @@
   <object id="39" x="1216" y="1120" width="64" height="64"/>
   <object id="40" x="1312" y="1024" width="64" height="64"/>
   <object id="41" x="1312" y="864" width="64" height="64"/>
-  <object id="50" name="wall" x="553" y="265" width="36" height="26.5"/>
  </objectgroup>
 </map>

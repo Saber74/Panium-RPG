@@ -21,7 +21,7 @@ counter = 0
 moving = False
 frame = 0
 pressed = "NULL"
-speed = 10
+speed = 0
 invisSurface.fill((255,255,255,0))
 x_diff = y_diff = 0
 x = y = 0

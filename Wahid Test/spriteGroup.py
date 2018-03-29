@@ -1,19 +1,20 @@
 from pygame import * 
-from random import *
 from pytmx import *
+from random import randint as r
 import os
-import sys
 WIDTH, HEIGHT = 800, 600 
+# WIDTH, HEIGHT = 1366, 768 
 size=(WIDTH, HEIGHT)
-invisSurface = Surface(size,SRCALPHA)
-invisSurface.fill((255,255,255,0))
 os.environ['SDL_VIDEO_WINDOW_POS'] = 'FULLSCREEN'
 screen = display.set_mode(size) 
 myClock = time.Clock()
 FPS = 60
-x = y = 0
+x = y = n = 0
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
+chest_open = []
+tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
+inventory = []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 pressed = "NULL"
 frame = 0
@@ -23,6 +24,7 @@ speed = 0
 pan = 10
 cm = image.load("SPRITES/Crow/Walk/Forward/Forward-0.png").convert_alpha()
 fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
+tops = load_pygame("Maps/over0.tmx", pixelalpha = True)
 for i in range(9):
 	crowWalkForward.append(image.load("SPRITES/Crow/Walk/Forward/Forward-%i.png" % (i + 1)).convert_alpha())
 	crowWalkRight.append(image.load("SPRITES/Crow/Walk/Right/Right-%i.png" % (i + 1)).convert_alpha())	
@@ -33,124 +35,78 @@ for i in range(9):
 	ravenWalkRight.append(image.load("SPRITES/Raven/Walk/Right/%i.png" % i).convert_alpha())
 	ravenWalkDown.append(image.load("SPRITES/Raven/Walk/Down/%i.png" % i).convert_alpha())
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
-# class Camera:
-	# def __init__(self, width, height):
-		# self.camera = Rect(0, 0, width, height)
-	# 	self.width = width
-	# 	self.height = height
-
-	# def apply(self, entity):
-		# return entity.rect.move(self.camera.topleft)
-
-	# def update(self, target):
-	# 	x = -target.rect.x + int(WIDTH / 2)
-	# 	y = -target.rect.y + int(HEIGHT / 2)	
-		# self.camera = Rect(x, y, self.width, self.height)
 class Player(sprite.Sprite):
 	# sprite for the player
 	def __init__(self, x, y, s):
 		sprite.Sprite.__init__(self)
 		self.image = cm
 		self.rect = self.image.get_rect()
-		self.x = x
-		self.y = y
-		self.speed = s
+		self.x = x ; self.y = y
 		self.rect.center = (self.x,self.y)
 	def update(self):
 		self.image = cm
-		# if h:
-		# 	if pressed == "UP" and hit:
-		# 		self.speed = 3
-		# 		self.rect.y += self.speed
-		# 		self.y = 0
-		# 	elif pressed == "DOWN" and hit:
-		# 		self.speed = 3
-		# 		self.rect.y -= self.speed	
-		# 		self.y = 0
-		# 	elif pressed == "RIGHT" and hit:
-		# 		self.speed = 3
-		# 		self.rect.x -= self.speed	
-		# 		self.x = 0
-		# 	elif pressed == 'LEFT' and hit:
-		# 		self.speed = 3
-		# 		self.rect.x += self.speed	
-		# 		self.x = 0
-		# 	else:
-		# 		self.x, self.y, self.speed = x, y, 10 	
+		self.x = x ; self.y = y
 		if pressed == "LEFT" or pressed == "RIGHT":
-			self.rect.x += x
+			self.rect.x += self.x
 		elif pressed == "UP" or pressed == "DOWN":	
-			self.rect.y += y
-		if self.rect.left  > 800:
-			self.rect.right = 0
-		elif self.rect.right < 0:
-			self.rect.left = 800
-		elif self.rect.bottom < 0:
-			self.rect.top = 600	
-		elif self.rect.top > 600:
-			self.rect.bottom = 0	
-class Mob(sprite.Sprite):
-	def __init__(self):
-		sprite.Sprite.__init__(self)
-		self.image = Surface((30,40))		
-		self.image.fill((255,0,0))
-		self.rect = self.image.get_rect()
-		self.rect.x = randint(0, 800 - self.rect.width)
-		self.rect.y = randint(-100,-40)
-		self.speedy = randint(1,8)
-		self.speedx = randint(-3,3)
-	def update(self):
-		self.rect.y += self.speedy
-		self.rect.x += self.speedx
-		if self.rect.top > 600 + 10 or self.rect.left < -25 or self.rect.right > 800 + 20:
-			self.rect.x = randint(0 ,800 - self.rect.width)
-			self.rect.y = randint(-100,-40)	
-			self.speedy = randint(5,8)
+			self.rect.y += self.y
 class Obstacle(sprite.Sprite):
 	def __init__(self, x, y, w, h):
 		sprite.Sprite.__init__(self)
-		self.image = Surface((x, y), SRCALPHA)
-		self.image.fill((0,0,0,0))
+		self.image = Surface((x, y), SRCALPHA) ; self.image.fill((0,0,0,0))
 		self.rect = Rect(x, y, w, h)
-		self.x = x
-		self.y = y
-		self.rect.x = x
-		self.rect.y = y
+		self.x = x ; self.y = y
+		# self.rect.x = x ; self.rect.y = y
 
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
+class Chest(sprite.Sprite):
+	def __init__(self, x, y, w, h, tier):
+		sprite.Sprite.__init__(self)
+		self.tier = tier
+		self.opened = False
+		self.images = [image.load("SPRITES/Chest/Tier" + str(self.tier) + "/0.png"), image.load("SPRITES/Chest/Tier" + str(self.tier) + "/1.png")]
+		self.prev_image = self.image = self.images[0] ; self.rect = Rect(x, y, w, h) ; self.prev_image = self.image
+		self.x, self.y = x, y
+	def update(self):
+		global chest_open
+		self.rect.topleft = self.x + x_diff, self.y + y_diff
+		if self.image == self.prev_image and self.opened and kp[K_SPACE]:
+			self.image = self.images[1]
+			item = r(0,len(tier1) - 1)
+			inventory.append(tier1[item])
+			del tier1[item]
+			print(inventory)
 
 all_sprites = sprite.Group()                                 
-mobs = sprite.Group()
-for i in range(8):
-	m = Mob()
-	all_sprites.add(m)
-	mobs.add(m)
 walls = sprite.Group()
-player = Player(400, 300 + 50, speed)
-# camera = Camera(fname.width * 32, fname.height * 32)
-print("ss",fname.width * 32, fname.height * 32)
+chests = sprite.Group()
+player = Player(WIDTH / 2, HEIGHT / 2 + 50, speed)
 all_sprites.add(player)
 for tile_object in fname.objects:
 	if tile_object.name == 'wall':
 		obs = Obstacle(tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 		walls.add(obs)
-		print("hit")
+	if tile_object.name == 'chest':
+		chest = Chest(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type)	
+		chests.add(chest)
+			
 running = True
 while running:
 	for evt in event.get():  
 		if evt.type == QUIT: 
 			running = False
-		if evt.type == MOUSEBUTTONDOWN:
-			if evt.button == 1:
-				print((mx,my))	
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
 				running = False    	
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 			if evt.key == K_2:
-				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft	
+				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
+			if evt.key == K_i:
+				print(inventory)
+			if evt.key == K_q:
+				print(tier1)		
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
@@ -187,15 +143,18 @@ while running:
 	# UPDATE
 	all_sprites.update()
 	walls.update()
+	chests.update()
 	# camera.update(player)
 	# check to see if the mob hit the player
 	hit = sprite.spritecollide(player, walls, False)
 	if hit:
-		# running = False
-		print("HIT THE WALL")
-	hits = sprite.spritecollide(player, mobs, True)
-	# if hits:
-	# 	running = False
+		n += 1
+		print(n)	
+		# print("HIT THE WALL ON ME")
+
+	chest_open = sprite.spritecollide(player, chests, False)	
+	if chest_open and kp[K_SPACE]:
+		chest_open[0].opened = True
 
 	# ANIMATION CONTROL
 	if moving:
@@ -210,12 +169,18 @@ while running:
 	screen.fill(0)
 	for layer in fname.visible_layers:
 		if isinstance(layer, TiledTileLayer):
-			for x, y, gid, in layer:
+			for x, y, gid in layer:
 				tile = fname.get_tile_image_by_gid(gid)
 				if tile:
 					screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
-	screen.blit(invisSurface, (0 + x_diff,0 + y_diff))				
-	screen.blit(invisSurface, (0,0))				
+	chests.draw(screen)
+	all_sprites.draw(screen)
+	for layer in tops.visible_layers:
+		if isinstance(layer, TiledTileLayer):
+			for x, y, gid in layer:
+				tile = tops.get_tile_image_by_gid(gid)
+				if tile:
+					screen.blit(tile,((x * tops.tilewidth) + x_diff, (y * tops.tileheight) + y_diff))				
 	# MOVEMENT ANIMATION
 	if U:
 		cm = cf[frame]
@@ -234,12 +199,10 @@ while running:
 			cm = cl[0]
 		elif pressed == "RIGHT":
 			cm = cr[0]
-	# print(fname.get_rect())		
 	# DRAW / RENDER         
 	# screen.fill(0)
-	# for sprite in all_sprites:
-	# 	# screen.blit(sprite.image, camera.apply(sprite))
-	all_sprites.draw(screen)
+	# chests.draw(screen)
+	# all_sprites.draw(screen)
 	walls.draw(screen)
 	display.flip() 
 	myClock.tick(FPS)

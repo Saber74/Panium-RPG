@@ -67,25 +67,42 @@ class Chest(sprite.Sprite):
 	def __init__(self, x, y, w, h, tier):
 		sprite.Sprite.__init__(self)
 		self.tier = tier
-		self.chest_tier = tier1
 		self.opened = False
 		self.images = [image.load("SPRITES/Chest/Tier" + str(self.tier) + "/0.png"), image.load("SPRITES/Chest/Tier" + str(self.tier) + "/1.png")]
 		self.prev_image = self.image = self.images[0] ; self.rect = Rect(x, y, w, h) ; self.prev_image = self.image
 		self.x, self.y = x, y
+		# self.c = tier1
 	def update(self):
 		global chest_open
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
 		if self.image == self.prev_image and self.opened and kp[K_SPACE]:
-			print('Tier:',self.tier)
-			print(self.chest_tier)
-			if self.tier == 1:
-				self.chest_tier = tier1
+			self.t = self.tier
+			print(self.t)
 			self.image = self.images[1]
-			item = r(0,len(self.chest_tier) - 1)
-			inventory.append(self.chest_tier[item])
-			del self.chest_tier[item]
-			print(inventory)
-
+			if self.t == '1':
+				item = r(0, len(tier1) - 1)
+				inventory.append(tier1[item])
+				del tier1[item]
+				print(inventory)
+			if self.t == '2':	
+				item = r(0, len(tier2) - 1)
+				inventory.append(tier2[item])
+				del tier2[item]
+				print(inventory)
+			if self.t == '3':
+				item = r(0, len(tier3) - 1)
+				inventory.append(tier3[item])
+				del tier3[item]	
+				print(inventory)
+			if self.t == '4':
+				item = r(0, len(tier4) - 1)
+				inventory.append(tier4[item])
+				del tier4[item]
+				print(inventory)	
+			# item = r(0, len(tier1) - 1)
+			# inventory.append(tier1[item])
+			# del tier1[item]
+			# print(inventory)	
 all_sprites = sprite.Group()                                 
 walls = sprite.Group()
 chests = sprite.Group()
@@ -163,7 +180,6 @@ while running:
 	chest_open = sprite.spritecollide(player, chests, False)	
 	if chest_open and kp[K_SPACE]:
 		chest_open[0].opened = True
-
 	# ANIMATION CONTROL
 	if moving:
 		counter += 1

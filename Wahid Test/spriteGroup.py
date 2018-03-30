@@ -14,6 +14,9 @@ crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 chest_open = []
 tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
+tier2 = ['Lightening']
+tier3 = ['Sword of Water']
+tier4 = ['Wind Staff']
 inventory = []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 pressed = "NULL"
@@ -64,6 +67,7 @@ class Chest(sprite.Sprite):
 	def __init__(self, x, y, w, h, tier):
 		sprite.Sprite.__init__(self)
 		self.tier = tier
+		self.chest_tier = tier1
 		self.opened = False
 		self.images = [image.load("SPRITES/Chest/Tier" + str(self.tier) + "/0.png"), image.load("SPRITES/Chest/Tier" + str(self.tier) + "/1.png")]
 		self.prev_image = self.image = self.images[0] ; self.rect = Rect(x, y, w, h) ; self.prev_image = self.image
@@ -72,10 +76,14 @@ class Chest(sprite.Sprite):
 		global chest_open
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
 		if self.image == self.prev_image and self.opened and kp[K_SPACE]:
+			print('Tier:',self.tier)
+			print(self.chest_tier)
+			if self.tier == 1:
+				self.chest_tier = tier1
 			self.image = self.images[1]
-			item = r(0,len(tier1) - 1)
-			inventory.append(tier1[item])
-			del tier1[item]
+			item = r(0,len(self.chest_tier) - 1)
+			inventory.append(self.chest_tier[item])
+			del self.chest_tier[item]
 			print(inventory)
 
 all_sprites = sprite.Group()                                 

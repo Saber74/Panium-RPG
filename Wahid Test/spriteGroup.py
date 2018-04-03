@@ -1,4 +1,4 @@
-from pygame import * 
+from pygame import * 	
 from pytmx import *
 from random import randint as r
 import os
@@ -25,6 +25,7 @@ counter = 0
 x_diff = y_diff = 0
 speed = 0
 pan = 10
+mode = 'Walking'
 cm = image.load("SPRITES/Crow/Walk/Forward/Forward-0.png").convert_alpha()
 fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
 tops = load_pygame("Maps/over0.tmx", pixelalpha = True)
@@ -43,8 +44,8 @@ class Player(sprite.Sprite):
 	def __init__(self, x, y, s):
 		sprite.Sprite.__init__(self)
 		self.image = cm
-		self.rect = self.image.get_rect()
 		self.x = x ; self.y = y
+		self.rect = self.image.get_rect()
 		self.rect.center = (self.x,self.y)
 	def update(self):
 		self.image = cm
@@ -71,38 +72,24 @@ class Chest(sprite.Sprite):
 		self.images = [image.load("SPRITES/Chest/Tier" + str(self.tier) + "/0.png"), image.load("SPRITES/Chest/Tier" + str(self.tier) + "/1.png")]
 		self.prev_image = self.image = self.images[0] ; self.rect = Rect(x, y, w, h) ; self.prev_image = self.image
 		self.x, self.y = x, y
-		# self.c = tier1
+		self.c = tier1
 	def update(self):
 		global chest_open
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
 		if self.image == self.prev_image and self.opened and kp[K_SPACE]:
-			self.t = self.tier
-			print(self.t)
 			self.image = self.images[1]
-			if self.t == '1':
-				item = r(0, len(tier1) - 1)
-				inventory.append(tier1[item])
-				del tier1[item]
-				print(inventory)
-			if self.t == '2':	
-				item = r(0, len(tier2) - 1)
-				inventory.append(tier2[item])
-				del tier2[item]
-				print(inventory)
-			if self.t == '3':
-				item = r(0, len(tier3) - 1)
-				inventory.append(tier3[item])
-				del tier3[item]	
-				print(inventory)
-			if self.t == '4':
-				item = r(0, len(tier4) - 1)
-				inventory.append(tier4[item])
-				del tier4[item]
-				print(inventory)	
-			# item = r(0, len(tier1) - 1)
-			# inventory.append(tier1[item])
-			# del tier1[item]
-			# print(inventory)	
+			if self.tier == '1':
+				self.c = tier1
+			elif self.tier == '2':	
+				self.c = tier2
+			elif self.tier == '3':
+				self.c = tier3
+			elif self.tier == '4':
+				self.c = tier4
+			item = r(0, len(self.c) - 1)
+			inventory.append(self.c[item])
+			del self.c[item]
+			print(inventory)				
 all_sprites = sprite.Group()                                 
 walls = sprite.Group()
 chests = sprite.Group()
@@ -129,100 +116,101 @@ while running:
 			if evt.key == K_2:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 			if evt.key == K_i:
-				print(inventory)
+				mode = 'Battle'
 			if evt.key == K_q:
-				print(tier1)		
+				mode = 'Walking'
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
 	# KEYBOARD MOVEMENT
-	if kp[K_RIGHT]:
-		x_diff -= pan
-		x = speed
-		R = True
-		moving = True
-		pressed = "RIGHT"
-	elif kp[K_LEFT]:
-		x_diff += pan
-		x = -speed
-		L = True
-		moving = True
-		pressed = "LEFT"
-	elif kp[K_UP]:
-		y_diff += pan
-		y = -speed
-		U = True
-		moving = True
-		pressed = "UP"
-	elif kp[K_DOWN]:
-		y_diff -= pan
-		y = speed
-		D = True
-		moving = True
-		pressed = "DOWN"
+	if mode == 'Walking':
+		if kp[K_RIGHT]:
+			x_diff -= pan
+			x = speed
+			R = True
+			moving = True
+			pressed = "RIGHT"
+		elif kp[K_LEFT]:
+			x_diff += pan
+			x = -speed
+			L = True
+			moving = True
+			pressed = "LEFT"
+		elif kp[K_UP]:
+			y_diff += pan
+			y = -speed
+			U = True
+			moving = True
+			pressed = "UP"
+		elif kp[K_DOWN]:
+			y_diff -= pan
+			y = speed
+			D = True
+			moving = True
+			pressed = "DOWN"
+		else:
+			x = y = 0			
+
+		# UPDATE
+		all_sprites.update()
+		walls.update()
+		chests.update()
+		# check to see if the mob hit the player
+		hit = sprite.spritecollide(player, walls, False)
+		if hit:
+			n += 1
+			print(n)	
+
+		chest_open = sprite.spritecollide(player, chests, False)	
+		if chest_open and kp[K_SPACE]:
+			chest_open[0].opened = True
+		# ANIMATION CONTROL
+		if moving:
+			counter += 1
+			if counter > 2:
+				counter = 0
+				frame += 1
+				if frame >= len(crowWalkDown):
+					frame = 0
+
+		# Map Loading
+		screen.fill(0)
+		for layer in fname.visible_layers:
+			if isinstance(layer, TiledTileLayer):
+				for x, y, gid in layer:
+					tile = fname.get_tile_image_by_gid(gid)
+					if tile:
+						screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
+		chests.draw(screen)
+		all_sprites.draw(screen)
+		for layer in tops.visible_layers:
+			if isinstance(layer, TiledTileLayer):
+				for x, y, gid in layer:
+					tile = tops.get_tile_image_by_gid(gid)
+					if tile:
+						screen.blit(tile,((x * tops.tilewidth) + x_diff, (y * tops.tileheight) + y_diff))				
+		# MOVEMENT ANIMATION
+		if U:
+			cm = cf[frame]
+		elif R:
+			cm = cr[frame]
+		elif D:
+			cm = cd[frame]
+		elif L:
+			cm = cl[frame]
+		else:
+			if pressed == "UP" or pressed == "NULL":
+				cm = cf[0]
+			elif pressed == "DOWN":
+				cm = cd[0]
+			elif pressed == "LEFT":
+				cm = cl[0]
+			elif pressed == "RIGHT":
+				cm = cr[0]
+		print(mode)		
 	else:
-		x = y = 0			
-		U = R = D = L = moving = False
-
-	# UPDATE
-	all_sprites.update()
-	walls.update()
-	chests.update()
-	# camera.update(player)
-	# check to see if the mob hit the player
-	hit = sprite.spritecollide(player, walls, False)
-	if hit:
-		n += 1
-		print(n)	
-		# print("HIT THE WALL ON ME")
-
-	chest_open = sprite.spritecollide(player, chests, False)	
-	if chest_open and kp[K_SPACE]:
-		chest_open[0].opened = True
-	# ANIMATION CONTROL
-	if moving:
-		counter += 1
-		if counter > 2:
-			counter = 0
-			frame += 1
-			if frame >= len(crowWalkDown):
-				frame = 0
-
-	# Map Loading
-	screen.fill(0)
-	for layer in fname.visible_layers:
-		if isinstance(layer, TiledTileLayer):
-			for x, y, gid in layer:
-				tile = fname.get_tile_image_by_gid(gid)
-				if tile:
-					screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
-	chests.draw(screen)
-	all_sprites.draw(screen)
-	for layer in tops.visible_layers:
-		if isinstance(layer, TiledTileLayer):
-			for x, y, gid in layer:
-				tile = tops.get_tile_image_by_gid(gid)
-				if tile:
-					screen.blit(tile,((x * tops.tilewidth) + x_diff, (y * tops.tileheight) + y_diff))				
-	# MOVEMENT ANIMATION
-	if U:
-		cm = cf[frame]
-	elif R:
-		cm = cr[frame]
-	elif D:
-		cm = cd[frame]
-	elif L:
-		cm = cl[frame]
-	else:
-		if pressed == "UP" or pressed == "NULL":
-			cm = cf[0]
-		elif pressed == "DOWN":
-			cm = cd[0]
-		elif pressed == "LEFT":
-			cm = cl[0]
-		elif pressed == "RIGHT":
-			cm = cr[0]
+		print(mode)			
 	# DRAW / RENDER         
 	# screen.fill(0)
 	# chests.draw(screen)

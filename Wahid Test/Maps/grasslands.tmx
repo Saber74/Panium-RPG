@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="62">
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="67">
  <tileset firstgid="1" name="Revolution_Grasslands" tilewidth="32" tileheight="32" tilecount="190" columns="10">
   <image source="revolution_grasslands.png" trans="a349a4" width="320" height="608"/>
   <tile id="5">
@@ -90,9 +90,13 @@
   <object id="39" name="wall" x="1216" y="1120" width="64" height="64"/>
   <object id="40" name="wall" x="1312" y="1024" width="64" height="64"/>
   <object id="41" name="wall" x="1312" y="864" width="64" height="64"/>
-  <object id="51" name="chest" type="2" x="544" y="385.333" width="61.3333" height="60"/>
-  <object id="58" name="chest" type="3" x="639.833" y="387" width="61.3333" height="60"/>
+  <object id="51" name="chest" type="4" x="544" y="385.333" width="61.3333" height="60"/>
+  <object id="58" name="chest" type="1" x="642.333" y="387.5" width="61.3333" height="60"/>
   <object id="60" name="chest" type="1" x="426.333" y="317.5" width="61.3333" height="60"/>
-  <object id="61" name="chest" type="4" x="725.833" y="297.5" width="61.3333" height="60"/>
+  <object id="61" name="chest" type="2" x="725.833" y="297.5" width="61.3333" height="60"/>
+  <object id="63" name="wall" x="426.833" y="317" width="61.3333" height="60"/>
+  <object id="64" name="wall" x="544.333" y="385" width="61.3333" height="60"/>
+  <object id="65" name="wall" x="641.833" y="386.5" width="61.3333" height="60"/>
+  <object id="66" name="wall" x="725.333" y="297.5" width="61.3333" height="60"/>
  </objectgroup>
 </map>

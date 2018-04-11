@@ -10,6 +10,17 @@ screen = display.set_mode(size)
 myClock = time.Clock()
 FPS = 60
 x = y = n = 0
+save = False
+# openedChests = []
+# openChests = open("Chest.txt", "r").read().strip().split('\n')
+
+inventory = []
+inventorySave = open("Inventory.txt", "r").read().strip().split('\n')
+for i in inventorySave:
+	if i != '':
+		inventory.append(i)
+inventorySave = open("Inventory.txt", "w")
+
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 chest_open = []
@@ -17,7 +28,6 @@ tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
 tier2 = ['Lightening']
 tier3 = ['Sword of Water']
 tier4 = ['Wind Staff']
-inventory = []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 pressed = "NULL"
 frame = 0
@@ -110,15 +120,21 @@ while running:
 			running = False
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
+				# if save:
+				for i in inventory:
+					inventorySave.write(i + '\n')
 				running = False    	
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 			if evt.key == K_2:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 			if evt.key == K_i:
-				mode = 'Battle'
+				# mode = 'Battle'
+				print(inventory)
 			if evt.key == K_q:
-				mode = 'Walking'
+				# mode = 'Walking'
+				# save = True
+				pass
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
@@ -160,7 +176,7 @@ while running:
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			n += 1
-			print(n)	
+			# print(n)	
 
 		chest_open = sprite.spritecollide(player, chests, False)	
 		if chest_open and kp[K_SPACE]:
@@ -208,13 +224,9 @@ while running:
 				cm = cl[0]
 			elif pressed == "RIGHT":
 				cm = cr[0]
-		print(mode)		
 	else:
-		print(mode)			
+		pass			
 	# DRAW / RENDER         
-	# screen.fill(0)
-	# chests.draw(screen)
-	# all_sprites.draw(screen)
 	walls.draw(screen)
 	display.flip() 
 	myClock.tick(FPS)

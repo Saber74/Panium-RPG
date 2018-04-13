@@ -90,13 +90,29 @@
   <object id="39" name="wall" x="1216" y="1120" width="64" height="64"/>
   <object id="40" name="wall" x="1312" y="1024" width="64" height="64"/>
   <object id="41" name="wall" x="1312" y="864" width="64" height="64"/>
-  <object id="51" name="chest" type="4" x="544" y="385.333" width="61.3333" height="60"/>
-  <object id="58" name="chest" type="1" x="642.333" y="387.5" width="61.3333" height="60"/>
-  <object id="60" name="chest" type="1" x="426.333" y="317.5" width="61.3333" height="60"/>
-  <object id="61" name="chest" type="2" x="725.833" y="297.5" width="61.3333" height="60"/>
-  <object id="63" name="wall" x="426.833" y="317" width="61.3333" height="60"/>
-  <object id="64" name="wall" x="544.333" y="385" width="61.3333" height="60"/>
-  <object id="65" name="wall" x="641.833" y="386.5" width="61.3333" height="60"/>
-  <object id="66" name="wall" x="725.333" y="297.5" width="61.3333" height="60"/>
+  <object id="51" name="chest" type="4" x="544" y="385.333" width="61.3333" height="60">
+   <properties>
+    <property name="ChestName" value="Chest2"/>
+   </properties>
+  </object>
+  <object id="58" name="chest" type="3" x="641.666" y="386.833" width="61.3333" height="60">
+   <properties>
+    <property name="ChestName" value="Chest3"/>
+   </properties>
+  </object>
+  <object id="60" name="chest" type="1" x="426.333" y="317.5" width="61.3333" height="60">
+   <properties>
+    <property name="ChestName" value="Chest1"/>
+   </properties>
+  </object>
+  <object id="61" name="chest" type="2" x="725.833" y="297.5" width="61.3333" height="60">
+   <properties>
+    <property name="ChestName" value="Chest4"/>
+   </properties>
+  </object>
+  <object id="63" name="wall" x="673.5" y="173" width="61.3333" height="60"/>
+  <object id="64" name="wall" x="673" y="173.667" width="61.3333" height="60"/>
+  <object id="65" name="wall" x="671.166" y="173.167" width="61.3333" height="60"/>
+  <object id="66" name="wall" x="673.333" y="173.5" width="61.3333" height="60"/>
  </objectgroup>
 </map>

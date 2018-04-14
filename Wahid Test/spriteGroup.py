@@ -28,10 +28,14 @@ inventorySave = open("Inventory.txt", "w")
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 chest_open = []
-tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
-tier2 = ['Lightening']
-tier3 = ['Sword of Water']
-tier4 = ['Wind Staff']
+# tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
+# tier2 = ['Lightening Essence']
+# tier3 = ['Sword of Water (II)']
+# tier4 = ['Wind Staff', 'Wind Staff']
+tier1 = ['Wind Staff']
+tier2 = ['Wind Staff']
+tier3 = ['Wind Staff']
+tier4 = ['Wind Staff', 'Wind Staff']
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 pressed = "NULL"
 frame = 0
@@ -39,7 +43,7 @@ counter = 0
 x_diff = y_diff = 0
 speed = 0
 pan = 10
-mode = 'Walking'
+mode = 0
 cm = image.load("SPRITES/Crow/Walk/Forward/Forward-0.png").convert_alpha()
 fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
 tops = load_pygame("Maps/over0.tmx", pixelalpha = True)
@@ -74,7 +78,6 @@ class Obstacle(sprite.Sprite):
 		self.image = Surface((x, y), SRCALPHA) ; self.image.fill((0,0,0,0))
 		self.rect = Rect(x, y, w, h)
 		self.x = x ; self.y = y
-		# self.rect.x = x ; self.rect.y = y
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
 class Chest(sprite.Sprite):
@@ -95,7 +98,6 @@ class Chest(sprite.Sprite):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
 		if self.image == self.prev_image and self.opened and kp[K_SPACE]:
 			self.image = self.images[1]
-			# print(self.name)
 			if self.tier == '1':
 				self.c = tier1
 			elif self.tier == '2':	
@@ -107,6 +109,7 @@ class Chest(sprite.Sprite):
 			if self.name not in openedChests:	
 				item = r(0, len(self.c) - 1)
 				inventory.append(self.c[item])
+				print(self.c[item], "has been obtained!!")
 				del self.c[item]
 				openedChests.append(self.name)
 all_sprites = sprite.Group()                                 
@@ -126,35 +129,51 @@ running = True
 while running:
 	for evt in event.get():  
 		if evt.type == QUIT: 
+			for i in inventory:
+				inventorySave.write(i + '\n')
+			for i in openedChests:
+				openChests.write(i + '\n')	
+			inventorySave.close()
+			openChests.close()
 			running = False
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
-				# if save:
 				for i in inventory:
 					inventorySave.write(i + '\n')
 				for i in openedChests:
 					openChests.write(i + '\n')	
+				inventorySave.close()
+				openChests.close()	
 				running = False    	
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 			if evt.key == K_2:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 			if evt.key == K_i:
-				# mode = 'Battle'
-				print(inventory)
+				inv = ''
+				for i in inventory:
+					number = 0
+					for n in inventory:
+						if i == n:
+							number += 1
+					inv += i + ' ' + 'x' + str(number) + ', '
+				split = inv.split(', ')
+				del split[split.index('')]	
+				s = set(split)
+				print(s)
 			if evt.key == K_q:
-				# mode = 'Walking'
-				# save = True
 				inventorySave = open("Inventory.txt", "w")
 				inventory = []
 				openChests = open("Inventory.txt", "w")
 				openedChests = []
+			if evt.key == K_b:
+				mode = 1 - mode	
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
 	# KEYBOARD MOVEMENT
-	if mode == 'Walking':
+	if mode == 0:
 		if kp[K_RIGHT]:
 			x_diff -= pan
 			x = speed
@@ -189,8 +208,7 @@ while running:
 		# check to see if the mob hit the player
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
-			n += 1
-			# print(n)	
+			pass
 
 		chest_open = sprite.spritecollide(player, chests, False)	
 		if chest_open and kp[K_SPACE]:
@@ -220,7 +238,6 @@ while running:
 					tile = tops.get_tile_image_by_gid(gid)
 					if tile:
 						screen.blit(tile,((x * tops.tilewidth) + x_diff, (y * tops.tileheight) + y_diff))				
-
 		# MOVEMENT ANIMATION
 		if U:
 			cm = cf[frame]

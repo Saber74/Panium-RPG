@@ -11,40 +11,48 @@ myClock = time.Clock()
 FPS = 60
 x = y = n = 0
 save = False
+Player_HP = 100
+battleAnimation = []
+############################################# LOADING CHEST STATES #############################################
 openedChests = []
 openChests = open("Chest.txt", "r").read().strip().split('\n')
 for i in openChests:
 	if i != '':
 		openedChests.append(i)
 openChests = open("Chest.txt", "w")
+############################################# LOADING CHEST STATES #############################################
 
+############################################### LOADING INVENTORY ###############################################
 inventory = []
 inventorySave = open("Inventory.txt", "r").read().strip().split('\n')
 for i in inventorySave:
 	if i != '':
 		inventory.append(i)
 inventorySave = open("Inventory.txt", "w")
+############################################### LOADING INVENTORY ###############################################
 
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
-chest_open = []
-# tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
-# tier2 = ['Lightening Essence']
-# tier3 = ['Sword of Water (II)']
-# tier4 = ['Wind Staff', 'Wind Staff']
-tier1 = ['Wind Staff']
-tier2 = ['Wind Staff']
-tier3 = ['Wind Staff']
-tier4 = ['Wind Staff', 'Wind Staff']
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
+cm = image.load("SPRITES/Crow/Walk/Forward/Forward-0.png").convert_alpha()
+chest_open = []
+
+############################################# POSSIBLE CHEST ITEMS #############################################
+tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
+tier2 = ['Lightening Essence']
+tier3 = ['Sword of Water (II)']
+tier4 = ['Wind Staff', 'Wind Staff']
+############################################# POSSIBLE CHEST ITEMS #############################################
 pressed = "NULL"
 frame = 0
 counter = 0
 x_diff = y_diff = 0
 speed = 0
 pan = 10
-mode = 0
-cm = image.load("SPRITES/Crow/Walk/Forward/Forward-0.png").convert_alpha()
+# mode = 0
+mode = 1
+
+############################################ LOADING MAP AND SPRITES ############################################
 fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
 tops = load_pygame("Maps/over0.tmx", pixelalpha = True)
 for i in range(9):
@@ -57,6 +65,10 @@ for i in range(9):
 	ravenWalkRight.append(image.load("SPRITES/Raven/Walk/Right/%i.png" % i).convert_alpha())
 	ravenWalkDown.append(image.load("SPRITES/Raven/Walk/Down/%i.png" % i).convert_alpha())
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
+for i in range(24):
+	battleAnimation.append(transform.scale(image.load("gif/%i.png" % i),(800,600)).convert_alpha())
+############################################ LOADING MAP AND SPRITES ############################################
+
 class Player(sprite.Sprite):
 	# sprite for the player
 	def __init__(self, x, y, s):
@@ -106,12 +118,11 @@ class Chest(sprite.Sprite):
 				self.c = tier3
 			elif self.tier == '4':
 				self.c = tier4
-			if self.name not in openedChests:	
-				item = r(0, len(self.c) - 1)
-				inventory.append(self.c[item])
-				print(self.c[item], "has been obtained!!")
-				del self.c[item]
-				openedChests.append(self.name)
+			item = r(0, len(self.c) - 1)
+			inventory.append(self.c[item])
+			print(self.c[item], "has been obtained!!")
+			del self.c[item]
+			openedChests.append(self.name)
 all_sprites = sprite.Group()                                 
 walls = sprite.Group()
 chests = sprite.Group()
@@ -257,7 +268,39 @@ while running:
 			elif pressed == "RIGHT":
 				cm = cr[0]
 	else:
-		pass			
+		if mode == 1:
+			turn = "Player"	
+			Enemy_HP = 100
+			for i in battleAnimation:
+				screen.blit(i,(0,0))
+				time.wait(25)
+				display.flip() 
+			mode = 2	
+		battleBack = transform.scale(image.load("img/battlebacks1/DarkSpace.png"), (WIDTH, HEIGHT))	
+		enemy = image.load("img/enemies/Chimera.png")
+		screen.blit(battleBack,(0,0))
+		screen.blit(enemy,(187.5,0))
+		if turn == "Player":
+			if kp[K_SPACE]:
+				print(turn)
+				Enemy_HP -= 10
+				print("Enemy HP:",Enemy_HP)
+				turn = "Enemy"
+		if turn == "Enemy":
+			time.wait(100)
+			print(turn)
+			Player_HP -= 10
+			print("Player HP:",Player_HP)	
+			turn = "Player"
+		if Player_HP <= 0 or Enemy_HP <= 0:	
+			if Player_HP <= 0:
+				print("YOU LOST!!")		
+			elif Enemy_HP <= 0:	
+				print("YOU WON!!")		
+			elif Player_HP <= 0 and Enemy_HP <= 0:
+				print("YOU LOST!!")		
+			mode = 0	
+				
 	# DRAW / RENDER         
 	walls.draw(screen)
 	display.flip() 

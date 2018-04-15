@@ -65,6 +65,12 @@ cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 cm = image.load("SPRITES/Crow/Walk/Forward/Forward-0.png").convert_alpha()
 chest_open = []
 
+############################################### ATTACK ANIMATIONS ###############################################
+Darkness1 = []
+for i in range(22):
+	Darkness1.append(image.load("SPRITES/Crow Attacks/%i.png" % i).convert_alpha())
+############################################### ATTACK ANIMATIONS ###############################################
+
 ############################################# POSSIBLE CHEST ITEMS #############################################
 tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
 tier2 = ['Lightening Essence']
@@ -198,7 +204,7 @@ while running:
 				if len(s) == 0:
 					print("YOU HAVE NO ITEMS!!!!")
 				else:	
-					print(s,"\n", "and you have",str(len(inventory)),"item(s)!")
+					print(s,"\n", "and you have",len(inventory),"item(s)!")
 			if evt.key == K_q:
 				inventorySave = open("Inventory.txt", "w")
 				inventory = []
@@ -297,7 +303,14 @@ while running:
 				cm = cr[0]
 	else:
 		if mode == 1:
-			turn = "Player"	
+			Attack_DMG = 20
+			Selected_Attack = 'NONE'
+			t = r(0,1)
+			if t == 0:
+				turn = "Player"	
+			else:
+				turn = "Enemy"	
+			print(turn,"GOES FIRST!!!")	
 			Enemy_HP = 100
 			print("PRESS SPACE TO ATTACK")
 			for i in battleAnimation:
@@ -307,17 +320,37 @@ while running:
 			mode = 2	
 		battleBack = transform.scale(image.load("img/battlebacks1/DarkSpace.png"), (WIDTH, HEIGHT))	
 		enemy = image.load("img/enemies/Chimera.png")
-		screen.blit(battleBack,(0,0))
-		screen.blit(enemy,(187.5,0))
-		if turn == "Player" and Player_HP > 0:
-			if kp[K_SPACE]:
-				print(turn)
-				Enemy_HP -= 20
-				print("Enemy HP:",Enemy_HP)
-				turn = "Enemy"
+		def FIGHTANIMATION(surf):
+			surf.blit(battleBack,(0,0))
+			surf.blit(enemy,(187.5,0))
+		FIGHTANIMATION(screen)	
+		########################################## ATTACK SELECTION ##########################################
+		if kp[K_z]:
+			Attack_DMG = 20
+			print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
+		elif kp[K_x]:
+			Attack_DMG = 30
+			print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
+		elif kp[K_c]:
+			Attack_DMG = 40		
+			print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
+		########################################## ATTACK SELECTION ##########################################
+
+		############################################### BATTLE ###############################################
+		if turn == "Player" and Player_HP > 0 and kp[K_SPACE]:
+			print(turn + "'s turn to attack!!")
+			for i in Darkness1:
+				# screen.fill(0)
+				FIGHTANIMATION(screen)	
+				screen.blit(i,(300,100))
+				time.wait(50)
+				display.flip()
+			Enemy_HP -= Attack_DMG
+			print("Enemy HP:",Enemy_HP)
+			turn = "Enemy"
 		if turn == "Enemy" and Enemy_HP > 0:
 			time.wait(100)
-			print(turn)
+			print(turn + "'s turn to attack!!")
 			Player_HP -= 10
 			print("Player HP:",Player_HP)	
 			turn = "Player"
@@ -329,7 +362,7 @@ while running:
 			elif Player_HP <= 0 and Enemy_HP <= 0:
 				print("YOU LOST!!")		
 			mode = 0	
-				
+		############################################### BATTLE ###############################################
 	# DRAW / RENDER         
 	walls.draw(screen)
 	display.flip() 

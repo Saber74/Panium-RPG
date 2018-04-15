@@ -49,18 +49,14 @@ crowStatsSave = open("CrowStats.txt", 'w')
 ################################################ CHARACTER STATS ################################################
 
 ############################################ GAME PROGRESSION / STATS ############################################
-# THIS MIGHT JUST END UP BEING DESIGNATED TO CHARACTER COORDINATES
-prog = []
-ProgressionSave = open("GameProgression.txt", 'r').read().strip().split(',')
-for i in ProgressionSave:
+CoordSave = open("Coordinates.txt", 'r').read().strip().split(',')
+for i in CoordSave:
 	if i != '':
-		prog.append(i)
-for i in prog:
-	if prog.index(i) == 0:
-		x_diff = float(i)
-	elif prog.index(i) == 1:
-		y_diff = float(i)			
-ProgressionSave = open("GameProgression.txt", 'w')
+		if CoordSave.index(i) == 0:
+			x_diff = float(i)
+		elif CoordSave.index(i) == 1:
+			y_diff = float(i)
+CoordSave = open("Coordinates.txt", 'w')
 ############################################ GAME PROGRESSION / STATS ############################################
 
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
@@ -168,8 +164,10 @@ while running:
 				inventorySave.write(i + '\n')
 			for i in openedChests:
 				openChests.write(i + '\n')	
+			CoordSave.write(str(x_diff) + ',' + str(y_diff))		
 			inventorySave.close()
 			openChests.close()
+			CoordSave.close()
 			running = False
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
@@ -177,10 +175,10 @@ while running:
 					inventorySave.write(i + '\n')
 				for i in openedChests:
 					openChests.write(i + '\n')	
-				ProgressionSave.write(str(x_diff) + ',' + str(y_diff))		
+				CoordSave.write(str(x_diff) + ',' + str(y_diff))		
 				inventorySave.close()
 				openChests.close()	
-				ProgressionSave.close()
+				CoordSave.close()
 				running = False    	
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
@@ -197,12 +195,16 @@ while running:
 				split = inv.split(', ')
 				del split[split.index('')]	
 				s = set(split)
-				print(s)
+				if len(s) == 0:
+					print("YOU HAVE NO ITEMS!!!!")
+				else:	
+					print(s,"\n", "and you have",str(len(inventory)),"item(s)!")
 			if evt.key == K_q:
 				inventorySave = open("Inventory.txt", "w")
 				inventory = []
 				openChests = open("Inventory.txt", "w")
 				openedChests = []
+				CoordSave = open("Coordinates.txt", 'w')
 			if evt.key == K_b:
 				mode = 1 - mode	
 	mx,my=mouse.get_pos()

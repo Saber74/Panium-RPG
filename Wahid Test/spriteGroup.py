@@ -49,8 +49,8 @@ counter = 0
 x_diff = y_diff = 0
 speed = 0
 pan = 10
-# mode = 0
-mode = 1
+mode = 0
+# mode = 1
 
 ############################################ LOADING MAP AND SPRITES ############################################
 fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
@@ -135,7 +135,7 @@ for tile_object in fname.objects:
 	if tile_object.name == 'chest':
 		chest = Chest(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type,tile_object.ChestName)	
 		chests.add(chest)
-			
+print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) ; PRESS I TO PRINT YOUR INVENTORY ; PRESS SPACE TO INTERACT WITH CHESTS")			
 running = True
 while running:
 	for evt in event.get():  
@@ -271,6 +271,7 @@ while running:
 		if mode == 1:
 			turn = "Player"	
 			Enemy_HP = 100
+			print("PRESS SPACE TO ATTACK")
 			for i in battleAnimation:
 				screen.blit(i,(0,0))
 				time.wait(25)
@@ -280,13 +281,13 @@ while running:
 		enemy = image.load("img/enemies/Chimera.png")
 		screen.blit(battleBack,(0,0))
 		screen.blit(enemy,(187.5,0))
-		if turn == "Player":
+		if turn == "Player" and Player_HP > 0:
 			if kp[K_SPACE]:
 				print(turn)
-				Enemy_HP -= 10
+				Enemy_HP -= 20
 				print("Enemy HP:",Enemy_HP)
 				turn = "Enemy"
-		if turn == "Enemy":
+		if turn == "Enemy" and Enemy_HP > 0:
 			time.wait(100)
 			print(turn)
 			Player_HP -= 10

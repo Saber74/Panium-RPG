@@ -21,6 +21,41 @@ speed = 0
 pan = 10
 mode = 0
 # mode = 1
+def MapLoad(Map_Name):
+	for layer in Map_Name.visible_layers:
+		if isinstance(layer, TiledTileLayer):
+			for x, y, gid in layer:
+				tile = Map_Name.get_tile_image_by_gid(gid)
+				if tile:
+					screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff))
+def Save():
+	for i in inventory:
+		inventorySave.write(i + '\n')
+	for i in openedChests:
+		openChests.write(i + '\n')	
+	CoordSave.write(str(x_diff) + ',' + str(y_diff))		
+	inventorySave.close()
+	openChests.close()
+	CoordSave.close()
+def InventoryDisplay():
+	inv = ''
+	for i in inventory:
+		number = 0
+		for n in inventory:
+			if i == n:
+				number += 1
+		inv += i + ' ' + 'x' + str(number) + ', '
+	split = inv.split(', ')
+	del split[split.index('')]	
+	s = set(split)
+	if len(s) == 0:
+		print("YOU HAVE NO ITEMS!!!!")
+	else:	
+		print(s,"\n", "and you have",len(inventory),"item(s)!")	
+	return s
+def FIGHTANIMATION(surf, enemy, battleBack):
+	surf.blit(battleBack,(0,0))
+	surf.blit(enemy,(187.5,0))	
 ############################################# LOADING CHEST STATES #############################################
 openedChests = []
 openChests = open("Chest.txt", "r").read().strip().split('\n')
@@ -48,16 +83,16 @@ for i in crowStatsSave:
 crowStatsSave = open("CrowStats.txt", 'w')
 ################################################ CHARACTER STATS ################################################
 
-############################################ GAME PROGRESSION / STATS ############################################
+############################################ COORDINATES / PLAYER POSITION ############################################
 CoordSave = open("Coordinates.txt", 'r').read().strip().split(',')
 for i in CoordSave:
 	if i != '':
 		if CoordSave.index(i) == 0:
-			x_diff = float(i)
+			x_diff = int(i)
 		elif CoordSave.index(i) == 1:
-			y_diff = float(i)
+			y_diff = int(i)
 CoordSave = open("Coordinates.txt", 'w')
-############################################ GAME PROGRESSION / STATS ############################################
+############################################ COORDINATES / PLAYER POSITION ############################################
 
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
@@ -166,45 +201,18 @@ running = True
 while running:
 	for evt in event.get():  
 		if evt.type == QUIT: 
-			for i in inventory:
-				inventorySave.write(i + '\n')
-			for i in openedChests:
-				openChests.write(i + '\n')	
-			CoordSave.write(str(x_diff) + ',' + str(y_diff))		
-			inventorySave.close()
-			openChests.close()
-			CoordSave.close()
+			Save()
 			running = False
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
-				for i in inventory:
-					inventorySave.write(i + '\n')
-				for i in openedChests:
-					openChests.write(i + '\n')	
-				CoordSave.write(str(x_diff) + ',' + str(y_diff))		
-				inventorySave.close()
-				openChests.close()	
-				CoordSave.close()
+				Save()
 				running = False    	
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 			if evt.key == K_2:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 			if evt.key == K_i:
-				inv = ''
-				for i in inventory:
-					number = 0
-					for n in inventory:
-						if i == n:
-							number += 1
-					inv += i + ' ' + 'x' + str(number) + ', '
-				split = inv.split(', ')
-				del split[split.index('')]	
-				s = set(split)
-				if len(s) == 0:
-					print("YOU HAVE NO ITEMS!!!!")
-				else:	
-					print(s,"\n", "and you have",len(inventory),"item(s)!")
+				InventoryDisplay()
 			if evt.key == K_q:
 				inventorySave = open("Inventory.txt", "w")
 				inventory = []
@@ -267,23 +275,15 @@ while running:
 				if frame >= len(crowWalkDown):
 					frame = 0
 
-		# Map Loading
+		############################################## Map Loading ##############################################
 		screen.fill(0)
-		for layer in fname.visible_layers:
-			if isinstance(layer, TiledTileLayer):
-				for x, y, gid in layer:
-					tile = fname.get_tile_image_by_gid(gid)
-					if tile:
-						screen.blit(tile, ((x * fname.tilewidth) + x_diff, (y * fname.tileheight) + y_diff))
+		MapLoad(fname)
 		chests.draw(screen)
 		all_sprites.draw(screen)
-		for layer in tops.visible_layers:
-			if isinstance(layer, TiledTileLayer):
-				for x, y, gid in layer:
-					tile = tops.get_tile_image_by_gid(gid)
-					if tile:
-						screen.blit(tile,((x * tops.tilewidth) + x_diff, (y * tops.tileheight) + y_diff))				
-		# MOVEMENT ANIMATION
+		MapLoad(tops)
+		############################################## Map Loading ##############################################
+
+		########################################### MOVEMENT ANIMATION ###########################################
 		if U:
 			cm = cf[frame]
 		elif R:
@@ -301,6 +301,7 @@ while running:
 				cm = cl[0]
 			elif pressed == "RIGHT":
 				cm = cr[0]
+		########################################### MOVEMENT ANIMATION ###########################################
 	else:
 		if mode == 1:
 			Attack_DMG = 20
@@ -320,10 +321,7 @@ while running:
 			mode = 2	
 		battleBack = transform.scale(image.load("img/battlebacks1/DarkSpace.png"), (WIDTH, HEIGHT))	
 		enemy = image.load("img/enemies/Chimera.png")
-		def FIGHTANIMATION(surf):
-			surf.blit(battleBack,(0,0))
-			surf.blit(enemy,(187.5,0))
-		FIGHTANIMATION(screen)	
+		FIGHTANIMATION(screen, enemy, battleBack)	
 		########################################## ATTACK SELECTION ##########################################
 		if kp[K_z]:
 			Attack_DMG = 20
@@ -340,7 +338,6 @@ while running:
 		if turn == "Player" and Player_HP > 0 and kp[K_SPACE]:
 			print(turn + "'s turn to attack!!")
 			for i in Darkness1:
-				# screen.fill(0)
 				FIGHTANIMATION(screen)	
 				screen.blit(i,(300,100))
 				time.wait(50)

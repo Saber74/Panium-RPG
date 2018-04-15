@@ -13,6 +13,14 @@ x = y = n = 0
 save = False
 Player_HP = 100
 battleAnimation = []
+pressed = "NULL"
+frame = 0
+counter = 0
+x_diff = y_diff = 0
+speed = 0
+pan = 10
+mode = 0
+# mode = 1
 ############################################# LOADING CHEST STATES #############################################
 openedChests = []
 openChests = open("Chest.txt", "r").read().strip().split('\n')
@@ -31,6 +39,30 @@ for i in inventorySave:
 inventorySave = open("Inventory.txt", "w")
 ############################################### LOADING INVENTORY ###############################################
 
+################################################ CHARACTER STATS ################################################
+crowStats = []
+crowStatsSave = open("CrowStats.txt", 'r').read().strip().split('\n')
+for i in crowStatsSave:
+	if i != '':
+		crowStats.append(i)
+crowStatsSave = open("CrowStats.txt", 'w')
+################################################ CHARACTER STATS ################################################
+
+############################################ GAME PROGRESSION / STATS ############################################
+# THIS MIGHT JUST END UP BEING DESIGNATED TO CHARACTER COORDINATES
+prog = []
+ProgressionSave = open("GameProgression.txt", 'r').read().strip().split(',')
+for i in ProgressionSave:
+	if i != '':
+		prog.append(i)
+for i in prog:
+	if prog.index(i) == 0:
+		x_diff = float(i)
+	elif prog.index(i) == 1:
+		y_diff = float(i)			
+ProgressionSave = open("GameProgression.txt", 'w')
+############################################ GAME PROGRESSION / STATS ############################################
+
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
@@ -43,14 +75,6 @@ tier2 = ['Lightening Essence']
 tier3 = ['Sword of Water (II)']
 tier4 = ['Wind Staff', 'Wind Staff']
 ############################################# POSSIBLE CHEST ITEMS #############################################
-pressed = "NULL"
-frame = 0
-counter = 0
-x_diff = y_diff = 0
-speed = 0
-pan = 10
-mode = 0
-# mode = 1
 
 ############################################ LOADING MAP AND SPRITES ############################################
 fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
@@ -153,8 +177,10 @@ while running:
 					inventorySave.write(i + '\n')
 				for i in openedChests:
 					openChests.write(i + '\n')	
+				ProgressionSave.write(str(x_diff) + ',' + str(y_diff))		
 				inventorySave.close()
 				openChests.close()	
+				ProgressionSave.close()
 				running = False    	
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft

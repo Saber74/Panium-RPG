@@ -18,8 +18,9 @@ frame = 0
 counter = 0
 x_diff = y_diff = 0
 speed = 0
-pan = 10
+pan = 5
 mode = 0
+s = 5
 # mode = 1
 def MapLoad(Map_Name):
 	for layer in Map_Name.visible_layers:
@@ -252,8 +253,13 @@ while running:
 			moving = True
 			pressed = "DOWN"
 		else:
-			x = y = 0			
-
+			x = y = 0	
+		if kp[K_LSHIFT]:
+			pan = 10
+			s = 2
+		else:
+			pan = 5	
+			s = 5
 		# UPDATE
 		all_sprites.update()
 		walls.update()
@@ -269,7 +275,7 @@ while running:
 		# ANIMATION CONTROL
 		if moving:
 			counter += 1
-			if counter > 2:
+			if counter > s:
 				counter = 0
 				frame += 1
 				if frame >= len(crowWalkDown):
@@ -338,7 +344,7 @@ while running:
 		if turn == "Player" and Player_HP > 0 and kp[K_SPACE]:
 			print(turn + "'s turn to attack!!")
 			for i in Darkness1:
-				FIGHTANIMATION(screen)	
+				FIGHTANIMATION(screen, enemy, battleBack)	
 				screen.blit(i,(300,100))
 				time.wait(50)
 				display.flip()

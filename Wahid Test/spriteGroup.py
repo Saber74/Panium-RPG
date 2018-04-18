@@ -2,6 +2,7 @@ from pygame import *
 from pytmx import *
 from random import randint as r
 import os
+lvl = 1
 WIDTH, HEIGHT = 800, 600 
 # WIDTH, HEIGHT = 1366, 768 
 size=(WIDTH, HEIGHT)
@@ -22,6 +23,8 @@ pan = 5
 mode = 0
 s = 5
 # mode = 1
+if lvl == 1:
+	tops
 def MapLoad(Map_Name):
 	for layer in Map_Name.visible_layers:
 		if isinstance(layer, TiledTileLayer):

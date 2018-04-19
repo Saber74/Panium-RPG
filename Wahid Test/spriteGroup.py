@@ -20,8 +20,18 @@ x_diff = y_diff = 0
 speed = 0
 pan = 5
 mode = 0
-s = 5
 # mode = 1
+s = 5
+lvl = 2
+selectedMap = 0
+def levelSelect(lvl):
+	if lvl == 1:
+		fname = load_pygame("Maps/grasslands.tmx")
+		tops = load_pygame("Maps/over0.tmx")
+	if lvl == 2:
+		fname = load_pygame("Maps/desert.tmx")
+		tops = load_pygame("Maps/blank.tmx")
+	return fname, tops		
 def MapLoad(Map_Name):
 	for layer in Map_Name.visible_layers:
 		if isinstance(layer, TiledTileLayer):
@@ -115,8 +125,9 @@ tier4 = ['Wind Staff', 'Wind Staff']
 ############################################# POSSIBLE CHEST ITEMS #############################################
 
 ############################################ LOADING MAP AND SPRITES ############################################
-fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
-tops = load_pygame("Maps/over0.tmx", pixelalpha = True)
+# fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
+fname = levelSelect(lvl)[0]
+tops = levelSelect(lvl)[1]
 for i in range(9):
 	crowWalkForward.append(image.load("SPRITES/Crow/Walk/Forward/Forward-%i.png" % (i + 1)).convert_alpha())
 	crowWalkRight.append(image.load("SPRITES/Crow/Walk/Right/Right-%i.png" % (i + 1)).convert_alpha())	

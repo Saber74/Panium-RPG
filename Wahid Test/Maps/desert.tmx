@@ -7,6 +7,10 @@
   </data>
  </layer>
  <objectgroup name="objects">
-  <object id="1" name="player" x="400" y="300" width="38.6667" height="44"/>
+  <object id="1" name="chest" type="3" x="1556.58" y="793.939" width="38.6667" height="38">
+   <properties>
+    <property name="ChestName" value="Chest6"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

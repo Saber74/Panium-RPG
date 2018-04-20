@@ -22,15 +22,26 @@ pan = 5
 mode = 0
 # mode = 1
 s = 5
-lvl = 2
-selectedMap = 0
-def levelSelect(lvl):
+lvl = 1
+def load_object(fname, chests, walls):
+	for tile_object in fname.objects:
+		if tile_object.name == 'wall':
+			obs = Obstacle(tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+			walls.add(obs)
+		if tile_object.name == 'chest':
+			chest = Chest(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type,tile_object.ChestName)	
+			chests.add(chest)
+def levelSelect(lvl, chests, walls):
 	if lvl == 1:
 		fname = load_pygame("Maps/grasslands.tmx")
 		tops = load_pygame("Maps/over0.tmx")
 	if lvl == 2:
 		fname = load_pygame("Maps/desert.tmx")
 		tops = load_pygame("Maps/blank.tmx")
+	for i in chests:
+		i.kill()
+	for i in walls:
+		i.kill()		
 	return fname, tops		
 def MapLoad(Map_Name):
 	for layer in Map_Name.visible_layers:
@@ -44,7 +55,9 @@ def Save():
 		inventorySave.write(i + '\n')
 	for i in openedChests:
 		openChests.write(i + '\n')	
+	lvlSave.write(str(lvl))	
 	CoordSave.write(str(x_diff) + ',' + str(y_diff))		
+	lvlSave.close()
 	inventorySave.close()
 	openChests.close()
 	CoordSave.close()
@@ -105,6 +118,12 @@ for i in CoordSave:
 CoordSave = open("Coordinates.txt", 'w')
 ############################################ COORDINATES / PLAYER POSITION ############################################
 
+################################################### LEVEL LOAD ###################################################
+lvlSave = open("lvl.txt", "r").read().strip()
+lvl = int(lvlSave)
+lvlSave = open("lvl.txt", "w")
+################################################### LEVEL LOAD ###################################################
+
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
@@ -120,14 +139,11 @@ for i in range(22):
 ############################################# POSSIBLE CHEST ITEMS #############################################
 tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
 tier2 = ['Lightening Essence']
-tier3 = ['Sword of Water (II)']
+tier3 = ['Sword of Water (II)', 'Sword of Lightening (V)']
 tier4 = ['Wind Staff', 'Wind Staff']
 ############################################# POSSIBLE CHEST ITEMS #############################################
 
 ############################################ LOADING MAP AND SPRITES ############################################
-# fname = load_pygame("Maps/grasslands.tmx", pixelalpha = True)
-fname = levelSelect(lvl)[0]
-tops = levelSelect(lvl)[1]
 for i in range(9):
 	crowWalkForward.append(image.load("SPRITES/Crow/Walk/Forward/Forward-%i.png" % (i + 1)).convert_alpha())
 	crowWalkRight.append(image.load("SPRITES/Crow/Walk/Right/Right-%i.png" % (i + 1)).convert_alpha())	
@@ -201,14 +217,10 @@ walls = sprite.Group()
 chests = sprite.Group()
 player = Player(WIDTH / 2, HEIGHT / 2 + 50, speed)
 all_sprites.add(player)
-for tile_object in fname.objects:
-	if tile_object.name == 'wall':
-		obs = Obstacle(tile_object.x, tile_object.y, tile_object.width, tile_object.height)
-		walls.add(obs)
-	if tile_object.name == 'chest':
-		chest = Chest(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type,tile_object.ChestName)	
-		chests.add(chest)
-print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) ; PRESS I TO PRINT YOUR INVENTORY ; PRESS SPACE TO INTERACT WITH CHESTS")			
+fname = levelSelect(lvl, chests, walls)[0]
+tops = levelSelect(lvl, chests, walls)[1]
+load_object(fname, chests, walls)
+print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) ; PRESS I TO PRINT YOUR INVENTORY ; PRESS SPACE TO INTERACT WITH CHESTS ; M&N TO TOGGLE MAP")			
 running = True
 while running:
 	for evt in event.get():  
@@ -233,6 +245,18 @@ while running:
 				CoordSave = open("Coordinates.txt", 'w')
 			if evt.key == K_b:
 				mode = 1 - mode	
+			if evt.key == K_n:
+				lvl = 2
+				fname = levelSelect(lvl, chests, walls)[0]
+				tops = levelSelect(lvl, chests, walls)[1]
+				load_object(fname, chests, walls)		
+				x_diff, y_diff = -1090, -420
+			if evt.key == K_m:
+				lvl = 1
+				fname = levelSelect(lvl, chests, walls)[0]
+				tops = levelSelect(lvl, chests, walls)[1]	
+				load_object(fname, chests, walls)
+				x_diff = y_diff = 0
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()

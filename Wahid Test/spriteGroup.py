@@ -23,6 +23,10 @@ mode = 0
 # mode = 1
 s = 5
 lvl = 1
+mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
+mixer.init()# initializes the music mixer
+mixer.music.load("Audio/BGM/aaronwalz_ghalarah.ama")
+mixer.music.play()
 def load_object(fname, chests, walls):
 	for tile_object in fname.objects:
 		if tile_object.name == 'wall':

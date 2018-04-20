@@ -25,7 +25,7 @@ s = 5
 lvl = 1
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
 mixer.init()# initializes the music mixer
-mixer.music.load("Audio/BGM/aaronwalz_ghalarah.ama")
+mixer.music.load("Audio/BGM/aaronwalz_ylisfar.ama")
 mixer.music.play()
 def load_object(fname, chests, walls):
 	for tile_object in fname.objects:
@@ -224,7 +224,7 @@ all_sprites.add(player)
 fname = levelSelect(lvl, chests, walls)[0]
 tops = levelSelect(lvl, chests, walls)[1]
 load_object(fname, chests, walls)
-print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) ; PRESS I TO PRINT YOUR INVENTORY ; PRESS SPACE TO INTERACT WITH CHESTS ; M&N TO TOGGLE MAP")			
+print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) ; PRESS I TO PRINT YOUR INVENTORY ; PRESS SPACE TO INTERACT WITH CHESTS ; M&N TO TOGGLE MAP ; O&P TOGGLE MUSIC")			
 running = True
 while running:
 	for evt in event.get():  
@@ -261,6 +261,10 @@ while running:
 				tops = levelSelect(lvl, chests, walls)[1]	
 				load_object(fname, chests, walls)
 				x_diff = y_diff = 0
+			if evt.key == K_o:
+				mixer.music.stop()
+			if evt.key == K_p:
+				mixer.music.play()		
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()

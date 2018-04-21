@@ -197,11 +197,8 @@ class Portal(sprite.Sprite):
 		self.rect = Rect(x, y, w, h)
 		self.x, self.y = x, y
 		self.type = location
-		self.teleport = False
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff		
-		if self.teleport:
-			print(self.type)
 
 class Chest(sprite.Sprite):
 	def __init__(self, x, y, w, h, tier, name):
@@ -332,8 +329,14 @@ while running:
 
 		tel = sprite.spritecollide(player, portals, False)
 		if tel:
-			tel[0].teleport = True	
-
+			lvl = int(tel[-1].type)
+			fname, tops = levelSelect(lvl, chests, walls, portals)
+			load_object(fname, chests, walls, portals)
+			if lvl == 1:
+				x_diff, y_diff = -545, -580
+			elif lvl == 2:
+				x_diff, y_diff = -1285, -495	
+				
 		chest_open = sprite.spritecollide(player, chests, False)	
 		if chest_open and kp[K_SPACE]:
 			chest_open[0].opened = True

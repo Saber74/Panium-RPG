@@ -26,8 +26,8 @@ lvl = 1
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
 mixer.init()# initializes the music mixer
 mixer.music.load("Audio/BGM/aaronwalz_ylisfar.ama")
-mixer.music.play()
-def load_object(fname, chests, walls):
+mixer.music.stop()
+def load_object(fname, chests, walls, portals):
 	for tile_object in fname.objects:
 		if tile_object.name == 'wall':
 			obs = Obstacle(tile_object.x, tile_object.y, tile_object.width, tile_object.height)
@@ -35,7 +35,10 @@ def load_object(fname, chests, walls):
 		if tile_object.name == 'chest':
 			chest = Chest(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type,tile_object.ChestName)	
 			chests.add(chest)
-def levelSelect(lvl, chests, walls):
+		if tile_object.name == "Portal":
+			port = Portal(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type)	
+			portals.add(port)
+def levelSelect(lvl, chests, walls, portals):
 	if lvl == 1:
 		fname = load_pygame("Maps/grasslands.tmx")
 		tops = load_pygame("Maps/over0.tmx")
@@ -46,6 +49,8 @@ def levelSelect(lvl, chests, walls):
 		i.kill()
 	for i in walls:
 		i.kill()		
+	for i in portals:
+		i.kill()	
 	return fname, tops		
 def MapLoad(Map_Name):
 	for layer in Map_Name.visible_layers:
@@ -167,12 +172,12 @@ class Player(sprite.Sprite):
 	def __init__(self, x, y, s):
 		sprite.Sprite.__init__(self)
 		self.image = cm
-		self.x = x ; self.y = y
+		self.x, self.y = x, y
 		self.rect = self.image.get_rect()
 		self.rect.center = (self.x,self.y)
 	def update(self):
 		self.image = cm
-		self.x = x ; self.y = y
+		self.x, self.y = x, y
 		if pressed == "LEFT" or pressed == "RIGHT":
 			self.rect.x += self.x
 		elif pressed == "UP" or pressed == "DOWN":	
@@ -182,9 +187,22 @@ class Obstacle(sprite.Sprite):
 		sprite.Sprite.__init__(self)
 		self.image = Surface((x, y), SRCALPHA) ; self.image.fill((0,0,0,0))
 		self.rect = Rect(x, y, w, h)
-		self.x = x ; self.y = y
+		self.x, self.y = x, y
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
+class Portal(sprite.Sprite):
+	def __init__(self, x, y, w, h, location):
+		sprite.Sprite.__init__(self)
+		self.image = Surface((x, y), SRCALPHA) ; self.image.fill((0,0,0,0))
+		self.rect = Rect(x, y, w, h)
+		self.x, self.y = x, y
+		self.type = location
+		self.teleport = False
+	def update(self):
+		self.rect.topleft = self.x + x_diff, self.y + y_diff		
+		if self.teleport:
+			print(self.type)
+
 class Chest(sprite.Sprite):
 	def __init__(self, x, y, w, h, tier, name):
 		sprite.Sprite.__init__(self)
@@ -219,11 +237,12 @@ class Chest(sprite.Sprite):
 all_sprites = sprite.Group()                                 
 walls = sprite.Group()
 chests = sprite.Group()
+portals = sprite.Group()
 player = Player(WIDTH / 2, HEIGHT / 2 + 50, speed)
 all_sprites.add(player)
-fname = levelSelect(lvl, chests, walls)[0]
-tops = levelSelect(lvl, chests, walls)[1]
-load_object(fname, chests, walls)
+fname = levelSelect(lvl, chests, walls, portals)[0]
+tops = levelSelect(lvl, chests, walls, portals)[1]
+load_object(fname, chests, walls, portals)
 print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) ; PRESS I TO PRINT YOUR INVENTORY ; PRESS SPACE TO INTERACT WITH CHESTS ; M&N TO TOGGLE MAP ; O&P TOGGLE MUSIC")			
 running = True
 while running:
@@ -251,15 +270,13 @@ while running:
 				mode = 1 - mode	
 			if evt.key == K_n:
 				lvl = 2
-				fname = levelSelect(lvl, chests, walls)[0]
-				tops = levelSelect(lvl, chests, walls)[1]
-				load_object(fname, chests, walls)		
+				fname, tops = levelSelect(lvl, chests, walls, portals)
+				load_object(fname, chests, walls, portals)		
 				x_diff, y_diff = -1090, -420
 			if evt.key == K_m:
 				lvl = 1
-				fname = levelSelect(lvl, chests, walls)[0]
-				tops = levelSelect(lvl, chests, walls)[1]	
-				load_object(fname, chests, walls)
+				fname, tops = levelSelect(lvl, chests, walls, portals)
+				load_object(fname, chests, walls, portals)
 				x_diff = y_diff = 0
 			if evt.key == K_o:
 				mixer.music.stop()
@@ -307,10 +324,15 @@ while running:
 		all_sprites.update()
 		walls.update()
 		chests.update()
+		portals.update()
 		# check to see if the mob hit the player
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			pass
+
+		tel = sprite.spritecollide(player, portals, False)
+		if tel:
+			tel[0].teleport = True	
 
 		chest_open = sprite.spritecollide(player, chests, False)	
 		if chest_open and kp[K_SPACE]:
@@ -411,6 +433,7 @@ while running:
 		############################################### BATTLE ###############################################
 	# DRAW / RENDER         
 	walls.draw(screen)
+	portals.draw(screen)
 	display.flip() 
 	myClock.tick(FPS)
 quit()

@@ -325,7 +325,7 @@ while running:
 		# check to see if the mob hit the player
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
-			pass
+			print('LAND HO')
 
 		tel = sprite.spritecollide(player, portals, False)
 		if tel:
@@ -348,7 +348,7 @@ while running:
 				frame += 1
 				if frame >= len(crowWalkDown):
 					frame = 0
-
+		# print(x_diff,y_diff)			
 		############################################## Map Loading ##############################################
 		screen.fill(0)
 		MapLoad(fname)
@@ -435,8 +435,8 @@ while running:
 			mode = 0	
 		############################################### BATTLE ###############################################
 	# DRAW / RENDER         
-	walls.draw(screen)
-	portals.draw(screen)
+	# walls.draw(screen)
+	# portals.draw(screen)
 	display.flip() 
 	myClock.tick(FPS)
 quit()

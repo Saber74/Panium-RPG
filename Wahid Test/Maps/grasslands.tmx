@@ -121,6 +121,5 @@
   </object>
   <object id="69" name="wall" x="544" y="478" width="61.3333" height="60"/>
   <object id="70" name="Portal" type="2" x="902.667" y="993.333" width="84" height="53.3333"/>
-  <object id="73" name="Portal" type="TEST" x="1108.67" y="908" width="84" height="53.3333"/>
  </objectgroup>
 </map>

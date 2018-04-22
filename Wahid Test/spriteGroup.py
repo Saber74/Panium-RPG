@@ -67,13 +67,14 @@ def Save():
 		inventorySave.write(i + '\n')
 	for i in openedChests:
 		openChests.write(i + '\n')	
-	lvlSave.write(str(lvl))	
+	lvlSave.write(lvl)	
 	CoordSave.write(str(x_diff) + ',' + str(y_diff))		
 	lvlSave.close()
 	inventorySave.close()
 	openChests.close()
 	CoordSave.close()
 def InventoryDisplay():
+	inventory_close = False	
 	inv = ''
 	for i in inventory:
 		number = 0
@@ -87,8 +88,21 @@ def InventoryDisplay():
 	if len(s) == 0:
 		print("YOU HAVE NO ITEMS!!!!")
 	else:	
-		print(s,"\n", "and you have",len(inventory),"item(s)!")	
-	return s
+		print(s,"\n","and you have",len(inventory),"item(s)!")	
+	display_inventory(s)	
+	# return s
+def display_inventory(inventory):
+	inventory_menu = Surface((WIDTH,HEIGHT), SRCALPHA)
+	inventory_menu.fill((0,0,0,1))
+	inventory_open = True
+	while inventory_open:
+		for evt in event.get():  
+			if evt.type == KEYDOWN:
+				if evt.key == K_i:
+					inventory_open = False
+		screen.blit(inventory_menu, (0,0))			
+		
+		display.flip()
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
@@ -127,12 +141,16 @@ for i in CoordSave:
 			x_diff = int(i)
 		elif CoordSave.index(i) == 1:
 			y_diff = int(i)
+	elif i == '':
+		x_diff == y_diff == 0	
 CoordSave = open("Coordinates.txt", 'w')
 ############################################ COORDINATES / PLAYER POSITION ############################################
 
 ################################################### LEVEL LOAD ###################################################
 lvlSave = open("lvl.txt", "r").read().strip()
 lvl = lvlSave
+if lvl == '':
+	lvl = '1'
 lvlSave = open("lvl.txt", "w")
 ################################################### LEVEL LOAD ###################################################
 
@@ -271,16 +289,6 @@ while running:
 				CoordSave = open("Coordinates.txt", 'w')
 			if evt.key == K_b:
 				mode = 1 - mode	
-			if evt.key == K_n:
-				lvl = '2'
-				fname, tops = levelSelect(lvl, chests, walls, portals)
-				load_object(fname, chests, walls, portals)		
-				x_diff, y_diff = -1090, -420
-			if evt.key == K_m:
-				lvl = '1'
-				fname, tops = levelSelect(lvl, chests, walls, portals)
-				load_object(fname, chests, walls, portals)
-				x_diff = y_diff = 0
 			if evt.key == K_o:
 				mixer.music.stop()
 			if evt.key == K_p:
@@ -443,10 +451,11 @@ while running:
 			elif Player_HP <= 0 and Enemy_HP <= 0:
 				print("YOU LOST!!")		
 			mode = 0	
+
 		############################################### BATTLE ###############################################
 	# DRAW / RENDER         
 	# walls.draw(screen)
 	# portals.draw(screen)
-	display.flip() 
+	display.flip()
 	myClock.tick(FPS)
 quit()

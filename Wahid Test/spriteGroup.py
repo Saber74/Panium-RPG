@@ -22,7 +22,7 @@ pan = 5
 mode = 0
 # mode = 1
 s = 5
-lvl = 1
+lvl = '1'
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
 mixer.init()# initializes the music mixer
 mixer.music.load("Audio/BGM/aaronwalz_ylisfar.ama")
@@ -39,10 +39,13 @@ def load_object(fname, chests, walls, portals):
 			port = Portal(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type)	
 			portals.add(port)
 def levelSelect(lvl, chests, walls, portals):
-	if lvl == 1:
+	if lvl == '0':
+		fname = load_pygame("Maps/STORE.tmx")
+		tops = load_pygame("Maps/blank.tmx")
+	if lvl == '1':
 		fname = load_pygame("Maps/grasslands.tmx")
 		tops = load_pygame("Maps/over0.tmx")
-	if lvl == 2:
+	if lvl == '2':
 		fname = load_pygame("Maps/desert.tmx")
 		tops = load_pygame("Maps/blank.tmx")
 	for i in chests:
@@ -129,7 +132,7 @@ CoordSave = open("Coordinates.txt", 'w')
 
 ################################################### LEVEL LOAD ###################################################
 lvlSave = open("lvl.txt", "r").read().strip()
-lvl = int(lvlSave)
+lvl = lvlSave
 lvlSave = open("lvl.txt", "w")
 ################################################### LEVEL LOAD ###################################################
 
@@ -174,10 +177,13 @@ class Player(sprite.Sprite):
 		self.image = cm
 		self.x, self.y = x, y
 		self.rect = self.image.get_rect()
+		# self.rect = Rect(-32, -48, 32, 24)
 		self.rect.center = (self.x,self.y)
 	def update(self):
 		self.image = cm
 		self.x, self.y = x, y
+		# draw.rect(screen, (0), self.rect)
+		# display.flip()
 		if pressed == "LEFT" or pressed == "RIGHT":
 			self.rect.x += self.x
 		elif pressed == "UP" or pressed == "DOWN":	
@@ -266,12 +272,12 @@ while running:
 			if evt.key == K_b:
 				mode = 1 - mode	
 			if evt.key == K_n:
-				lvl = 2
+				lvl = '2'
 				fname, tops = levelSelect(lvl, chests, walls, portals)
 				load_object(fname, chests, walls, portals)		
 				x_diff, y_diff = -1090, -420
 			if evt.key == K_m:
-				lvl = 1
+				lvl = '1'
 				fname, tops = levelSelect(lvl, chests, walls, portals)
 				load_object(fname, chests, walls, portals)
 				x_diff = y_diff = 0
@@ -326,16 +332,20 @@ while running:
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			print('LAND HO')
+			pass
 
 		tel = sprite.spritecollide(player, portals, False)
 		if tel:
-			lvl = int(tel[-1].type)
+			lvl = tel[-1].type
+			if lvl == '0':
+				x_diff, y_diff = 240, 100	
+			elif lvl == '1':
+				x_diff, y_diff = -545, -580
+			elif lvl == '2':
+				x_diff, y_diff = -1285, -495	
+					
 			fname, tops = levelSelect(lvl, chests, walls, portals)
 			load_object(fname, chests, walls, portals)
-			if lvl == 1:
-				x_diff, y_diff = -545, -580
-			elif lvl == 2:
-				x_diff, y_diff = -1285, -495	
 				
 		chest_open = sprite.spritecollide(player, chests, False)	
 		if chest_open and kp[K_SPACE]:

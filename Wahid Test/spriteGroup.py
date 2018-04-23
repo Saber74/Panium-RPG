@@ -2,10 +2,11 @@ from pygame import *
 from pytmx import *
 from random import randint as r
 import os
+import pickle
 WIDTH, HEIGHT = 800, 600 
 # WIDTH, HEIGHT = 1366, 768 
 size=(WIDTH, HEIGHT)
-os.environ['SDL_VIDEO_WINDOW_POS'] = 'FULLSCREEN'
+os.environ['SDL_VIDEO_WINDOW_POS'] = '0,10'
 screen = display.set_mode(size) 
 myClock = time.Clock()
 FPS = 60
@@ -17,9 +18,9 @@ pressed = "NULL"
 frame = 0
 counter = 0
 x_diff = y_diff = 0
-speed = 0
-pan = 5
+pan = 1
 mode = 0
+speed = 0
 # mode = 1
 s = 5
 lvl = '1'
@@ -67,14 +68,12 @@ def Save():
 		inventorySave.write(i + '\n')
 	for i in openedChests:
 		openChests.write(i + '\n')	
-	lvlSave.write(lvl)	
+	open("lvl.txt", "w").write(lvl)	
 	CoordSave.write(str(x_diff) + ',' + str(y_diff))		
-	lvlSave.close()
 	inventorySave.close()
 	openChests.close()
 	CoordSave.close()
 def InventoryDisplay():
-	inventory_close = False	
 	inv = ''
 	for i in inventory:
 		number = 0
@@ -83,30 +82,38 @@ def InventoryDisplay():
 				number += 1
 		inv += i + ' ' + 'x' + str(number) + ', '
 	split = inv.split(', ')
-	del split[split.index('')]	
+	del split[split.index('')]
 	s = set(split)
-	if len(s) == 0:
-		print("YOU HAVE NO ITEMS!!!!")
-	else:	
-		print(s,"\n","and you have",len(inventory),"item(s)!")	
+	# if len(s) == 0:
+	# 	print("YOU HAVE NO ITEMS!!!!")
+	# else:	
+	# 	print(s,"\n","and you have",len(inventory),"item(s)!")
 	display_inventory(s)	
 	# return s
 def display_inventory(inventory):
 	inventory_menu = Surface((WIDTH,HEIGHT), SRCALPHA)
 	inventory_menu.fill((0,0,0,1))
 	inventory_open = True
+	menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
 				if evt.key == K_i:
 					inventory_open = False
 		screen.blit(inventory_menu, (0,0))			
+		inventory_menu.blit(menu_base, (0,0))
 		
 		
 		display.flip()
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
+# def save_dict():
+# 	person = {"John": [15, "Murderer"], "Sally": 16}
+# 	print(person)
+# 	p.dump(person, open("people.txt", "wb"))
+# 	people = p.load(open("people.txt", 'rb'))
+# 	print(people)	
 ############################################# LOADING CHEST STATES #############################################
 openedChests = []
 openChests = open("Chest.txt", "r").read().strip().split('\n')
@@ -152,7 +159,6 @@ lvlSave = open("lvl.txt", "r").read().strip()
 lvl = lvlSave
 if lvl == '':
 	lvl = '1'
-lvlSave = open("lvl.txt", "w")
 ################################################### LEVEL LOAD ###################################################
 
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
@@ -212,6 +218,8 @@ class Obstacle(sprite.Sprite):
 		sprite.Sprite.__init__(self)
 		self.image = Surface((x, y), SRCALPHA) ; self.image.fill((0,0,0,0))
 		self.rect = Rect(x, y, w, h)
+		self.info = []
+		self.info.append(self.rect)
 		self.x, self.y = x, y
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
@@ -302,25 +310,21 @@ while running:
 	if mode == 0:
 		if kp[K_RIGHT]:
 			x_diff -= pan
-			x = speed
 			R = True
 			moving = True
 			pressed = "RIGHT"
 		elif kp[K_LEFT]:
 			x_diff += pan
-			x = -speed
 			L = True
 			moving = True
 			pressed = "LEFT"
 		elif kp[K_UP]:
 			y_diff += pan
-			y = -speed
 			U = True
 			moving = True
 			pressed = "UP"
 		elif kp[K_DOWN]:
 			y_diff -= pan
-			y = speed
 			D = True
 			moving = True
 			pressed = "DOWN"
@@ -341,8 +345,10 @@ while running:
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			# print('LAND HO')
+			if hit[-1] in hit[-1].info:
+				print(hit[-1].info[0])
+			# print(hit[-1].info)
 			pass
-
 		tel = sprite.spritecollide(player, portals, False)
 		if tel:
 			lvl = tel[-1].type

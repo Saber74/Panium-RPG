@@ -102,6 +102,7 @@ def display_inventory(inventory):
 					inventory_open = False
 		screen.blit(inventory_menu, (0,0))			
 		
+		
 		display.flip()
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))

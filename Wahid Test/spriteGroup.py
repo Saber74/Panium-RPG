@@ -168,8 +168,8 @@ for i in range(22):
 
 ############################################# POSSIBLE CHEST ITEMS #############################################
 tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
-tier2 = ['Lightening Essence']
-tier3 = ['Sword of Water (II)', 'Sword of Lightening (V)']
+tier2 = ['Lightening Essence','Lightening Essence']
+tier3 = ['Sword of Water (II)', 'Sword of Lightening (V)', "Sword of Fire"]
 tier4 = ['Wind Staff', 'Wind Staff']
 ############################################# POSSIBLE CHEST ITEMS #############################################
 
@@ -339,7 +339,7 @@ while running:
 		# check to see if the mob hit the player
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
-			print('LAND HO')
+			# print('LAND HO')
 			pass
 
 		tel = sprite.spritecollide(player, portals, False)

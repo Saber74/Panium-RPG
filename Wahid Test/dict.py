@@ -1,6 +1,9 @@
 import pickle as p
-person = {"John": [15, "Murderer"], "Sally": 16}
+person = {"lvl": 1,
+		  "Coords": [0,0],
+		  "Inventory": []}
 print(person)
 p.dump(person, open("people.txt", "wb"))
 people = p.load(open("people.txt", 'rb'))
-print(people)
+people["Inventory"].append("HI")
+print(people["Inventory"])

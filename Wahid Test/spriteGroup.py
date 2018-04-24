@@ -2,7 +2,7 @@ from pygame import *
 from pytmx import *
 from random import randint as r
 import os
-import pickle
+import pickle as p
 WIDTH, HEIGHT = 800, 600 
 # WIDTH, HEIGHT = 1366, 768 
 size=(WIDTH, HEIGHT)
@@ -24,10 +24,13 @@ speed = 0
 # mode = 1
 s = 5
 lvl = '1'
-mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
-mixer.init()# initializes the music mixer
-mixer.music.load("Audio/BGM/aaronwalz_ylisfar.ama")
-mixer.music.stop()
+currChar = "Crow"
+# mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
+# mixer.init()# initializes the music mixer
+# mixer.music.load("Audio/BGM/aaronwalz_ylisfar.ama")
+# mixer.music.stop()
+font.init()
+timesNewRomanFont = font.SysFont("Times New Roman", 24)
 def load_object(fname, chests, walls, portals):
 	for tile_object in fname.objects:
 		if tile_object.name == 'wall':
@@ -73,7 +76,7 @@ def Save():
 	inventorySave.close()
 	openChests.close()
 	CoordSave.close()
-def InventoryDisplay():
+def InventoryDisplay(current_Character):
 	inv = ''
 	for i in inventory:
 		number = 0
@@ -84,36 +87,51 @@ def InventoryDisplay():
 	split = inv.split(', ')
 	del split[split.index('')]
 	s = set(split)
-	# if len(s) == 0:
-	# 	print("YOU HAVE NO ITEMS!!!!")
-	# else:	
-	# 	print(s,"\n","and you have",len(inventory),"item(s)!")
-	display_inventory(s)	
-	# return s
-def display_inventory(inventory):
-	inventory_menu = Surface((WIDTH,HEIGHT), SRCALPHA)
-	inventory_menu.fill((0,0,0,1))
-	inventory_open = True
+	display_inventory(s, current_Character)	
+def display_inventory(inventory, current_Character):
+	sel = Surface((800,600), SRCALPHA)
+	sel.fill((0,0,0,0))
+	screen.blit(sel,(0,0))
 	menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
+	screen.blit(menu_base, (0,0))
+	arrow_pos = 65
+	inventory_open = True
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
 				if evt.key == K_i:
 					inventory_open = False
-		screen.blit(inventory_menu, (0,0))			
-		inventory_menu.blit(menu_base, (0,0))
-		
-		
+				if evt.key == K_DOWN:
+					arrow_pos += 30
+				if evt.key == K_UP:
+					arrow_pos -= 30
+		count = 0			
+		# inv = list(inventory)
+		screen.blit(menu_base, (0,0))
+		for i in inventory:			
+			count += 1
+			ItemName = timesNewRomanFont.render(i, True, (0,0,0))			
+			draw.circle(screen, (0,0,0), (455,arrow_pos), 4)
+			screen.blit(ItemName, (470, 20 + 30 * count))
+		if current_Character == "Crow":
+			screen.blit(transform.scale(image.load("img/faces/crow.png").convert_alpha(), (130,185)),(30,35))			
+		elif current_Character == "Raven":
+			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
+		mx, my = mouse.get_pos()
+		print(str(mx) + ', ' + str(my))
 		display.flip()
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
 # def save_dict():
-# 	person = {"John": [15, "Murderer"], "Sally": 16}
+# 	person = {"lvl": 1,
+# 			  "Coords": [0,0],
+# 			  "Inventory": []}
 # 	print(person)
 # 	p.dump(person, open("people.txt", "wb"))
 # 	people = p.load(open("people.txt", 'rb'))
-# 	print(people)	
+# 	print(people["John"])	
+# print(save_dict())	
 ############################################# LOADING CHEST STATES #############################################
 openedChests = []
 openChests = open("Chest.txt", "r").read().strip().split('\n')
@@ -286,10 +304,12 @@ while running:
 				running = False    	
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
+				currChar = "Crow"
 			if evt.key == K_2:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
+				currChar = "Raven"
 			if evt.key == K_i:
-				InventoryDisplay()
+				InventoryDisplay(currChar)
 			if evt.key == K_q:
 				inventorySave = open("Inventory.txt", "w")
 				inventory = []
@@ -345,8 +365,8 @@ while running:
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			# print('LAND HO')
-			if hit[-1] in hit[-1].info:
-				print(hit[-1].info[0])
+			# if hit[-1] in hit[-1].info:
+			# 	print(hit[-1].info[0])
 			# print(hit[-1].info)
 			pass
 		tel = sprite.spritecollide(player, portals, False)

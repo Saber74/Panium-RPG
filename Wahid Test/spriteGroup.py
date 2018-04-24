@@ -88,37 +88,46 @@ def InventoryDisplay(current_Character):
 	del split[split.index('')]
 	s = set(split)
 	display_inventory(s, current_Character)	
-def display_inventory(inventory, current_Character):
-	sel = Surface((800,600), SRCALPHA)
-	sel.fill((0,0,0,0))
-	screen.blit(sel,(0,0))
+def display_inventory(Inventory, current_Character):
 	menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
 	screen.blit(menu_base, (0,0))
-	arrow_pos = 65
+	arrow_pos = 0
 	inventory_open = True
+	inv = list(Inventory)
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
 				if evt.key == K_i:
 					inventory_open = False
 				if evt.key == K_DOWN:
-					arrow_pos += 30
+					arrow_pos += 1
 				if evt.key == K_UP:
-					arrow_pos -= 30
+					arrow_pos -= 1
+				if evt.key == K_SPACE:
+					x = inv[arrow_pos]
+					y = x.split(" x")
+					print(y)
+					del inv[arrow_pos]	
+					del inventory[inventory.index(y[0])]
+					print(inventory)
+					InventoryDisplay(current_Character)
 		count = 0			
-		# inv = list(inventory)
 		screen.blit(menu_base, (0,0))
-		for i in inventory:			
+		for i in range(len(inv)):
 			count += 1
-			ItemName = timesNewRomanFont.render(i, True, (0,0,0))			
-			draw.circle(screen, (0,0,0), (455,arrow_pos), 4)
+			ItemName = timesNewRomanFont.render(inv[i], True, (0,0,0))
+			if arrow_pos > len(inv) - 1:
+				arrow_pos -= 1
+			if arrow_pos < 0:
+				arrow_pos += 1	
+			draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
 			screen.blit(ItemName, (470, 20 + 30 * count))
 		if current_Character == "Crow":
 			screen.blit(transform.scale(image.load("img/faces/crow.png").convert_alpha(), (130,185)),(30,35))			
 		elif current_Character == "Raven":
 			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
 		mx, my = mouse.get_pos()
-		print(str(mx) + ', ' + str(my))
+		# print(str(mx) + ', ' + str(my))
 		display.flip()
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))

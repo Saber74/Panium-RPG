@@ -76,7 +76,7 @@ def Save():
 	inventorySave.close()
 	openChests.close()
 	CoordSave.close()
-def InventoryDisplay(current_Character):
+def InventoryDisplay(current_Character, num):
 	inv = ''
 	for i in inventory:
 		number = 0
@@ -87,7 +87,10 @@ def InventoryDisplay(current_Character):
 	split = inv.split(', ')
 	del split[split.index('')]
 	s = set(split)
-	display_inventory(s, current_Character)	
+	if num == 0:
+		display_inventory(s, current_Character)	
+	elif num == 1:
+		return s	
 def display_inventory(Inventory, current_Character):
 	menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
 	screen.blit(menu_base, (0,0))
@@ -106,11 +109,10 @@ def display_inventory(Inventory, current_Character):
 				if evt.key == K_SPACE:
 					x = inv[arrow_pos]
 					y = x.split(" x")
-					print(y)
 					del inv[arrow_pos]	
 					del inventory[inventory.index(y[0])]
 					print(inventory)
-					InventoryDisplay(current_Character)
+					inv = list(InventoryDisplay(current_Character, 1))
 		count = 0			
 		screen.blit(menu_base, (0,0))
 		for i in range(len(inv)):
@@ -318,7 +320,7 @@ while running:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 				currChar = "Raven"
 			if evt.key == K_i:
-				InventoryDisplay(currChar)
+				InventoryDisplay(currChar, 0)
 			if evt.key == K_q:
 				inventorySave = open("Inventory.txt", "w")
 				inventory = []

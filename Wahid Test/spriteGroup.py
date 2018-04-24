@@ -25,6 +25,7 @@ speed = 0
 s = 5
 lvl = '1'
 currChar = "Crow"
+HP_items = ["Potion 50", "Meat 100"]
 # mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
 # mixer.init()# initializes the music mixer
 # mixer.music.load("Audio/BGM/aaronwalz_ylisfar.ama")
@@ -110,6 +111,11 @@ def display_inventory(Inventory, current_Character):
 				if evt.key == K_SPACE:
 					x = inv[arrow_pos]
 					y = x.split(" x")
+					for i in HP_items:
+						i = i.split(' ')
+						if y[0] in i:
+							# HP_GAIN(i[1])
+							print("HP +", i[1])
 					del inv[arrow_pos]	
 					del inventory[inventory.index(y[0])]
 					inv = list(InventoryDisplay(current_Character, 1))

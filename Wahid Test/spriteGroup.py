@@ -31,6 +31,7 @@ currChar = "Crow"
 # mixer.music.stop()
 font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
+medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
 def load_object(fname, chests, walls, portals):
 	for tile_object in fname.objects:
 		if tile_object.name == 'wall':
@@ -111,14 +112,13 @@ def display_inventory(Inventory, current_Character):
 					y = x.split(" x")
 					del inv[arrow_pos]	
 					del inventory[inventory.index(y[0])]
-					print(inventory)
 					inv = list(InventoryDisplay(current_Character, 1))
 		count = 0			
 		screen.blit(menu_base, (0,0))
 		for i in range(len(inv)):
 			count += 1
-			ItemName = timesNewRomanFont.render(inv[i], True, (0,0,0))
-			if arrow_pos > len(inv) - 1:
+			ItemName = medievalFont.render(inv[i], True, (0,0,0))
+			if arrow_pos == len(inv):
 				arrow_pos -= 1
 			if arrow_pos < 0:
 				arrow_pos += 1	
@@ -205,7 +205,7 @@ for i in range(22):
 ############################################# POSSIBLE CHEST ITEMS #############################################
 tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
 tier2 = ['Lightening Essence','Lightening Essence']
-tier3 = ['Sword of Water (II)', 'Sword of Lightening (V)', "Sword of Fire"]
+tier3 = ['Sword of Water', 'Sword of Lightening', "Sword of Fire"]
 tier4 = ['Wind Staff', 'Wind Staff']
 ############################################# POSSIBLE CHEST ITEMS #############################################
 

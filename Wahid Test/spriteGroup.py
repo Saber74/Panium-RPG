@@ -111,11 +111,6 @@ def display_inventory(Inventory, current_Character):
 				if evt.key == K_SPACE:
 					x = inv[arrow_pos]
 					y = x.split(" x")
-					for i in HP_items:
-						i = i.split(' ')
-						if y[0] in i:
-							# HP_GAIN(i[1])
-							print("HP +", i[1])
 					del inv[arrow_pos]	
 					del inventory[inventory.index(y[0])]
 					inv = list(InventoryDisplay(current_Character, 1))
@@ -141,13 +136,11 @@ def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
 # def save_dict():
-# 	person = {"lvl": 1,
-# 			  "Coords": [0,0],
-# 			  "Inventory": []}
-# 	print(person)
-# 	p.dump(person, open("people.txt", "wb"))
-# 	people = p.load(open("people.txt", 'rb'))
-# 	print(people["John"])	
+# 	prog_data = {"lvl": 1,
+# 			  	 "Coords": [0,0],
+# 			  	  }
+# 	p.dump(prog_data, open("prog.dat", "wb"))
+# 	people = p.load(open("prog.dat", 'rb'))
 # print(save_dict())	
 ############################################# LOADING CHEST STATES #############################################
 openedChests = []
@@ -248,6 +241,7 @@ class Player(sprite.Sprite):
 			self.rect.x += self.x
 		elif pressed == "UP" or pressed == "DOWN":	
 			self.rect.y += self.y
+		# print(self.rect)
 class Obstacle(sprite.Sprite):
 	def __init__(self, x, y, w, h):
 		sprite.Sprite.__init__(self)
@@ -378,10 +372,12 @@ while running:
 		walls.update()
 		chests.update()
 		portals.update()
+		r = Rect(WIDTH / 2 - 18, HEIGHT / 2 + 49, 38, 24)
+		draw.rect(screen, (0), r)
+		display.flip()
 		# check to see if the mob hit the player
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
-			# print('LAND HO')
 			# if hit[-1] in hit[-1].info:
 			# 	print(hit[-1].info[0])
 			# print(hit[-1].info)

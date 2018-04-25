@@ -230,13 +230,13 @@ class Player(sprite.Sprite):
 		self.image = cm
 		self.x, self.y = x, y
 		self.rect = self.image.get_rect()
-		# self.rect = Rect(-32, -48, 32, 24)
-		self.rect.center = (self.x,self.y)
+		self.rect.midbottom = (self.x,self.y)
+		# self.rect = Rect(0, 0, 32, 48)
 	def update(self):
 		self.image = cm
 		self.x, self.y = x, y
-		# draw.rect(screen, (0), self.rect)
-		# display.flip()
+		draw.rect(screen, (0), self.rect)
+		display.flip()
 		if pressed == "LEFT" or pressed == "RIGHT":
 			self.rect.x += self.x
 		elif pressed == "UP" or pressed == "DOWN":	
@@ -372,15 +372,12 @@ while running:
 		walls.update()
 		chests.update()
 		portals.update()
-		r = Rect(WIDTH / 2 - 18, HEIGHT / 2 + 49, 38, 24)
-		draw.rect(screen, (0), r)
-		display.flip()
 		# check to see if the mob hit the player
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
-			# if hit[-1] in hit[-1].info:
-			# 	print(hit[-1].info[0])
-			# print(hit[-1].info)
+			h = hit[0]
+			if h.rect.collidepoint((player.rect.centerx, player.rect.bottom -20)):
+				print('poop')
 			pass
 		tel = sprite.spritecollide(player, portals, False)
 		if tel:

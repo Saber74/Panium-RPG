@@ -111,6 +111,10 @@ def display_inventory(Inventory, current_Character):
 				if evt.key == K_SPACE:
 					x = inv[arrow_pos]
 					y = x.split(" x")
+					for i in HP_items:
+						i = i.split(' ')
+						if y[0] in i:
+							print("HP +", i[1])
 					del inv[arrow_pos]	
 					del inventory[inventory.index(y[0])]
 					inv = list(InventoryDisplay(current_Character, 1))
@@ -235,13 +239,6 @@ class Player(sprite.Sprite):
 	def update(self):
 		self.image = cm
 		self.x, self.y = x, y
-		draw.rect(screen, (0), self.rect)
-		display.flip()
-		if pressed == "LEFT" or pressed == "RIGHT":
-			self.rect.x += self.x
-		elif pressed == "UP" or pressed == "DOWN":	
-			self.rect.y += self.y
-		# print(self.rect)
 class Obstacle(sprite.Sprite):
 	def __init__(self, x, y, w, h):
 		sprite.Sprite.__init__(self)
@@ -375,22 +372,36 @@ while running:
 		# check to see if the mob hit the player
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
-			h = hit[0]
-			if h.rect.collidepoint((player.rect.centerx, player.rect.bottom -20)):
-				print('poop')
-			pass
+			# h = hit[0]
+			# if h.rect.collidepoint((player.rect.centerx, player.rect.bottom -20)):
+				# if player.rect.x > h.rect.x and L and not U and not D and not R:
+					# pan = 0
+				# elif player.rect.x < h.rect.x and R and not L and not U and not D:
+					# pan = 0
+
+				# if player.rect.y > h.rect.y and U and not D and not R and not L:
+					# pan = 0
+				# elif player.rect.y < h.rect.y and D and not U and not R and not L:
+					# pan = 0	
+			pass		
 		tel = sprite.spritecollide(player, portals, False)
 		if tel:
-			lvl = tel[-1].type
-			if lvl == '0':
-				x_diff, y_diff = 240, 100	
-			elif lvl == '1':
-				x_diff, y_diff = -545, -580
-			elif lvl == '2':
-				x_diff, y_diff = -1285, -495	
-					
-			fname, tops = levelSelect(lvl, chests, walls, portals)
-			load_object(fname, chests, walls, portals)
+			# t = tel[0]
+			# if t.rect.collidepoint((player.rect.centerx, player.rect.bottom -20)):
+			# 	if player.rect.x > h.rect.x and L:
+			# 		pan = 0
+			# 	else:
+			# 		pan = 5
+				lvl = tel[-1].type
+				if lvl == '0':
+					x_diff, y_diff = 240, 100	
+				elif lvl == '1':
+					x_diff, y_diff = -545, -580
+				elif lvl == '2':
+					x_diff, y_diff = -1285, -495	
+						
+				fname, tops = levelSelect(lvl, chests, walls, portals)
+				load_object(fname, chests, walls, portals)
 				
 		chest_open = sprite.spritecollide(player, chests, False)	
 		if chest_open and kp[K_SPACE]:
@@ -491,8 +502,6 @@ while running:
 
 		############################################### BATTLE ###############################################
 	# DRAW / RENDER         
-	# walls.draw(screen)
-	# portals.draw(screen)
 	display.flip()
 	myClock.tick(FPS)
 quit()

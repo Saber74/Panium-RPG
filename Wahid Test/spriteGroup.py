@@ -26,10 +26,10 @@ s = 5
 # lvl = '1'
 currChar = "Crow"
 HP_items = ["Potion 50", "Meat 100"]
-# mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
-# mixer.init()# initializes the music mixer
-# mixer.music.load("Audio/BGM/aaronwalz_ylisfar.ama")
-# mixer.music.stop()
+mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
+mixer.init()# initializes the music mixer
+mixer.music.load("Audio/BGM/aaronwalz_veldarah.ama")
+mixer.music.play()
 font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
 medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)

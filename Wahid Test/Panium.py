@@ -21,6 +21,7 @@ x_diff = y_diff = 0
 pan = 1
 mode = 0
 speed = 0
+gold = 100
 # mode = 1
 s = 5
 # lvl = '1'
@@ -57,14 +58,10 @@ def levelSelect(lvl, chests, walls, portals):
 	if lvl == '2':
 		fname = load_pygame("Maps/desert.tmx")
 		tops = load_pygame("Maps/blank.tmx")
-	for i in chests:
-		i.kill()
-	for i in walls:
-		i.kill()		
-	for i in portals:
-		i.kill()	
-	for i in clerks:
-		i.kill()	
+	kill = [chests, walls, portals, clerks]
+	for i in kill:
+		for n in i:
+			n.kill()	
 	return fname, tops		
 def MapLoad(Map_Name):
 	for layer in Map_Name.visible_layers:
@@ -133,25 +130,33 @@ def display_inventory(Inventory, current_Character):
 		# print(str(mx) + ', ' + str(my))
 		display.flip()
 def HP_Change(Add):
-	global Player_HP
+	global Crow_HP
 	hp_change = int(Add)
-	Player_HP += hp_change
+	Crow_HP += hp_change
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
 def load_dict():
 	prog_data = p.load(open("prog.dat", 'rb'))
-	return prog_data
-def save_dict(lvl, x, y, Chests, inv):
+	crow_data = p.load(open("crow_stats.dat", 'rb'))
+	return prog_data, crow_data
+def save_dict(lvl, x, y, Chests, inv, Gold, Crow_HP):
 	prog_data = {"lvl": lvl,
 			  	 "Coords": [x, y],
 			  	 "Chests": Chests,
-			  	 "inv": inv}
+			  	 "inv": inv,
+			  	 "Gold": Gold}
+	crow_data = {"HP": Crow_HP}		  	 
 	p.dump(prog_data, open("prog.dat", "wb"))	
-lvl = str(load_dict()["lvl"])	
-x_diff, y_diff = load_dict()['Coords'][0], load_dict()['Coords'][1]
-openedChests = load_dict()["Chests"]
-inventory = load_dict()["inv"]
+	p.dump(crow_data, open("crow_stats.dat", "wb"))	
+lvl = str(load_dict()[0]["lvl"])	
+x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
+openedChests = load_dict()[0]["Chests"]
+inventory = load_dict()[0]["inv"]
+gold = load_dict()
+
+Crow_HP = load_dict()[1]["HP"]
+
 ################################################ CHARACTER STATS ################################################
 # crowStats = []
 # crowStatsSave = open("CrowStats.txt", 'r').read().strip().split('\n')
@@ -290,11 +295,11 @@ running = True
 while running:
 	for evt in event.get():  
 		if evt.type == QUIT: 
-			save_dict(lvl, x_diff, y_diff, openedChests, inventory)
+			save_dict(lvl, x_diff, y_diff, openedChests, inventory, gold,Crow_HP)
 			running = False
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
-				save_dict(lvl, x_diff, y_diff, openedChests, inventory)
+				save_dict(lvl, x_diff, y_diff, openedChests, inventory, gold,Crow_HP)
 				running = False    	
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
@@ -314,7 +319,9 @@ while running:
 			if evt.key == K_p:
 				mixer.music.play()		
 			if evt.key == K_j:
-				print(Player_HP)	
+				print(gold)	
+			if evt.key == K_k:
+				gold += 100	
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
@@ -467,7 +474,7 @@ while running:
 		########################################## ATTACK SELECTION ##########################################
 
 		############################################### BATTLE ###############################################
-		if turn == "Player" and Player_HP > 0 and kp[K_SPACE]:
+		if turn == "Player" and Crow_HP > 0 and kp[K_SPACE]:
 			print(turn + "'s turn to attack!!")
 			for i in Darkness1:
 				FIGHTANIMATION(screen, enemy, battleBack)	
@@ -480,15 +487,15 @@ while running:
 		if turn == "Enemy" and Enemy_HP > 0:
 			time.wait(100)
 			print(turn + "'s turn to attack!!")
-			Player_HP -= 10
-			print("Player HP:",Player_HP)	
+			Crow_HP -= 10
+			print("Player HP:",Crow_HP)	
 			turn = "Player"
-		if Player_HP <= 0 or Enemy_HP <= 0:	
-			if Player_HP <= 0:
+		if Crow_HP <= 0 or Enemy_HP <= 0:	
+			if Crow_HP <= 0:
 				print("YOU LOST!!")		
 			elif Enemy_HP <= 0:	
 				print("YOU WON!!")		
-			elif Player_HP <= 0 and Enemy_HP <= 0:
+			elif Crow_HP <= 0 and Enemy_HP <= 0:
 				print("YOU LOST!!")		
 			mode = 0	
 		############################################### BATTLE ###############################################

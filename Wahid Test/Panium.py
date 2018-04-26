@@ -231,15 +231,17 @@ class Store_Clerk(sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.x, self.y = x, y
 		self.interact = False
+		self.back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff	
+	def open_store(self):
 		while self.interact:
-			back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
 			for evt in event.get():  
 				if evt.type == KEYDOWN:
 					if evt.key == K_ESCAPE:
 						self.interact = False
-			screen.blit(back, (0,0))			
+						return
+			screen.blit(self.back, (0,0))			
 			display.flip()	
 
 class Chest(sprite.Sprite):
@@ -348,8 +350,8 @@ while running:
 			pan = 5	
 			s = 5
 		# UPDATE
-		clerks.update()
 		all_sprites.update()
+		clerks.update()
 		walls.update()
 		chests.update()
 		portals.update()
@@ -357,6 +359,7 @@ while running:
 		clerk_Interact = sprite.spritecollide(player, clerks, False)
 		if clerk_Interact and kp[K_SPACE]:
 			clerk_Interact[0].interact = True
+			clerk_Interact[0].open_store()
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			# print('s')
@@ -488,7 +491,6 @@ while running:
 			elif Player_HP <= 0 and Enemy_HP <= 0:
 				print("YOU LOST!!")		
 			mode = 0	
-
 		############################################### BATTLE ###############################################
 	# DRAW / RENDER         
 	display.flip()

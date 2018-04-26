@@ -4,5 +4,5 @@ setup(
 	name = "MAIN",
 	version = "3.1",
 	description = '',
-	executables = [Executable('spriteGroup.py', base = "Win32GUI")]
+	executables = [Executable('Panium.py', base = "Win32GUI")]
 	)

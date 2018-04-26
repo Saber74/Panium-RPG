@@ -25,11 +25,11 @@ speed = 0
 s = 5
 # lvl = '1'
 currChar = "Crow"
-HP_items = ["Potion 50", "Meat 100"]
+HP_items = ["Potion 50", "Meat 100", "Poison -50"]
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
 mixer.init()# initializes the music mixer
 mixer.music.load("Audio/BGM/aaronwalz_veldarah.ama")
-mixer.music.play()
+mixer.music.stop()
 font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
 medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
@@ -44,6 +44,9 @@ def load_object(fname, chests, walls, portals):
 		if tile_object.name == "Portal":
 			port = Portal(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type)	
 			portals.add(port)
+		if tile_object.name == "Clerk":
+			clerk = Store_Clerk(tile_object.x, tile_object.y, tile_object.type)	
+			clerks.add(clerk)
 def levelSelect(lvl, chests, walls, portals):
 	if lvl == '0':
 		fname = load_pygame("Maps/STORE.tmx")
@@ -59,6 +62,8 @@ def levelSelect(lvl, chests, walls, portals):
 	for i in walls:
 		i.kill()		
 	for i in portals:
+		i.kill()	
+	for i in clerks:
 		i.kill()	
 	return fname, tops		
 def MapLoad(Map_Name):
@@ -105,7 +110,7 @@ def display_inventory(Inventory, current_Character):
 						i = i.split(' ')
 						if y[0] in i:
 							print("HP +", i[1])
-							HP_Gain(i[1])
+							HP_Change(i[1])
 					del inv[arrow_pos]	
 					del inventory[inventory.index(y[0])]
 					inv = list(InventoryDisplay(current_Character, 1))
@@ -127,10 +132,10 @@ def display_inventory(Inventory, current_Character):
 		mx, my = mouse.get_pos()
 		# print(str(mx) + ', ' + str(my))
 		display.flip()
-def HP_Gain(Add):
+def HP_Change(Add):
 	global Player_HP
-	hp_gain = int(Add)
-	Player_HP += hp_gain
+	hp_change = int(Add)
+	Player_HP += hp_change
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
@@ -147,7 +152,6 @@ lvl = str(load_dict()["lvl"])
 x_diff, y_diff = load_dict()['Coords'][0], load_dict()['Coords'][1]
 openedChests = load_dict()["Chests"]
 inventory = load_dict()["inv"]
-
 ################################################ CHARACTER STATS ################################################
 # crowStats = []
 # crowStatsSave = open("CrowStats.txt", 'r').read().strip().split('\n')
@@ -205,20 +209,38 @@ class Player(sprite.Sprite):
 class Obstacle(sprite.Sprite):
 	def __init__(self, x, y, w, h):
 		sprite.Sprite.__init__(self)
-		self.image = Surface((x, y), SRCALPHA) ; self.image.fill((0,0,0,0))
 		self.rect = Rect(x, y, w, h)
 		self.x, self.y = x, y
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
+
 class Portal(sprite.Sprite):
 	def __init__(self, x, y, w, h, location):
 		sprite.Sprite.__init__(self)
-		self.image = Surface((x, y), SRCALPHA) ; self.image.fill((0,0,0,0))
 		self.rect = Rect(x, y, w, h)
 		self.x, self.y = x, y
 		self.type = location
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff		
+
+class Store_Clerk(sprite.Sprite):
+	def __init__(self, x, y, tier):
+		sprite.Sprite.__init__(self)
+		self.tier = tier
+		self.image = image.load("img/Store Clerks/Clerk" + self.tier + ".png")
+		self.rect = self.image.get_rect()
+		self.x, self.y = x, y
+		self.interact = False
+	def update(self):
+		self.rect.topleft = self.x + x_diff, self.y + y_diff	
+		while self.interact:
+			back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
+			for evt in event.get():  
+				if evt.type == KEYDOWN:
+					if evt.key == K_ESCAPE:
+						self.interact = False
+			screen.blit(back, (0,0))			
+			display.flip()	
 
 class Chest(sprite.Sprite):
 	def __init__(self, x, y, w, h, tier, name):
@@ -248,7 +270,6 @@ class Chest(sprite.Sprite):
 				self.c = tier4
 			item = r(0, len(self.c) - 1)
 			inventory.append(self.c[item])
-			print(inventory)
 			print(self.c[item], "has been obtained!!")
 			del self.c[item]
 			openedChests.append(self.name)
@@ -256,6 +277,7 @@ all_sprites = sprite.Group()
 walls = sprite.Group()
 chests = sprite.Group()
 portals = sprite.Group()
+clerks = sprite.Group()
 player = Player(WIDTH / 2, HEIGHT / 2 + 50, speed)
 all_sprites.add(player)
 fname = levelSelect(lvl, chests, walls, portals)[0]
@@ -326,13 +348,18 @@ while running:
 			pan = 5	
 			s = 5
 		# UPDATE
+		clerks.update()
 		all_sprites.update()
 		walls.update()
 		chests.update()
 		portals.update()
 		# check to see if the mob hit the player
+		clerk_Interact = sprite.spritecollide(player, clerks, False)
+		if clerk_Interact and kp[K_SPACE]:
+			clerk_Interact[0].interact = True
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
+			# print('s')
 			# h = hit[0]
 			# if h.rect.collidepoint((player.rect.centerx, player.rect.bottom -20)):
 				# if player.rect.x > h.rect.x and L and not U and not D and not R:
@@ -380,6 +407,7 @@ while running:
 		screen.fill(0)
 		MapLoad(fname)
 		chests.draw(screen)
+		clerks.draw(screen)
 		all_sprites.draw(screen)
 		MapLoad(tops)
 		############################################## Map Loading ##############################################

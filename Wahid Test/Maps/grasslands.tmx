@@ -40,7 +40,7 @@
    H4sIAAAAAAAAC+2Yy04TURyH2z4OIqzk4kpEHgQIICIRlUu4KPoGXJbUghtsUcIGE2CFCd0BokLCxVYXkLTwEnxdlDRkLuc2M21zvuTbtNPT33/mnP85mVjMYqlf8gn9MR7GY7EmbI7rjyVCKbOTurSRvx0f+9TRwH89wEbF/yznDeqedTLmM+zyGfsRGVqwVaGO8v0WvWdB8oQsHfhUow7Re6aKzhrx+q2puS+KzvN2+m3Y+ctUPm/ZZ3N/rkSR3wmdZ1MtNZRQXYvVVIMqtVKDW86o1rMOQZwlLJZa4TkO4ouAxu+mj/dgr0M//81nf/AYTzTPXm/wLY7qDaNEjux5/If/Berow34ccPhuBt/he6MJxZCt4xWO4Ougg0lSIHsRr/FGoI5JnMLpoINZ7vBaA2Fgqu+FtQY2mMfzuICLFXPaVN8Law3skD2JnzBVUUeUfa+E7HzIutQRNbLzYZXsXzCNGcE6vPZ0U0Q9HyzBMOfSx9xw63tuDOFLHFbMJ7ovLUmuf7e+58YYjuOE/6WOiO5LsnXI9r1Z/IAf/S91RHRfku1jKn3PYtEhmWDdYAqXcQU/K7xv0u1xuqTJnME1/IrfcF2hDt0ep8smmb9jAYu4hdsKdaj0ONl90Ov6XTL/wEu8wj3MhvQeU3b/8Lp+n8wHeIg/8Qh/GarD73xvso5TMp/hOV7gX8wZqsPvfF8r+6A935sj6ncppqjW94my1Ov7xFtzyk4LECcAAA==
   </data>
  </layer>
- <objectgroup name="walls">
+ <objectgroup name="walls" opacity="0.95">
   <object id="1" name="wall" x="1056" y="128" width="544" height="480"/>
   <object id="2" name="wall" x="32" y="576" width="416" height="32"/>
   <object id="3" name="wall" x="448" y="608" width="352" height="32"/>

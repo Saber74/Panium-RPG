@@ -23,7 +23,7 @@ mode = 0
 speed = 0
 # mode = 1
 s = 5
-lvl = '1'
+# lvl = '1'
 currChar = "Crow"
 HP_items = ["Potion 50", "Meat 100"]
 # mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
@@ -68,16 +68,6 @@ def MapLoad(Map_Name):
 				tile = Map_Name.get_tile_image_by_gid(gid)
 				if tile:
 					screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff))
-def Save():
-	for i in inventory:
-		inventorySave.write(i + '\n')
-	for i in openedChests:
-		openChests.write(i + '\n')	
-	open("lvl.txt", "w").write(lvl)	
-	CoordSave.write(str(x_diff) + ',' + str(y_diff))		
-	inventorySave.close()
-	openChests.close()
-	CoordSave.close()
 def InventoryDisplay(current_Character, num):
 	inv = ''
 	for i in inventory:
@@ -108,13 +98,14 @@ def display_inventory(Inventory, current_Character):
 					arrow_pos += 1
 				if evt.key == K_UP:
 					arrow_pos -= 1
-				if evt.key == K_SPACE:
+				if evt.key == K_SPACE and len(inv) > 0:
 					x = inv[arrow_pos]
 					y = x.split(" x")
 					for i in HP_items:
 						i = i.split(' ')
 						if y[0] in i:
 							print("HP +", i[1])
+							HP_Gain(i[1])
 					del inv[arrow_pos]	
 					del inventory[inventory.index(y[0])]
 					inv = list(InventoryDisplay(current_Character, 1))
@@ -136,62 +127,35 @@ def display_inventory(Inventory, current_Character):
 		mx, my = mouse.get_pos()
 		# print(str(mx) + ', ' + str(my))
 		display.flip()
+def HP_Gain(Add):
+	global Player_HP
+	hp_gain = int(Add)
+	Player_HP += hp_gain
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
-# def save_dict():
-# 	prog_data = {"lvl": 1,
-# 			  	 "Coords": [0,0],
-# 			  	  }
-# 	p.dump(prog_data, open("prog.dat", "wb"))
-# 	people = p.load(open("prog.dat", 'rb'))
-# print(save_dict())	
-############################################# LOADING CHEST STATES #############################################
-openedChests = []
-openChests = open("Chest.txt", "r").read().strip().split('\n')
-for i in openChests:
-	if i != '':
-		openedChests.append(i)
-openChests = open("Chest.txt", "w")
-############################################# LOADING CHEST STATES #############################################
-
-############################################### LOADING INVENTORY ###############################################
-inventory = []
-inventorySave = open("Inventory.txt", "r").read().strip().split('\n')
-for i in inventorySave:
-	if i != '':
-		inventory.append(i)
-inventorySave = open("Inventory.txt", "w")
-############################################### LOADING INVENTORY ###############################################
+def load_dict():
+	prog_data = p.load(open("prog.dat", 'rb'))
+	return prog_data
+def save_dict(lvl, x, y, Chests, inv):
+	prog_data = {"lvl": lvl,
+			  	 "Coords": [x, y],
+			  	 "Chests": Chests,
+			  	 "inv": inv}
+	p.dump(prog_data, open("prog.dat", "wb"))	
+lvl = str(load_dict()["lvl"])	
+x_diff, y_diff = load_dict()['Coords'][0], load_dict()['Coords'][1]
+openedChests = load_dict()["Chests"]
+inventory = load_dict()["inv"]
 
 ################################################ CHARACTER STATS ################################################
-crowStats = []
-crowStatsSave = open("CrowStats.txt", 'r').read().strip().split('\n')
-for i in crowStatsSave:
-	if i != '':
-		crowStats.append(i)
-crowStatsSave = open("CrowStats.txt", 'w')
+# crowStats = []
+# crowStatsSave = open("CrowStats.txt", 'r').read().strip().split('\n')
+# for i in crowStatsSave:
+# 	if i != '':
+# 		crowStats.append(i)
+# crowStatsSave = open("CrowStats.txt", 'w')
 ################################################ CHARACTER STATS ################################################
-
-############################################ COORDINATES / PLAYER POSITION ############################################
-CoordSave = open("Coordinates.txt", 'r').read().strip().split(',')
-for i in CoordSave:
-	if i != '':
-		if CoordSave.index(i) == 0:
-			x_diff = int(i)
-		elif CoordSave.index(i) == 1:
-			y_diff = int(i)
-	elif i == '':
-		x_diff == y_diff == 0	
-CoordSave = open("Coordinates.txt", 'w')
-############################################ COORDINATES / PLAYER POSITION ############################################
-
-################################################### LEVEL LOAD ###################################################
-lvlSave = open("lvl.txt", "r").read().strip()
-lvl = lvlSave
-if lvl == '':
-	lvl = '1'
-################################################### LEVEL LOAD ###################################################
 
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
@@ -235,7 +199,6 @@ class Player(sprite.Sprite):
 		self.x, self.y = x, y
 		self.rect = self.image.get_rect()
 		self.rect.midbottom = (self.x,self.y)
-		# self.rect = Rect(0, 0, 32, 48)
 	def update(self):
 		self.image = cm
 		self.x, self.y = x, y
@@ -244,8 +207,6 @@ class Obstacle(sprite.Sprite):
 		sprite.Sprite.__init__(self)
 		self.image = Surface((x, y), SRCALPHA) ; self.image.fill((0,0,0,0))
 		self.rect = Rect(x, y, w, h)
-		self.info = []
-		self.info.append(self.rect)
 		self.x, self.y = x, y
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
@@ -287,6 +248,7 @@ class Chest(sprite.Sprite):
 				self.c = tier4
 			item = r(0, len(self.c) - 1)
 			inventory.append(self.c[item])
+			print(inventory)
 			print(self.c[item], "has been obtained!!")
 			del self.c[item]
 			openedChests.append(self.name)
@@ -304,11 +266,11 @@ running = True
 while running:
 	for evt in event.get():  
 		if evt.type == QUIT: 
-			Save()
+			save_dict(lvl, x_diff, y_diff, openedChests, inventory)
 			running = False
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
-				Save()
+				save_dict(lvl, x_diff, y_diff, openedChests, inventory)
 				running = False    	
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
@@ -319,17 +281,16 @@ while running:
 			if evt.key == K_i:
 				InventoryDisplay(currChar, 0)
 			if evt.key == K_q:
-				inventorySave = open("Inventory.txt", "w")
 				inventory = []
-				openChests = open("Inventory.txt", "w")
 				openedChests = []
-				CoordSave = open("Coordinates.txt", 'w')
 			if evt.key == K_b:
 				mode = 1 - mode	
 			if evt.key == K_o:
 				mixer.music.stop()
 			if evt.key == K_p:
 				mixer.music.play()		
+			if evt.key == K_j:
+				print(Player_HP)	
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()

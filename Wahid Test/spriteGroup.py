@@ -21,7 +21,6 @@ x_diff = y_diff = 0
 pan = 1
 mode = 0
 speed = 0
-gold = 100
 # mode = 1
 s = 5
 # lvl = '1'
@@ -58,10 +57,14 @@ def levelSelect(lvl, chests, walls, portals):
 	if lvl == '2':
 		fname = load_pygame("Maps/desert.tmx")
 		tops = load_pygame("Maps/blank.tmx")
-	kill = [chests, walls, portals, clerks]
-	for i in kill:
-		for n in i:
-			n.kill()	
+	for i in chests:
+		i.kill()
+	for i in walls:
+		i.kill()		
+	for i in portals:
+		i.kill()	
+	for i in clerks:
+		i.kill()	
 	return fname, tops		
 def MapLoad(Map_Name):
 	for layer in Map_Name.visible_layers:
@@ -130,51 +133,33 @@ def display_inventory(Inventory, current_Character):
 		# print(str(mx) + ', ' + str(my))
 		display.flip()
 def HP_Change(Add):
-	global Crow_HP
+	global Player_HP
 	hp_change = int(Add)
-	Crow_HP += hp_change
+	Player_HP += hp_change
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
 def load_dict():
 	prog_data = p.load(open("prog.dat", 'rb'))
-	crow_data = p.load(open("crow_stats.dat", 'rb'))
-	raven_data = p.load(open("raven_stats.dat", 'rb'))
-	return prog_data, crow_data, raven_data
-def save_dict():
+	return prog_data
+def save_dict(lvl, x, y, Chests, inv):
 	prog_data = {"lvl": lvl,
-			  	 "Coords": [x_diff, y_diff],
-			  	 "Chests": openedChests,
-			  	 "inv": inventory,
-			  	 "Gold": gold,
-			  	 "Current Charachter": currChar}
-
-	crow_data = {"HP": Crow_HP,
-				 "Attack": 0,
-				 "Defense": 0,
-				 "Magic Attack": 0,
-				 "Magic Defense": 0,
-				 "Dexterity": 0}		  	 
-	raven_data = {"HP": Raven_HP,
-				 "Attack": 0,
-				 "Defense": 0,
-				 "Magic Attack": 0,
-				 "Magic Defense": 0,
-				 "Dexterity": 0}
+			  	 "Coords": [x, y],
+			  	 "Chests": Chests,
+			  	 "inv": inv}
 	p.dump(prog_data, open("prog.dat", "wb"))	
-	p.dump(crow_data, open("crow_stats.dat", "wb"))	
-	p.dump(raven_data, open("raven_stats.dat", 'wb'))
-
-lvl = str(load_dict()[0]["lvl"])	
-x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
-openedChests = load_dict()[0]["Chests"]
-inventory = load_dict()[0]["inv"]
-gold = load_dict()[0]["Gold"]
-currChar = load_dict()[0]["Current Charachter"]
-
-Crow_HP = load_dict()[1]["HP"]
-
-Raven_HP = load_dict()[2]["HP"]
+lvl = str(load_dict()["lvl"])	
+x_diff, y_diff = load_dict()['Coords'][0], load_dict()['Coords'][1]
+openedChests = load_dict()["Chests"]
+inventory = load_dict()["inv"]
+################################################ CHARACTER STATS ################################################
+# crowStats = []
+# crowStatsSave = open("CrowStats.txt", 'r').read().strip().split('\n')
+# for i in crowStatsSave:
+# 	if i != '':
+# 		crowStats.append(i)
+# crowStatsSave = open("CrowStats.txt", 'w')
+################################################ CHARACTER STATS ################################################
 
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
@@ -246,17 +231,15 @@ class Store_Clerk(sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.x, self.y = x, y
 		self.interact = False
-		self.back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff	
-	def open_store(self):
 		while self.interact:
+			back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
 			for evt in event.get():  
 				if evt.type == KEYDOWN:
 					if evt.key == K_ESCAPE:
 						self.interact = False
-						return
-			screen.blit(self.back, (0,0))			
+			screen.blit(back, (0,0))			
 			display.flip()	
 
 class Chest(sprite.Sprite):
@@ -305,11 +288,11 @@ running = True
 while running:
 	for evt in event.get():  
 		if evt.type == QUIT: 
-			save_dict()
+			save_dict(lvl, x_diff, y_diff, openedChests, inventory)
 			running = False
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
-				save_dict()
+				save_dict(lvl, x_diff, y_diff, openedChests, inventory)
 				running = False    	
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
@@ -334,14 +317,8 @@ while running:
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
-	# KEYBOARD MOVEMENT	
+	# KEYBOARD MOVEMENT
 	if mode == 0:
-		if currChar == "Crow":
-			Player_HP = Crow_HP
-			cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
-		elif currChar == "Raven":
-			Player_HP = Raven_HP
-			cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 		if kp[K_RIGHT]:
 			x_diff -= pan
 			R = True
@@ -371,8 +348,8 @@ while running:
 			pan = 5	
 			s = 5
 		# UPDATE
-		all_sprites.update()
 		clerks.update()
+		all_sprites.update()
 		walls.update()
 		chests.update()
 		portals.update()
@@ -380,7 +357,6 @@ while running:
 		clerk_Interact = sprite.spritecollide(player, clerks, False)
 		if clerk_Interact and kp[K_SPACE]:
 			clerk_Interact[0].interact = True
-			clerk_Interact[0].open_store()
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			# print('s')
@@ -512,6 +488,7 @@ while running:
 			elif Player_HP <= 0 and Enemy_HP <= 0:
 				print("YOU LOST!!")		
 			mode = 0	
+
 		############################################### BATTLE ###############################################
 	# DRAW / RENDER         
 	display.flip()

@@ -129,10 +129,12 @@ def display_inventory(Inventory, current_Character):
 		mx, my = mouse.get_pos()
 		# print(str(mx) + ', ' + str(my))
 		display.flip()
-def HP_Change(Add):
+def HP_Change(HP):
 	global Crow_HP
-	hp_change = int(Add)
-	Crow_HP += hp_change
+	Crow_HP += int(HP)
+def Gold_Change(Gold):
+	global gold
+	gold += Gold	
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
@@ -242,6 +244,10 @@ class Store_Clerk(sprite.Sprite):
 	def __init__(self, x, y, tier):
 		sprite.Sprite.__init__(self)
 		self.tier = tier
+		self.s1 = ['Potion                100', 'Elixer                75', 'Sword                50', 'Shield                50']
+		self.s2 = ['Potion                100', 'Elixer                75', 'Sword                50', 'Shield                50']
+		self.s3 = ['Potion                100', 'Elixer                75', 'Sword                50', 'Shield                50']
+		self.s4 = ['Potion                100', 'Elixer                75', 'Sword                50', 'Shield                50']
 		self.image = image.load("img/Store Clerks/Clerk" + self.tier + ".png")
 		self.rect = self.image.get_rect()
 		self.x, self.y = x, y
@@ -250,13 +256,48 @@ class Store_Clerk(sprite.Sprite):
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff	
 	def open_store(self):
+		self.selection = self.s1
+		if self.tier == '1':
+			self.selection = self.s1
+		elif self.tier == '2':
+			self.selection = self.s2
+		elif self.tier == '3':
+			self.selection = self.s3
+		elif self.tier == '4':
+			self.selection = self.s4		
+		arrow_pos = 0	
+		global gold
 		while self.interact:
 			for evt in event.get():  
 				if evt.type == KEYDOWN:
 					if evt.key == K_ESCAPE:
 						self.interact = False
 						return
-			screen.blit(self.back, (0,0))			
+					if evt.key == K_UP:
+						arrow_pos -= 1
+					if evt.key == K_DOWN:
+						arrow_pos += 1		
+					if evt.key == K_SPACE:
+						x = self.selection[arrow_pos]
+						y = x.split(" " * 16)
+						if int(y[1]) <= gold:
+							print("You have bought a " + y[0] + '!!')
+							inventory.append(y[0])
+							gold -= int(y[1])
+						if int(y[1]) > gold:
+							print("You don't have enough money!!")
+							
+			screen.blit(self.back, (0,0))
+			for i in range(len(self.selection)):
+				if arrow_pos == len(self.selection):
+					arrow_pos -= 1
+				if arrow_pos < 0:
+					arrow_pos += 1	
+				draw.circle(screen, (0,0,0), (100, 105 + 30 * arrow_pos), 3)
+				ItemName = medievalFont.render(self.selection[i], True, (0,0,0))			
+				screen.blit(ItemName, (105, 90 + 30 * i))
+			mx, my = mouse.get_pos()
+			# print(str(mx) + ', ' + str(my)) # 100, 105
 			display.flip()	
 
 class Chest(sprite.Sprite):
@@ -300,7 +341,7 @@ all_sprites.add(player)
 fname = levelSelect(lvl, chests, walls, portals)[0]
 tops = levelSelect(lvl, chests, walls, portals)[1]
 load_object(fname, chests, walls, portals)
-print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) ; PRESS I TO PRINT YOUR INVENTORY ; PRESS SPACE TO INTERACT WITH CHESTS ; M&N TO TOGGLE MAP ; O&P TOGGLE MUSIC")			
+print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) ; PRESS I TO PRINT YOUR INVENTORY ; PRESS SPACE TO INTERACT WITH CHESTS ; M&N TO TOGGLE MAP ; O&P TOGGLE MUSIC ; J TO PRINT GOLD")			
 running = True
 while running:
 	for evt in event.get():  
@@ -329,7 +370,7 @@ while running:
 			if evt.key == K_p:
 				mixer.music.play()		
 			if evt.key == K_j:
-				print(Player_HP)	
+				print(gold)	
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()

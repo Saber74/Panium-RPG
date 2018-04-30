@@ -98,7 +98,7 @@ def display_inventory(Inventory, current_Character):
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
-				if evt.key == K_i:
+				if evt.key == K_ESCAPE:
 					inventory_open = False
 				if evt.key == K_DOWN:
 					arrow_pos += 1

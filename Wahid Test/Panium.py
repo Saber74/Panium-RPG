@@ -26,7 +26,10 @@ pan = 1
 mode = 0
 speed = 0
 gold = 100
+# mode = 1
 s = 5
+# lvl = '1'
+obr = []
 currChar = "Crow"
 HP_items = ["Potion 50", "Meat 100", "Poison -50"]
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
@@ -34,9 +37,7 @@ mixer.init()# initializes the music mixer
 mixer.music.load("Audio/BGM/aaronwalz_veldarah.ama")
 mixer.music.stop()
 font.init()
-timesNewRomanFont = font.SysFont("Times New Roman", 24)
 medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
-fancyFont=font.Font("FONTS/Friedolin.ttf", 95)
 def load_object(fname, chests, walls, portals):
 	for tile_object in fname.objects:
 		if tile_object.name == 'wall':
@@ -97,7 +98,7 @@ def display_inventory(Inventory, current_Character):
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
-				if evt.key == K_ESCAPE or evt.key == K_i:
+				if evt.key == K_ESCAPE:
 					inventory_open = False
 				if evt.key == K_DOWN:
 					arrow_pos += 1
@@ -135,9 +136,9 @@ def display_inventory(Inventory, current_Character):
 def HP_Change(HP):
 	global Crow_HP
 	Crow_HP += int(HP)
-# def Gold_Change(Gold):
-# 	global gold
-# 	gold += Gold	
+def Gold_Change(Gold):
+	global gold
+	gold += Gold	
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
@@ -159,18 +160,18 @@ def save_dict():
 				 "Defense": 0,
 				 "Magic Attack": 0,
 				 "Magic Defense": 0,
-				 "Dexterity": 0}	  	 
+				 "Dexterity": 0}		  	 
 	raven_data = {"HP": Raven_HP,
 				 "Attack": 0,
 				 "Defense": 0,
 				 "Magic Attack": 0,
 				 "Magic Defense": 0,
 				 "Dexterity": 0}
-	p.dump(prog_data, open("prog.dat", "wb"))
+	p.dump(prog_data, open("prog.dat", "wb"))	
 	p.dump(crow_data, open("crow_stats.dat", "wb"))	
 	p.dump(raven_data, open("raven_stats.dat", 'wb'))
 
-lvl = str(load_dict()[0]["lvl"])
+lvl = str(load_dict()[0]["lvl"])	
 x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
 openedChests = load_dict()[0]["Chests"]
 inventory = load_dict()[0]["inv"]
@@ -229,11 +230,12 @@ class Player(sprite.Sprite):
 class Obstacle(sprite.Sprite):
 	def __init__(self, x, y, w, h):
 		sprite.Sprite.__init__(self)
+		global obr
 		self.rect = Rect(x, y, w, h)
+		obr.append(self.rect)
 		self.x, self.y = x, y
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
-
 class Portal(sprite.Sprite):
 	def __init__(self, x, y, w, h, location):
 		sprite.Sprite.__init__(self)
@@ -256,7 +258,6 @@ class Store_Clerk(sprite.Sprite):
 		self.x, self.y = x, y
 		self.interact = False
 		self.back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
-		self.event = "NULL"
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff	
 	def open_store(self):
@@ -282,35 +283,26 @@ class Store_Clerk(sprite.Sprite):
 					if evt.key == K_DOWN:
 						arrow_pos += 1		
 					if evt.key == K_SPACE:
-						if self.event == 'buy':
-							x = self.selection[arrow_pos]
-							y = x.split(" " * 88)
-							if int(y[1]) <= gold:
-								print("You have bought a " + y[0] + '!!')
-								inventory.append(y[0])
-								gold -= int(y[1])
-							if int(y[1]) > gold:
-								print("You don't have enough money!!")
-					if evt.key == K_b:
-						self.event = 'buy'		
-					if evt.key == K_s:
-						self.event = 'sell'	
-			if self.event == 'buy' or self.event == 'NULL':			
-				screen.blit(self.back, (0,0))
-				ShopName = fancyFont.render("Shop Number 1", True, (0,0,0))
-				screen.blit(ShopName, (185,0))
-				for i in range(len(self.selection)):
-					if arrow_pos == len(self.selection):
-						arrow_pos -= 1
-					if arrow_pos < 0:
-						arrow_pos += 1	
-					draw.circle(screen, (0,0,0), (100, 105 + 30 * arrow_pos), 3)
-					ItemName = medievalFont.render(self.selection[i], True, (0,0,0))			
-					screen.blit(ItemName, (105, 90 + 30 * i))
-			if self.event == 'sell':
-				print("You can sell")		
+						x = self.selection[arrow_pos]
+						y = x.split(" " * 88)
+						if int(y[1]) <= gold:
+							print("You have bought a " + y[0] + '!!')
+							inventory.append(y[0])
+							gold -= int(y[1])
+						if int(y[1]) > gold:
+							print("You don't have enough money!!")
+							
+			screen.blit(self.back, (0,0))
+			for i in range(len(self.selection)):
+				if arrow_pos == len(self.selection):
+					arrow_pos -= 1
+				if arrow_pos < 0:
+					arrow_pos += 1	
+				draw.circle(screen, (0,0,0), (100, 105 + 30 * arrow_pos), 3)
+				ItemName = medievalFont.render(self.selection[i], True, (0,0,0))			
+				screen.blit(ItemName, (105, 90 + 30 * i))
 			mx, my = mouse.get_pos()
-			# print(str(mx) + ', ' + str(my))
+			# print(str(mx) + ', ' + str(my)) # 100, 105
 			display.flip()	
 
 class Chest(sprite.Sprite):
@@ -390,6 +382,7 @@ while running:
 	U = R = D = L = moving = False
 	# KEYBOARD MOVEMENT	
 	if mode == 0:
+		print(x_diff,y_diff)
 		if currChar == "Crow":
 			Player_HP = Crow_HP
 			cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft

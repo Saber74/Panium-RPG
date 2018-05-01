@@ -7,7 +7,11 @@ WIDTH, HEIGHT = 800, 600
 # WIDTH, HEIGHT = 1366, 768 
 size=(WIDTH, HEIGHT)
 os.environ['SDL_VIDEO_WINDOW_POS'] = '0,10'
-screen = display.set_mode(size) 
+screen = display.set_mode(size)
+########################################## USE IN FINAL PRODUCT ##########################################
+# screen = display.set_mode(size, FULLSCREEN)
+# width, height = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
+########################################## USE IN FINAL PRODUCT ##########################################
 myClock = time.Clock()
 FPS = 60
 x = y = n = 0
@@ -93,7 +97,7 @@ def display_inventory(Inventory, current_Character):
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
-				if evt.key == K_i:
+				if evt.key == K_ESCAPE:
 					inventory_open = False
 				if evt.key == K_DOWN:
 					arrow_pos += 1
@@ -243,10 +247,10 @@ class Store_Clerk(sprite.Sprite):
 	def __init__(self, x, y, tier):
 		sprite.Sprite.__init__(self)
 		self.tier = tier
-		self.s1 = ['Potion                100', 'Elixer                75', 'Sword                50', 'Shield                50']
-		self.s2 = ['Potion                100', 'Elixer                75', 'Sword                50', 'Shield                50']
-		self.s3 = ['Potion                100', 'Elixer                75', 'Sword                50', 'Shield                50']
-		self.s4 = ['Potion                100', 'Elixer                75', 'Sword                50', 'Shield                50']
+		self.s1 = ['Potion' + " " * 88 + '100', 'Elixer' + " " * 88 + '75', 'Sword' + " " * 88 + '50', 'Shield' + " " * 88 + '50']
+		self.s2 = ['Potion' + " " * 88 + '100', 'Elixer' + " " * 88 + '75', 'Sword' + " " * 88 + '50', 'Shield' + " " * 88 + '50']
+		self.s3 = ['Potion' + " " * 88 + '100', 'Elixer' + " " * 88 + '75', 'Sword' + " " * 88 + '50', 'Shield' + " " * 88 + '50']
+		self.s4 = ['Potion' + " " * 88 + '100', 'Elixer' + " " * 88 + '75', 'Sword' + " " * 88 + '50', 'Shield' + " " * 88 + '50']
 		self.image = image.load("img/Store Clerks/Clerk" + self.tier + ".png")
 		self.rect = self.image.get_rect()
 		self.x, self.y = x, y
@@ -278,7 +282,7 @@ class Store_Clerk(sprite.Sprite):
 						arrow_pos += 1		
 					if evt.key == K_SPACE:
 						x = self.selection[arrow_pos]
-						y = x.split(" " * 16)
+						y = x.split(" " * 88)
 						if int(y[1]) <= gold:
 							print("You have bought a " + y[0] + '!!')
 							inventory.append(y[0])

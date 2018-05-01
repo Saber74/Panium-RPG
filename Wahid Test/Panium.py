@@ -22,9 +22,7 @@ pan = 1
 mode = 0
 speed = 0
 gold = 100
-# mode = 1
 s = 5
-# lvl = '1'
 currChar = "Crow"
 HP_items = ["Potion 50", "Meat 100", "Poison -50"]
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
@@ -34,6 +32,7 @@ mixer.music.stop()
 font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
 medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
+fancyFont=font.Font("FONTS/Friedolin.ttf", 95)
 def load_object(fname, chests, walls, portals):
 	for tile_object in fname.objects:
 		if tile_object.name == 'wall':
@@ -132,9 +131,9 @@ def display_inventory(Inventory, current_Character):
 def HP_Change(HP):
 	global Crow_HP
 	Crow_HP += int(HP)
-def Gold_Change(Gold):
-	global gold
-	gold += Gold	
+# def Gold_Change(Gold):
+# 	global gold
+# 	gold += Gold	
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
@@ -288,6 +287,8 @@ class Store_Clerk(sprite.Sprite):
 							print("You don't have enough money!!")
 							
 			screen.blit(self.back, (0,0))
+			ShopName = fancyFont.render("Shop Number 1", True, (0,0,0))
+			screen.blit(ShopName, (185,0))
 			for i in range(len(self.selection)):
 				if arrow_pos == len(self.selection):
 					arrow_pos -= 1

@@ -132,7 +132,7 @@ def display_inventory(Inventory, current_Character):
 		mx, my = mouse.get_pos()
 		# print(str(mx) + ', ' + str(my))
 		display.flip()
-		
+
 def display_seller_inventory(Inventory):
 	menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
 	screen.blit(menu_base, (0,0))
@@ -143,7 +143,9 @@ def display_seller_inventory(Inventory):
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
 				if evt.key == K_ESCAPE or evt.key == K_i:
-					return
+					clerks.event = 'Buy'
+					print(clerks.event, "FUNC")
+					Store_Clerk.open_store()
 					inventory_open = False
 				if evt.key == K_DOWN:
 					arrow_pos += 1

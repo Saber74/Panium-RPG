@@ -27,6 +27,7 @@ mode = 0
 speed = 0
 gold = 100
 s = 5
+c = 'NULL'
 currChar = "Crow"
 HP_items = ["Potion 50", "Meat 100", "Poison -50"]
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
@@ -85,10 +86,13 @@ def InventoryDisplay(current_Character, num):
 	del split[split.index('')]
 	s = set(split)
 	if num == 0:
-		display_inventory(s, current_Character)	
+		display_inventory(s, current_Character, 'inventory')	
 	elif num == 1:
-		return s	
-def display_inventory(Inventory, current_Character):
+		return s
+	elif num == 2:
+		display_inventory(s, current_Character, 'sell')	
+
+def display_inventory(Inventory, current_Character, mode):
 	menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
 	screen.blit(menu_base, (0,0))
 	arrow_pos = 0
@@ -98,22 +102,35 @@ def display_inventory(Inventory, current_Character):
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
 				if evt.key == K_ESCAPE or evt.key == K_i:
+					if mode == "sell":
+						global c
+						c = 'NULL'
+						return c
 					inventory_open = False
 				if evt.key == K_DOWN:
 					arrow_pos += 1
 				if evt.key == K_UP:
 					arrow_pos -= 1
 				if evt.key == K_SPACE and len(inv) > 0:
-					x = inv[arrow_pos]
-					y = x.split(" x")
-					for i in HP_items:
-						i = i.split(' ')
-						if y[0] in i:
-							print("HP +", i[1])
-							HP_Change(i[1])
-					del inv[arrow_pos]	
-					del inventory[inventory.index(y[0])]
-					inv = list(InventoryDisplay(current_Character, 1))
+					if mode == 'inventory':
+						x = inv[arrow_pos]
+						y = x.split(" x")
+						for i in HP_items:
+							i = i.split(' ')
+							if y[0] in i:
+								print("HP +", i[1])
+								HP_Change(i[1])
+						del inv[arrow_pos]	
+						del inventory[inventory.index(y[0])]
+						inv = list(InventoryDisplay(current_Character, 1))
+					if mode == 'sell':
+						x = inv[arrow_pos]
+						y = x.split(" x")
+						gold += 100
+						del inv[arrow_pos]	
+						del inventory[inventory.index(y[0])]
+						inv = list(InventoryDisplay(current_Character, 1))
+
 		count = 0			
 		screen.blit(menu_base, (0,0))
 		for i in range(len(inv)):
@@ -133,52 +150,7 @@ def display_inventory(Inventory, current_Character):
 		# print(str(mx) + ', ' + str(my))
 		display.flip()
 
-def display_seller_inventory(Inventory):
-	menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
-	screen.blit(menu_base, (0,0))
 	arrow_pos = 0
-	inventory_open = True
-	inv = list(Inventory)
-	while inventory_open:
-		for evt in event.get():  
-			if evt.type == KEYDOWN:
-				if evt.key == K_ESCAPE or evt.key == K_i:
-					clerks.event = 'Buy'
-					print(clerks.event, "FUNC")
-					Store_Clerk.open_store()
-					inventory_open = False
-				if evt.key == K_DOWN:
-					arrow_pos += 1
-				if evt.key == K_UP:
-					arrow_pos -= 1
-				# if evt.key == K_SPACE and len(inv) > 0:
-				# 	x = inv[arrow_pos]
-				# 	y = x.split(" x")
-				# 	for i in HP_items:
-				# 		i = i.split(' ')
-				# 		if y[0] in i:
-				# 			print("HP +", i[1])
-				# 			HP_Change(i[1])
-				# 	del inv[arrow_pos]	
-				# 	del inventory[inventory.index(y[0])]
-				# 	inv = list(InventoryDisplay(current_Character, 1))
-		count = 0			
-		screen.blit(menu_base, (0,0))
-		for i in range(len(inv)):
-			count += 1
-			ItemName = medievalFont.render(inv[i], True, (0,0,0))
-			if arrow_pos == len(inv):
-				arrow_pos -= 1
-			if arrow_pos < 0:
-				arrow_pos += 1	
-			draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
-			screen.blit(ItemName, (470, 20 + 30 * count))
-		# if current_Character == "Crow":
-		# 	screen.blit(transform.scale(image.load("img/faces/crow.png").convert_alpha(), (130,185)),(30,35))			
-		# elif current_Character == "Raven":
-		# 	screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))	
-		# print(str(mx) + ', ' + str(my))
-		display.flip()		
 def HP_Change(HP):
 	global Crow_HP
 	Crow_HP += int(HP)
@@ -200,7 +172,7 @@ def save_dict():
 			  	 "inv": inventory,
 			  	 "Gold": gold,
 			  	 "Current Charachter": currChar}
-
+	# item_value = {'tmp': 100}		  	 
 	crow_data = {"HP": Crow_HP,
 				 "Attack": 0,
 				 "Defense": 0,
@@ -355,8 +327,12 @@ class Store_Clerk(sprite.Sprite):
 					ItemName = medievalFont.render(self.selection[i], True, (0,0,0))			
 					screen.blit(ItemName, (105, 90 + 30 * i))
 			if self.event == 'sell': 
+				InventoryDisplay(currChar, 2)
 				print("You can sell")		
-				display_seller_inventory(InventoryDisplay(currChar, 1))
+				self.event = c
+				# if InventoryDisplay(currChar, 2) == "sell":
+				# 	self.event = "NULL"
+				# 	print("end")
 			mx, my = mouse.get_pos()
 			# print(str(mx) + ', ' + str(my))
 			display.flip()	

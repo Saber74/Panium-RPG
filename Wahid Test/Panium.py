@@ -132,6 +132,51 @@ def display_inventory(Inventory, current_Character):
 		mx, my = mouse.get_pos()
 		# print(str(mx) + ', ' + str(my))
 		display.flip()
+		
+def display_seller_inventory(Inventory):
+	menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
+	screen.blit(menu_base, (0,0))
+	arrow_pos = 0
+	inventory_open = True
+	inv = list(Inventory)
+	while inventory_open:
+		for evt in event.get():  
+			if evt.type == KEYDOWN:
+				if evt.key == K_ESCAPE or evt.key == K_i:
+					return
+					inventory_open = False
+				if evt.key == K_DOWN:
+					arrow_pos += 1
+				if evt.key == K_UP:
+					arrow_pos -= 1
+				# if evt.key == K_SPACE and len(inv) > 0:
+				# 	x = inv[arrow_pos]
+				# 	y = x.split(" x")
+				# 	for i in HP_items:
+				# 		i = i.split(' ')
+				# 		if y[0] in i:
+				# 			print("HP +", i[1])
+				# 			HP_Change(i[1])
+				# 	del inv[arrow_pos]	
+				# 	del inventory[inventory.index(y[0])]
+				# 	inv = list(InventoryDisplay(current_Character, 1))
+		count = 0			
+		screen.blit(menu_base, (0,0))
+		for i in range(len(inv)):
+			count += 1
+			ItemName = medievalFont.render(inv[i], True, (0,0,0))
+			if arrow_pos == len(inv):
+				arrow_pos -= 1
+			if arrow_pos < 0:
+				arrow_pos += 1	
+			draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
+			screen.blit(ItemName, (470, 20 + 30 * count))
+		# if current_Character == "Crow":
+		# 	screen.blit(transform.scale(image.load("img/faces/crow.png").convert_alpha(), (130,185)),(30,35))			
+		# elif current_Character == "Raven":
+		# 	screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))	
+		# print(str(mx) + ', ' + str(my))
+		display.flip()		
 def HP_Change(HP):
 	global Crow_HP
 	Crow_HP += int(HP)
@@ -282,7 +327,7 @@ class Store_Clerk(sprite.Sprite):
 					if evt.key == K_DOWN:
 						arrow_pos += 1		
 					if evt.key == K_SPACE:
-						if self.event == 'buy':
+						if self.event == 'buy' or self.event == 'NULL':
 							x = self.selection[arrow_pos]
 							y = x.split(" " * 88)
 							if int(y[1]) <= gold:
@@ -309,6 +354,7 @@ class Store_Clerk(sprite.Sprite):
 					screen.blit(ItemName, (105, 90 + 30 * i))
 			if self.event == 'sell': 
 				print("You can sell")		
+				display_seller_inventory(InventoryDisplay(currChar, 1))
 			mx, my = mouse.get_pos()
 			# print(str(mx) + ', ' + str(my))
 			display.flip()	

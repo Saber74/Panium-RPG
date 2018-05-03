@@ -28,6 +28,9 @@ speed = 0
 gold = 100
 s = 5
 c = 'NULL'
+
+menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
+
 currChar = "Crow"
 HP_items = ["Potion 50", "Meat 100", "Poison -50"]
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
@@ -93,7 +96,6 @@ def InventoryDisplay(current_Character, num):
 		display_inventory(s, current_Character, 'sell')	
 
 def display_inventory(Inventory, current_Character, mode):
-	menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
 	screen.blit(menu_base, (0,0))
 	arrow_pos = 0
 	inventory_open = True
@@ -124,9 +126,15 @@ def display_inventory(Inventory, current_Character, mode):
 						del inventory[inventory.index(y[0])]
 						inv = list(InventoryDisplay(current_Character, 1))
 					if mode == 'sell':
+						global gold
 						x = inv[arrow_pos]
 						y = x.split(" x")
-						gold += 100
+						try:
+							gold += load_dict()[3][y[0]]
+							print("You have gained", str(load_dict()[3][y[0]]), "gold!! Now you have", str(gold), "gold in total!!")
+						except:
+							gold += 100
+							print("You have gained", str(100), "gold!! Now you have", str(gold), "gold in total!!")
 						del inv[arrow_pos]	
 						del inventory[inventory.index(y[0])]
 						inv = list(InventoryDisplay(current_Character, 1))
@@ -164,7 +172,8 @@ def load_dict():
 	prog_data = p.load(open("prog.dat", 'rb'))
 	crow_data = p.load(open("crow_stats.dat", 'rb'))
 	raven_data = p.load(open("raven_stats.dat", 'rb'))
-	return prog_data, crow_data, raven_data
+	item_value = p.load(open("item_value.dat", 'rb'))
+	return prog_data, crow_data, raven_data, item_value
 def save_dict():
 	prog_data = {"lvl": lvl,
 			  	 "Coords": [x_diff, y_diff],
@@ -172,7 +181,11 @@ def save_dict():
 			  	 "inv": inventory,
 			  	 "Gold": gold,
 			  	 "Current Charachter": currChar}
-	# item_value = {'tmp': 100}		  	 
+	item_value = {'Potion': 75,
+				  'Elixer': 50,
+				  'Sword': 25,
+				  'Shield': 25}		  	 
+
 	crow_data = {"HP": Crow_HP,
 				 "Attack": 0,
 				 "Defense": 0,
@@ -188,6 +201,7 @@ def save_dict():
 	p.dump(prog_data, open("prog.dat", "wb"))
 	p.dump(crow_data, open("crow_stats.dat", "wb"))	
 	p.dump(raven_data, open("raven_stats.dat", 'wb'))
+	p.dump(item_value, open("item_value.dat", 'wb'))
 
 lvl = str(load_dict()[0]["lvl"])
 x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
@@ -328,11 +342,7 @@ class Store_Clerk(sprite.Sprite):
 					screen.blit(ItemName, (105, 90 + 30 * i))
 			if self.event == 'sell': 
 				InventoryDisplay(currChar, 2)
-				print("You can sell")		
 				self.event = c
-				# if InventoryDisplay(currChar, 2) == "sell":
-				# 	self.event = "NULL"
-				# 	print("end")
 			mx, my = mouse.get_pos()
 			# print(str(mx) + ', ' + str(my))
 			display.flip()	
@@ -380,6 +390,7 @@ tops = levelSelect(lvl, chests, walls, portals)[1]
 load_object(fname, chests, walls, portals)
 print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) ; PRESS I TO PRINT YOUR INVENTORY ; PRESS SPACE TO INTERACT WITH CHESTS ; M&N TO TOGGLE MAP ; O&P TOGGLE MUSIC ; J TO PRINT GOLD")			
 running = True
+key.set_repeat(100,100)
 while running:
 	for evt in event.get():  
 		if evt.type == QUIT: 
@@ -448,6 +459,7 @@ while running:
 		else:
 			pan = 5	
 			s = 5
+		print(myClock.get_fps())	
 		# UPDATE
 		all_sprites.update()
 		clerks.update()

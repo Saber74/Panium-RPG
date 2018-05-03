@@ -42,12 +42,9 @@ timesNewRomanFont = font.SysFont("Times New Roman", 24)
 medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
 fancyFont=font.Font("FONTS/Friedolin.ttf", 95)
 def start_Screen():
-	from pygame import * 
-	size=(800,600)
-	screen = display.set_mode(size) 
-	                                 
 	running = True
 	while running:
+
 	    for evt in event.get():  
 	        if evt.type == QUIT: 
 	            running = False
@@ -72,6 +69,9 @@ def load_object(fname, chests, walls, portals):
 		if tile_object.name == "Clerk":
 			clerk = Store_Clerk(tile_object.x, tile_object.y, tile_object.type)	
 			clerks.add(clerk)
+		if tile_object.name == 'NPC':
+			npc = NPC(tile_object.x, tile_object.y, tile_object.type)	
+			npcs.add(npc)
 def levelSelect(lvl, chests, walls, portals):
 	if lvl == '0':
 		fname = load_pygame("Maps/STORE.tmx")
@@ -82,7 +82,7 @@ def levelSelect(lvl, chests, walls, portals):
 	if lvl == '2':
 		fname = load_pygame("Maps/desert.tmx")
 		tops = load_pygame("Maps/blank.tmx")
-	kill = [chests, walls, portals, clerks]
+	kill = [chests, walls, portals, clerks, npcs]
 	for i in kill:
 		for n in i:
 			n.kill()	
@@ -276,6 +276,7 @@ class Player(sprite.Sprite):
 	def update(self):
 		self.image = cm
 		self.x, self.y = x, y
+
 class Obstacle(sprite.Sprite):
 	def __init__(self, x, y, w, h):
 		sprite.Sprite.__init__(self)
@@ -293,6 +294,16 @@ class Portal(sprite.Sprite):
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff		
 
+class NPC(sprite.Sprite):
+	def __init__(self, x, y, importance):
+		sprite.Sprite.__init__(self)
+		self.type = importance
+		self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
+		self.rect = self.image.get_rect()
+		self.x, self.y = x, y
+	def update(self):
+		self.rect.topleft = self.x + x_diff, self.y + y_diff
+
 class Store_Clerk(sprite.Sprite):
 	def __init__(self, x, y, tier):
 		sprite.Sprite.__init__(self)
@@ -301,7 +312,7 @@ class Store_Clerk(sprite.Sprite):
 		self.s2 = ['Potion' + " " * 88 + '100', 'Elixer' + " " * 88 + '75', 'Sword' + " " * 88 + '50', 'Shield' + " " * 88 + '50']
 		self.s3 = ['Potion' + " " * 88 + '100', 'Elixer' + " " * 88 + '75', 'Sword' + " " * 88 + '50', 'Shield' + " " * 88 + '50']
 		self.s4 = ['Potion' + " " * 88 + '100', 'Elixer' + " " * 88 + '75', 'Sword' + " " * 88 + '50', 'Shield' + " " * 88 + '50']
-		self.image = image.load("img/Store Clerks/Clerk" + self.tier + ".png")
+		self.image = image.load("img/Store Clerks/Clerk" + self.tier + ".png").convert_alpha()
 		self.rect = self.image.get_rect()
 		self.x, self.y = x, y
 		self.interact = False
@@ -400,6 +411,7 @@ walls = sprite.Group()
 chests = sprite.Group()
 portals = sprite.Group()
 clerks = sprite.Group()
+npcs = sprite.Group()
 player = Player(WIDTH / 2, HEIGHT / 2 + 50, speed)
 all_sprites.add(player)
 fname = levelSelect(lvl, chests, walls, portals)[0]
@@ -479,6 +491,7 @@ while running:
 		# print(myClock.get_fps())	
 		# UPDATE
 		all_sprites.update()
+		npcs.update()
 		clerks.update()
 		walls.update()
 		chests.update()
@@ -488,6 +501,11 @@ while running:
 		if clerk_Interact and kp[K_SPACE]:
 			clerk_Interact[0].interact = True
 			clerk_Interact[0].open_store()
+
+		npc_interact = sprite.spritecollide(player, npcs, False)	
+		if npc_interact:
+			print('npc')
+
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			# print('s')
@@ -532,6 +550,7 @@ while running:
 		MapLoad(fname)
 		chests.draw(screen)
 		clerks.draw(screen)
+		npcs.draw(screen)
 		all_sprites.draw(screen)
 		MapLoad(tops)
 		############################################## Map Loading ##############################################

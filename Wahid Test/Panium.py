@@ -41,6 +41,23 @@ font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
 medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
 fancyFont=font.Font("FONTS/Friedolin.ttf", 95)
+def start_Screen():
+	from pygame import * 
+	size=(800,600)
+	screen = display.set_mode(size) 
+	                                 
+	running = True
+	while running:
+	    for evt in event.get():  
+	        if evt.type == QUIT: 
+	            running = False
+
+	    mx,my=mouse.get_pos()
+	    mb=mouse.get_pressed()
+	                          
+	    
+	    display.flip() 
+	quit()
 def load_object(fname, chests, walls, portals):
 	for tile_object in fname.objects:
 		if tile_object.name == 'wall':
@@ -459,7 +476,7 @@ while running:
 		else:
 			pan = 5	
 			s = 5
-		print(myClock.get_fps())	
+		# print(myClock.get_fps())	
 		# UPDATE
 		all_sprites.update()
 		clerks.update()
@@ -488,12 +505,6 @@ while running:
 			pass		
 		tel = sprite.spritecollide(player, portals, False)
 		if tel:
-			# t = tel[0]
-			# if t.rect.collidepoint((player.rect.centerx, player.rect.bottom -20)):
-			# 	if player.rect.x > h.rect.x and L:
-			# 		pan = 0
-			# 	else:
-			# 		pan = 5
 				lvl = tel[-1].type
 				if lvl == '0':
 					x_diff, y_diff = 240, 100	
@@ -501,7 +512,6 @@ while running:
 					x_diff, y_diff = -545, -580
 				elif lvl == '2':
 					x_diff, y_diff = -1285, -495	
-						
 				fname, tops = levelSelect(lvl, chests, walls, portals)
 				load_object(fname, chests, walls, portals)
 				

@@ -264,7 +264,6 @@ for i in range(9):
 for i in range(24):
 	battleAnimation.append(transform.scale(image.load("gif/%i.png" % i),(800,600)).convert_alpha())
 ############################################ LOADING MAP AND SPRITES ############################################
-
 class Player(sprite.Sprite):
 	# sprite for the player
 	def __init__(self, x, y, s):
@@ -303,6 +302,7 @@ class NPC(sprite.Sprite):
 		self.x, self.y = x, y
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
+
 
 class Store_Clerk(sprite.Sprite):
 	def __init__(self, x, y, tier):

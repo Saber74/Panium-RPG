@@ -134,6 +134,10 @@
     <property name="ChestName" value="s"/>
    </properties>
   </object>
-  <object id="85" name="NPC" type="0" x="457" y="500" width="20" height="30"/>
+  <object id="85" name="NPC" type="0" x="457" y="500" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="GUUUUD AFTERNUUUUUN"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

@@ -45,32 +45,32 @@ def start_Screen():
 	running = True
 	while running:
 
-	    for evt in event.get():  
-	        if evt.type == QUIT: 
-	            running = False
+		for evt in event.get():  
+			if evt.type == QUIT: 
+				running = False
 
-	    mx,my=mouse.get_pos()
-	    mb=mouse.get_pressed()
-	                          
-	    
-	    display.flip() 
+		mx,my=mouse.get_pos()
+		mb=mouse.get_pressed()
+							  
+		
+		display.flip() 
 	quit()
 def load_object(fname, chests, walls, portals):
 	for tile_object in fname.objects:
 		if tile_object.name == 'wall':
 			obs = Obstacle(tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 			walls.add(obs)
-		if tile_object.name == 'chest':
-			chest = Chest(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type,tile_object.ChestName)	
+		elif tile_object.name == 'chest':
+			chest = Chest(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type, tile_object.ChestName)	
 			chests.add(chest)
-		if tile_object.name == "Portal":
+		elif tile_object.name == "Portal":
 			port = Portal(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type)	
 			portals.add(port)
-		if tile_object.name == "Clerk":
+		elif tile_object.name == "Clerk":
 			clerk = Store_Clerk(tile_object.x, tile_object.y, tile_object.type)	
 			clerks.add(clerk)
-		if tile_object.name == 'NPC':
-			npc = NPC(tile_object.x, tile_object.y, tile_object.type)	
+		elif tile_object.name == 'NPC':
+			npc = NPC(tile_object.x, tile_object.y, tile_object.type, tile_object.Dialogue)	
 			npcs.add(npc)
 def levelSelect(lvl, chests, walls, portals):
 	if lvl == '0':
@@ -193,11 +193,11 @@ def load_dict():
 	return prog_data, crow_data, raven_data, item_value
 def save_dict():
 	prog_data = {"lvl": lvl,
-			  	 "Coords": [x_diff, y_diff],
-			  	 "Chests": openedChests,
-			  	 "inv": inventory,
-			  	 "Gold": gold,
-			  	 "Current Charachter": currChar}
+				 "Coords": [x_diff, y_diff],
+				 "Chests": openedChests,
+				 "inv": inventory,
+				 "Gold": gold,
+				 "Current Charachter": currChar}
 	item_value = {'Potion': 75,
 				  'Elixer': 50,
 				  'Sword': 25,
@@ -294,15 +294,35 @@ class Portal(sprite.Sprite):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff		
 
 class NPC(sprite.Sprite):
-	def __init__(self, x, y, importance):
+	def __init__(self, x, y, importance, speech):
 		sprite.Sprite.__init__(self)
 		self.type = importance
+		self.speech = speech
 		self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
 		self.rect = self.image.get_rect()
+		self.interact = False
+		self.display_text = False
 		self.x, self.y = x, y
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
-
+		if self.interact:
+			while self.display_text:
+				for evt in event.get():  
+					if evt.type == QUIT: 
+						self.display_text = False
+						self.disp = False
+					if evt.type == KEYDOWN:
+						if evt.key == K_ESCAPE:
+							self.display_text = False
+							self.interact = False
+							return self.interact
+				mx,my=mouse.get_pos()
+				mb=mouse.get_pressed()
+				
+				screen.blit(timesNewRomanFont.render(self.speech, True, (0,0,0)), (0,0))
+				display.flip() 
+			self.display_text = False
+			self.interact = False	
 
 class Store_Clerk(sprite.Sprite):
 	def __init__(self, x, y, tier):
@@ -452,6 +472,7 @@ while running:
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
+	print(myClock.get_fps())
 	# KEYBOARD MOVEMENT	
 	if mode == 0:
 		if currChar == "Crow":
@@ -503,8 +524,13 @@ while running:
 			clerk_Interact[0].open_store()
 
 		npc_interact = sprite.spritecollide(player, npcs, False)	
-		if npc_interact:
-			print('npc')
+		if npc_interact and kp[K_SPACE]:
+			npc_interact[0].interact = True
+			npc_interact[0].display_text = True
+		elif npc_interact and not kp[K_SPACE]:
+			npc_interact[0].display_text = False
+			npc_interact[0].interact = False
+				
 
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:

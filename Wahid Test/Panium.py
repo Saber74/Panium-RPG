@@ -305,6 +305,9 @@ class NPC(sprite.Sprite):
 		self.x, self.y = x, y
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
+	def display_speech(self, interact, display_text):
+		self.interact = interact
+		self.display_text = display_text
 		if self.interact:
 			while self.display_text:
 				for evt in event.get():  
@@ -525,11 +528,7 @@ while running:
 
 		npc_interact = sprite.spritecollide(player, npcs, False)	
 		if npc_interact and kp[K_SPACE]:
-			npc_interact[0].interact = True
-			npc_interact[0].display_text = True
-		elif npc_interact and not kp[K_SPACE]:
-			npc_interact[0].display_text = False
-			npc_interact[0].interact = False
+			npc_interact[0].display_speech(True, True)
 				
 
 		hit = sprite.spritecollide(player, walls, False)

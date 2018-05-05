@@ -28,10 +28,8 @@ speed = 0
 gold = 100
 s = 5
 c = 'NULL'
-
 menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
 dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
-
 currChar = "Crow"
 HP_items = ["Potion 50", "Meat 100", "Poison -50"]
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
@@ -53,7 +51,6 @@ def start_Screen():
 		mx,my=mouse.get_pos()
 		mb=mouse.get_pressed()
 							  
-		
 		display.flip() 
 	quit()
 def load_object(fname, chests, walls, portals):

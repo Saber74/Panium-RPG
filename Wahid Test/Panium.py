@@ -307,6 +307,8 @@ class NPC(sprite.Sprite):
 		self.interact = interact
 		self.display_text = display_text
 		self.prog = 0
+		self.sent = ''
+		self.n = 0
 		if self.interact:
 			while self.display_text:
 				for evt in event.get():  
@@ -320,13 +322,20 @@ class NPC(sprite.Sprite):
 						if evt.key == K_SPACE:
 							if self.prog < len(self.split) - 1:
 								self.prog += 1	
+								self.n = 0
+								self.sent = ''
 				mx,my=mouse.get_pos()
 				mb=mouse.get_pressed()
 				# print(mx,my)
 				screen.blit(dialogue_box, (0,0))
 				self.split = self.speech.split(' // ')
-				screen.blit(timesNewRomanFont.render(self.split[self.prog], True, (150,150,150)), (45,30))
-				display.flip()
+				if self.n == 0:
+					for i in self.split[self.prog]:
+						self.sent += i	
+						screen.blit(timesNewRomanFont.render(self.sent, True, (150,150,150)), (45,30))
+						display.flip()
+						time.wait(70)
+					self.n = 1	
 			self.display_text = False
 			self.interact = False
 

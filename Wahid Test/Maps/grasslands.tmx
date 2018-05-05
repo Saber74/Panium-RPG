@@ -151,7 +151,7 @@
   </object>
   <object id="183" name="NPC" type="0" x="773" y="391" width="20" height="30">
    <properties>
-    <property name="Dialogue" value="Welcome to hell!! // I mean Massey..."/>
+    <property name="Dialogue" value="Welcome to hell!!  ........ // I mean Massey..."/>
    </properties>
   </object>
  </objectgroup>

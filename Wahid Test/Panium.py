@@ -309,6 +309,8 @@ class NPC(sprite.Sprite):
 		self.prog = 0
 		self.sent = ''
 		self.n = 0
+		self.s = 100
+		self.text_y = 30
 		if self.interact:
 			while self.display_text:
 				for evt in event.get():  
@@ -331,13 +333,24 @@ class NPC(sprite.Sprite):
 				self.split = self.speech.split(' // ')
 				if self.n == 0:
 					for i in self.split[self.prog]:
-						self.sent += i	
-						screen.blit(timesNewRomanFont.render(self.sent, True, (150,150,150)), (45,30))
+						self.sent += i
+						try:
+							if i == '/':
+								self.index = self.split[self.prog].index(i)
+								if self.split[self.prog][self.index:(self.index + 5)] == '/new/':
+									self.text_y += 30
+									self.split[self.prog] = self.split[self.prog].replace('/new/', "")
+									self.sent = ''
+								self.s = 0	
+						except:
+							pass			
+						if self.s <= 5:
+							self.s += 1
+							self.sent = ''	
+						screen.blit(timesNewRomanFont.render(self.sent, True, (150,150,150)), (45,self.text_y))
 						display.flip()
 						time.wait(70)
 					self.n = 1	
-			self.display_text = False
-			self.interact = False
 
 class Store_Clerk(sprite.Sprite):
 	def __init__(self, x, y, tier):

@@ -27,6 +27,7 @@ mode = 0
 speed = 0
 gold = 100
 s = 5
+npc_item = {}
 c = 'NULL'
 menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
 dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
@@ -65,10 +66,10 @@ def load_object(fname, chests, walls, portals):
 			port = Portal(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type)	
 			portals.add(port)
 		elif tile_object.name == "Clerk":
-			clerk = Store_Clerk(tile_object.x, tile_object.y, tile_object.type)	
+			clerk = Store_Clerk(tile_object.x, tile_object.y, tile_object.type)
 			clerks.add(clerk)
 		elif tile_object.name == 'NPC':
-			npc = NPC(tile_object.x, tile_object.y, tile_object.type, tile_object.Dialogue)	
+			npc = NPC(tile_object.x, tile_object.y, tile_object.type, tile_object.Dialogue, tile_object.item, tile_object.Name)	
 			npcs.add(npc)
 def levelSelect(lvl, chests, walls, portals):
 	if lvl == '0':
@@ -195,11 +196,12 @@ def save_dict():
 				 "Chests": openedChests,
 				 "inv": inventory,
 				 "Gold": gold,
+				 "npc_items": npc_item,
 				 "Current Charachter": currChar}
 	item_value = {'Potion': 75,
 				  'Elixer': 50,
 				  'Sword': 25,
-				  'Shield': 25}		  	 
+				  'Shield': 25}  	 			  
 
 	crow_data = {"HP": Crow_HP,
 				 "Attack": 0,
@@ -223,6 +225,8 @@ x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
 openedChests = load_dict()[0]["Chests"]
 inventory = load_dict()[0]["inv"]
 gold = load_dict()[0]["Gold"]
+npc_item = load_dict()[0]['npc_items']
+print(npc_item)
 currChar = load_dict()[0]["Current Charachter"]
 
 Crow_HP = load_dict()[1]["HP"]
@@ -292,10 +296,12 @@ class Portal(sprite.Sprite):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff		
 
 class NPC(sprite.Sprite):
-	def __init__(self, x, y, importance, speech):
+	def __init__(self, x, y, importance, speech, item, name):
 		sprite.Sprite.__init__(self)
 		self.type = importance
 		self.speech = speech
+		self.item = item
+		self.name = name
 		self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
 		self.rect = self.image.get_rect()
 		self.interact = False
@@ -318,7 +324,12 @@ class NPC(sprite.Sprite):
 						self.display_text = False
 						self.disp = False
 					if evt.type == KEYDOWN:
-						if evt.key == K_z:
+						if evt.key == K_z and self.prog == len(self.split) - 1:
+							if self.item != 'NULL' and self.name not in npc_item:
+								self.item_split = self.item.split(' // ')
+								for i in self.item_split:
+									inventory.append(i)
+								npc_item[self.name] = self.name
 							self.display_text = False
 							self.interact = False
 						if evt.key == K_SPACE:
@@ -343,10 +354,11 @@ class NPC(sprite.Sprite):
 							self.s += 1
 							self.sent = ''	
 						else:	
-							self.s = 100	
+							self.s = 100
 						screen.blit(timesNewRomanFont.render(self.sent, True, (150,150,150)), (45,self.text_y))
 						display.flip()
-						time.wait(70)
+						# time.wait(70)
+						time.wait(35)
 					self.n = 1	
 
 class Store_Clerk(sprite.Sprite):
@@ -485,6 +497,7 @@ while running:
 			if evt.key == K_q:
 				inventory = []
 				openedChests = []
+				npc_item = {}
 			if evt.key == K_b:
 				mode = 1 - mode	
 			if evt.key == K_o:
@@ -497,7 +510,8 @@ while running:
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
-	print(myClock.get_fps())
+	# print(myClock.get_fps())
+	# print(load_dict()[4])
 	# KEYBOARD MOVEMENT	
 	if mode == 0:
 		if currChar == "Crow":
@@ -550,6 +564,7 @@ while running:
 
 		npc_interact = sprite.spritecollide(player, npcs, False)	
 		if npc_interact and kp[K_SPACE]:
+			print(npc_interact[0].item)
 			npc_interact[0].display_speech(True, True)
 				
 

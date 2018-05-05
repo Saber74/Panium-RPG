@@ -137,21 +137,29 @@
   <object id="85" name="NPC" type="0" x="457" y="500" width="20" height="30">
    <properties>
     <property name="Dialogue" value="GUUUUD AFTERNUUUUUN"/>
+    <property name="Name" value="Village Child"/>
+    <property name="item" value="NULL"/>
    </properties>
   </object>
   <object id="181" name="NPC" type="1" x="664" y="509" width="20" height="30">
    <properties>
-    <property name="Dialogue" value="Well, Hello There. // Guud Afternuun. // My name is Mrs.Lozo!"/>
+    <property name="Dialogue" value="Well, Hello There. // Guud Afternuun. // My name is Mrs.Lozo! # Here is some Physics Homework and Failing Grade"/>
+    <property name="Name" value="Village Child Lozo"/>
+    <property name="item" value="Physics Homework // Failing Grade"/>
    </properties>
   </object>
   <object id="182" name="NPC" type="2" x="314" y="375" width="20" height="30">
    <properties>
-    <property name="Dialogue" value="Hello there Nizar! // Is collision working yet?"/>
+    <property name="Dialogue" value="Hello there Nizar! // Is collision working yet? # Here, maybe a potion might help!"/>
+    <property name="Name" value="Village Child Potion"/>
+    <property name="item" value="Potion"/>
    </properties>
   </object>
   <object id="183" name="NPC" type="0" x="773" y="391" width="20" height="30">
    <properties>
-    <property name="Dialogue" value="Welcome to hell!!  ........ // I mean Massey... # Does it matter? # poop"/>
+    <property name="Dialogue" value="Welcome to hell!!  ........ // I mean Massey... # Does it matter? # poop // Is this really just a test # .............. I am feeling uncomfortable. # Why? # KYS // Here is a legendary sword for your hard work!"/>
+    <property name="Name" value="Hell Girl"/>
+    <property name="item" value="Legendary Sword"/>
    </properties>
   </object>
  </objectgroup>

@@ -30,6 +30,7 @@ s = 5
 c = 'NULL'
 
 menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
+dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
 
 currChar = "Crow"
 HP_items = ["Potion 50", "Meat 100", "Poison -50"]
@@ -308,6 +309,7 @@ class NPC(sprite.Sprite):
 	def display_speech(self, interact, display_text):
 		self.interact = interact
 		self.display_text = display_text
+		self.prog = 0
 		if self.interact:
 			while self.display_text:
 				for evt in event.get():  
@@ -315,17 +317,21 @@ class NPC(sprite.Sprite):
 						self.display_text = False
 						self.disp = False
 					if evt.type == KEYDOWN:
-						if evt.key == K_ESCAPE:
+						if evt.key == K_z:
 							self.display_text = False
 							self.interact = False
-							return self.interact
+						if evt.key == K_SPACE:
+							if self.prog < len(self.split) - 1:
+								self.prog += 1	
 				mx,my=mouse.get_pos()
 				mb=mouse.get_pressed()
-				
-				screen.blit(timesNewRomanFont.render(self.speech, True, (0,0,0)), (0,0))
-				display.flip() 
+				# print(mx,my)
+				screen.blit(dialogue_box, (0,0))
+				self.split = self.speech.split(' // ')
+				screen.blit(timesNewRomanFont.render(self.split[self.prog], True, (150,150,150)), (45,30))
+				display.flip()
 			self.display_text = False
-			self.interact = False	
+			self.interact = False
 
 class Store_Clerk(sprite.Sprite):
 	def __init__(self, x, y, tier):

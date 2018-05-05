@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="181">
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="184">
  <tileset firstgid="1" name="Revolution_Grasslands" tilewidth="32" tileheight="32" tilecount="190" columns="10">
   <image source="revolution_grasslands.png" trans="a349a4" width="320" height="608"/>
   <tile id="5">
@@ -137,6 +137,21 @@
   <object id="85" name="NPC" type="0" x="457" y="500" width="20" height="30">
    <properties>
     <property name="Dialogue" value="GUUUUD AFTERNUUUUUN"/>
+   </properties>
+  </object>
+  <object id="181" name="NPC" type="1" x="664" y="509" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="Well, Hello There. // Guud Afternuun. // My name is Mrs.Lozo!"/>
+   </properties>
+  </object>
+  <object id="182" name="NPC" type="2" x="314" y="375" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="Hello there Nizar! // Is collision working yet?"/>
+   </properties>
+  </object>
+  <object id="183" name="NPC" type="0" x="773" y="391" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="Welcome to hell!! // I mean Massey..."/>
    </properties>
   </object>
  </objectgroup>

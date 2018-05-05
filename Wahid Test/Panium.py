@@ -326,6 +326,7 @@ class NPC(sprite.Sprite):
 								self.prog += 1	
 								self.n = 0
 								self.sent = ''
+								self.text_y = 30
 				mx,my=mouse.get_pos()
 				mb=mouse.get_pressed()
 				# print(mx,my)
@@ -334,19 +335,15 @@ class NPC(sprite.Sprite):
 				if self.n == 0:
 					for i in self.split[self.prog]:
 						self.sent += i
-						try:
-							if i == '/':
-								self.index = self.split[self.prog].index(i)
-								if self.split[self.prog][self.index:(self.index + 5)] == '/new/':
-									self.text_y += 30
-									self.split[self.prog] = self.split[self.prog].replace('/new/', "")
-									self.sent = ''
-								self.s = 0	
-						except:
-							pass			
-						if self.s <= 5:
+						if i == '#':
+							self.sent = ''
+							self.s = 0	
+							self.text_y += 30
+						if self.s <= 1:
 							self.s += 1
 							self.sent = ''	
+						else:	
+							self.s = 100	
 						screen.blit(timesNewRomanFont.render(self.sent, True, (150,150,150)), (45,self.text_y))
 						display.flip()
 						time.wait(70)

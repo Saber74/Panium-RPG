@@ -43,7 +43,6 @@ fancyFont=font.Font("FONTS/Friedolin.ttf", 95)
 def start_Screen():
 	running = True
 	while running:
-
 		for evt in event.get():  
 			if evt.type == QUIT: 
 				running = False
@@ -242,11 +241,6 @@ lvl = str(load_dict()[0]["lvl"])
 x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
 openedChests = load_dict()[0]["Chests"]
 inventory = load_dict()[0]["inv"]
-# ss = ['1','2','3','4','5','6','7','8','9','10',
-# 	  '11','12','13','14','15','16','17','18','19','20',
-# 	  '21','22','23','24','25','26','27','28','29','30']
-# for i in ss:
-# 	inventory.append(i)	  
 gold = load_dict()[0]["Gold"]
 npc_item = load_dict()[0]['npc_items']
 currChar = load_dict()[0]["Current Charachter"]

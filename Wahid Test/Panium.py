@@ -157,10 +157,10 @@ def display_inventory(Inventory, current_Character, mode):
 							if y[0] in i:
 								print("HP +", i[1])
 								HP_Change(i[1])
-						del tmp_inv[arrow_pos]	
-						del inv[x]
+						del tmp_inv[counter]	
 						del inventory[inventory.index(y[0])]
 						inv = list(InventoryDisplay(current_Character, 1))
+						tmp_inv = inv
 					if mode == 'sell':
 						global gold
 						x = tmp_inv[arrow_pos]
@@ -171,14 +171,16 @@ def display_inventory(Inventory, current_Character, mode):
 						except:
 							gold += 100
 							print("You have gained", str(100), "gold!! Now you have", str(gold), "gold in total!!")
-						del tmp_inv[arrow_pos]	
-						del inv[x]	
+						del tmp_inv[counter]	
 						del inventory[inventory.index(y[0])]
 						inv = list(InventoryDisplay(current_Character, 1))
+						tmp_inv = inv
 		screen.blit(menu_base, (0,0))
+		if counter == len(inv):
+			counter -= 1	
 		for i in range(len(tmp_inv)):
 			ItemName = medievalFont.render(tmp_inv[i], True, (0,0,0))
-			if arrow_pos == len(inv):
+			if arrow_pos == len(tmp_inv):
 				arrow_pos -= 1
 			if arrow_pos < 0:
 				arrow_pos += 1	
@@ -239,13 +241,14 @@ def save_dict():
 lvl = str(load_dict()[0]["lvl"])
 x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
 openedChests = load_dict()[0]["Chests"]
-# inventory = load_dict()[0]["inv"]
-inventory = ['1','2','3','4','5','6','7','8','9','10',
-			 '11','12','13','14','15','16','17','18','19','20',
-			 '21','22','23','24','25','26','27','28','29','30']
+inventory = load_dict()[0]["inv"]
+# ss = ['1','2','3','4','5','6','7','8','9','10',
+# 	  '11','12','13','14','15','16','17','18','19','20',
+# 	  '21','22','23','24','25','26','27','28','29','30']
+# for i in ss:
+# 	inventory.append(i)	  
 gold = load_dict()[0]["Gold"]
 npc_item = load_dict()[0]['npc_items']
-print(npc_item)
 currChar = load_dict()[0]["Current Charachter"]
 
 Crow_HP = load_dict()[1]["HP"]

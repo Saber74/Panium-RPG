@@ -117,7 +117,6 @@ def display_inventory(Inventory, current_Character, mode):
 	inv = list(Inventory)
 	counter = 0
 	tmp_inv = inv
-	# tmp_inv = []
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
@@ -135,31 +134,32 @@ def display_inventory(Inventory, current_Character, mode):
 						for i in inv[(counter - 16):]:
 							tmp_inv.append(i)
 						arrow_pos = 16	
-					print(arrow_pos)
+					print(counter)
 				if evt.key == K_UP:
 					arrow_pos -= 1
 					counter -= 1
-					# if arrow_pos < 0:
-					# 	tmp_inv = []
-					# 	for i in inv[(counter - 16):(counter + 16)]:
-					# 		tmp_inv.append(i)
-					# 	arrow_pos = 0
-					print(arrow_pos)
+					if arrow_pos < 0:
+						if counter > -1:
+							ind = inv.index(tmp_inv[0])
+							tmp_inv.insert(0, inv[ind - 1])
+						else:	
+							counter = 0
+					print(counter)
 				if evt.key == K_SPACE and len(inv) > 0:
 					if mode == 'inventory':
-						x = inv[arrow_pos]
+						x = tmp_inv[arrow_pos]
 						y = x.split(" x")
 						for i in HP_items:
 							i = i.split(' ')
 							if y[0] in i:
 								print("HP +", i[1])
 								HP_Change(i[1])
-						del inv[arrow_pos]	
+						del tmp_inv[arrow_pos]	
 						del inventory[inventory.index(y[0])]
 						inv = list(InventoryDisplay(current_Character, 1))
 					if mode == 'sell':
 						global gold
-						x = inv[arrow_pos]
+						x = tmp_inv[arrow_pos]
 						y = x.split(" x")
 						try:
 							gold += load_dict()[3][y[0]]
@@ -167,14 +167,11 @@ def display_inventory(Inventory, current_Character, mode):
 						except:
 							gold += 100
 							print("You have gained", str(100), "gold!! Now you have", str(gold), "gold in total!!")
-						del inv[arrow_pos]	
+						del tmp_inv[arrow_pos]	
+						del inv[x]	
 						del inventory[inventory.index(y[0])]
 						inv = list(InventoryDisplay(current_Character, 1))
 		screen.blit(menu_base, (0,0))
-		# if arrow_pos > 16:
-		# 	tmp_inv = []
-		# 	for i in inv[(arrow_pos - 16):]:
-		# 		tmp_inv.append(i)
 		for i in range(len(tmp_inv)):
 			ItemName = medievalFont.render(tmp_inv[i], True, (0,0,0))
 			if arrow_pos == len(inv):
@@ -182,13 +179,13 @@ def display_inventory(Inventory, current_Character, mode):
 			if arrow_pos < 0:
 				arrow_pos += 1	
 			draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
-			screen.blit(ItemName, (470, 20 + 30 * (i + 1)))
+			if (i + 1) <= 17:
+				screen.blit(ItemName, (470, 20 + 30 * (i + 1)))
 		if current_Character == "Crow":
 			screen.blit(transform.scale(image.load("img/faces/crow.png").convert_alpha(), (130,185)),(30,35))			
 		elif current_Character == "Raven":
 			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
 		mx, my = mouse.get_pos()
-		# print(str(mx) + ', ' + str(my))
 		display.flip()
 
 	arrow_pos = 0
@@ -526,7 +523,8 @@ while running:
 			if evt.key == K_p:
 				mixer.music.play()		
 			if evt.key == K_j:
-				print(gold)	
+				# print(gold)	
+				print(inventory)	
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()

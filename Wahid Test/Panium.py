@@ -129,10 +129,13 @@ def display_inventory(Inventory, current_Character, mode):
 				if evt.key == K_DOWN:
 					arrow_pos += 1
 					counter += 1
-					if arrow_pos > 16:
-						tmp_inv = []
-						for i in inv[(counter - 16):]:
-							tmp_inv.append(i)
+					if len(tmp_inv) > 1:
+						if arrow_pos > 16:
+							tmp_inv = []
+							for i in inv[(counter - 16):]:
+								tmp_inv.append(i)
+							arrow_pos = 16	
+					else:		
 						arrow_pos = 16	
 					print(counter)
 				if evt.key == K_UP:
@@ -155,6 +158,7 @@ def display_inventory(Inventory, current_Character, mode):
 								print("HP +", i[1])
 								HP_Change(i[1])
 						del tmp_inv[arrow_pos]	
+						del inv[x]
 						del inventory[inventory.index(y[0])]
 						inv = list(InventoryDisplay(current_Character, 1))
 					if mode == 'sell':
@@ -185,9 +189,7 @@ def display_inventory(Inventory, current_Character, mode):
 			screen.blit(transform.scale(image.load("img/faces/crow.png").convert_alpha(), (130,185)),(30,35))			
 		elif current_Character == "Raven":
 			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
-		mx, my = mouse.get_pos()
 		display.flip()
-
 	arrow_pos = 0
 def HP_Change(HP):
 	global Crow_HP

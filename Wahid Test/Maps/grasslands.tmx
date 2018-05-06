@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="208">
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="184">
  <tileset firstgid="1" name="Revolution_Grasslands" tilewidth="32" tileheight="32" tilecount="190" columns="10">
   <image source="revolution_grasslands.png" trans="a349a4" width="320" height="608"/>
   <tile id="5">
@@ -143,16 +143,16 @@
   </object>
   <object id="181" name="NPC" type="1" x="664" y="509" width="20" height="30">
    <properties>
-    <property name="Dialogue" value="Well, Hello There. // Guud Afternuun. // My name is Mrs.Lozo!"/>
-    <property name="Name" value="Village Child"/>
-    <property name="item" value="NULL"/>
+    <property name="Dialogue" value="Well, Hello There. // Guud Afternuun. // My name is Mrs.Lozo! # Here is some Physics Homework and Failing Grade"/>
+    <property name="Name" value="Village Child Lozo"/>
+    <property name="item" value="Physics Homework // Failing Grade"/>
    </properties>
   </object>
   <object id="182" name="NPC" type="2" x="314" y="375" width="20" height="30">
    <properties>
-    <property name="Dialogue" value="Hello there Nizar! // Is collision working yet?"/>
-    <property name="Name" value="Village Child"/>
-    <property name="item" value="Potions"/>
+    <property name="Dialogue" value="Hello there Nizar! // Is collision working yet? # Here, maybe a potion might help!"/>
+    <property name="Name" value="Village Child Potion"/>
+    <property name="item" value="Potion"/>
    </properties>
   </object>
   <object id="183" name="NPC" type="0" x="773" y="391" width="20" height="30">

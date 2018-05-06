@@ -27,6 +27,7 @@ mode = 0
 speed = 0
 gold = 100
 s = 5
+npc_item = {}
 c = 'NULL'
 menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
 dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
@@ -43,6 +44,7 @@ fancyFont=font.Font("FONTS/Friedolin.ttf", 95)
 def start_Screen():
 	running = True
 	while running:
+
 		for evt in event.get():  
 			if evt.type == QUIT: 
 				running = False
@@ -114,8 +116,6 @@ def display_inventory(Inventory, current_Character, mode):
 	arrow_pos = 0
 	inventory_open = True
 	inv = list(Inventory)
-	counter = 0
-	tmp_inv = inv
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
@@ -127,42 +127,23 @@ def display_inventory(Inventory, current_Character, mode):
 					inventory_open = False
 				if evt.key == K_DOWN:
 					arrow_pos += 1
-					counter += 1
-					if len(tmp_inv) > 1:
-						if arrow_pos > 16:
-							tmp_inv = []
-							for i in inv[(counter - 16):]:
-								tmp_inv.append(i)
-							arrow_pos = 16	
-					else:		
-						arrow_pos = 16	
-					print(counter)
 				if evt.key == K_UP:
 					arrow_pos -= 1
-					counter -= 1
-					if arrow_pos < 0:
-						if counter > -1:
-							ind = inv.index(tmp_inv[0])
-							tmp_inv.insert(0, inv[ind - 1])
-						else:	
-							counter = 0
-					print(counter)
 				if evt.key == K_SPACE and len(inv) > 0:
 					if mode == 'inventory':
-						x = tmp_inv[arrow_pos]
+						x = inv[arrow_pos]
 						y = x.split(" x")
 						for i in HP_items:
 							i = i.split(' ')
 							if y[0] in i:
 								print("HP +", i[1])
 								HP_Change(i[1])
-						del tmp_inv[counter]	
+						del inv[arrow_pos]	
 						del inventory[inventory.index(y[0])]
 						inv = list(InventoryDisplay(current_Character, 1))
-						tmp_inv = inv
 					if mode == 'sell':
 						global gold
-						x = tmp_inv[arrow_pos]
+						x = inv[arrow_pos]
 						y = x.split(" x")
 						try:
 							gold += load_dict()[3][y[0]]
@@ -170,27 +151,29 @@ def display_inventory(Inventory, current_Character, mode):
 						except:
 							gold += 100
 							print("You have gained", str(100), "gold!! Now you have", str(gold), "gold in total!!")
-						del tmp_inv[counter]	
+						del inv[arrow_pos]	
 						del inventory[inventory.index(y[0])]
 						inv = list(InventoryDisplay(current_Character, 1))
-						tmp_inv = inv
+
+		count = 0			
 		screen.blit(menu_base, (0,0))
-		if counter == len(inv):
-			counter -= 1	
-		for i in range(len(tmp_inv)):
-			ItemName = medievalFont.render(tmp_inv[i], True, (0,0,0))
-			if arrow_pos == len(tmp_inv):
+		for i in range(len(inv)):
+			count += 1
+			ItemName = medievalFont.render(inv[i], True, (0,0,0))
+			if arrow_pos == len(inv):
 				arrow_pos -= 1
 			if arrow_pos < 0:
 				arrow_pos += 1	
 			draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
-			if (i + 1) <= 17:
-				screen.blit(ItemName, (470, 20 + 30 * (i + 1)))
+			screen.blit(ItemName, (470, 20 + 30 * count))
 		if current_Character == "Crow":
 			screen.blit(transform.scale(image.load("img/faces/crow.png").convert_alpha(), (130,185)),(30,35))			
 		elif current_Character == "Raven":
 			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
+		mx, my = mouse.get_pos()
+		# print(str(mx) + ', ' + str(my))
 		display.flip()
+
 	arrow_pos = 0
 def HP_Change(HP):
 	global Crow_HP
@@ -243,6 +226,7 @@ openedChests = load_dict()[0]["Chests"]
 inventory = load_dict()[0]["inv"]
 gold = load_dict()[0]["Gold"]
 npc_item = load_dict()[0]['npc_items']
+print(npc_item)
 currChar = load_dict()[0]["Current Charachter"]
 
 Crow_HP = load_dict()[1]["HP"]
@@ -366,7 +350,7 @@ class NPC(sprite.Sprite):
 							self.sent = ''
 							self.s = 0	
 							self.text_y += 30
-							time.wait(600)
+							time.wait(650)
 						if self.s <= 1:
 							self.s += 1
 							self.sent = ''	
@@ -522,8 +506,7 @@ while running:
 			if evt.key == K_p:
 				mixer.music.play()		
 			if evt.key == K_j:
-				# print(gold)	
-				print(inventory)	
+				print(gold)	
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()

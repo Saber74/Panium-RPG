@@ -143,8 +143,8 @@
   </object>
   <object id="181" name="NPC" type="1" x="664" y="509" width="20" height="30">
    <properties>
-    <property name="Dialogue" value="Well, Hello There. // Guud Afternuun. // My name is Mrs.Lozo! # Here is some Physics Homework and Failing Grade"/>
-    <property name="Name" value="Village Child Lozo"/>
+    <property name="Dialogue" value="Well, Hello There. // Guud Afternuun. // My name is Mrs.Lozo! # Here is some Physics Homework and Failing Grade # I hear if you kill yourself, you don't have to suffer anymore! # You should try it because it will be good for you and good for us!"/>
+    <property name="Name" value="Village Dad Lozo"/>
     <property name="item" value="Physics Homework // Failing Grade"/>
    </properties>
   </object>

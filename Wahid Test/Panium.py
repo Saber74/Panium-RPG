@@ -27,7 +27,6 @@ mode = 0
 speed = 0
 gold = 100
 s = 5
-npc_item = {}
 c = 'NULL'
 menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
 dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
@@ -116,6 +115,9 @@ def display_inventory(Inventory, current_Character, mode):
 	arrow_pos = 0
 	inventory_open = True
 	inv = list(Inventory)
+	counter = 0
+	tmp_inv = inv
+	# tmp_inv = []
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
@@ -127,8 +129,22 @@ def display_inventory(Inventory, current_Character, mode):
 					inventory_open = False
 				if evt.key == K_DOWN:
 					arrow_pos += 1
+					counter += 1
+					if arrow_pos > 16:
+						tmp_inv = []
+						for i in inv[(counter - 16):]:
+							tmp_inv.append(i)
+						arrow_pos = 16	
+					print(arrow_pos)
 				if evt.key == K_UP:
 					arrow_pos -= 1
+					counter -= 1
+					# if arrow_pos < 0:
+					# 	tmp_inv = []
+					# 	for i in inv[(counter - 16):(counter + 16)]:
+					# 		tmp_inv.append(i)
+					# 	arrow_pos = 0
+					print(arrow_pos)
 				if evt.key == K_SPACE and len(inv) > 0:
 					if mode == 'inventory':
 						x = inv[arrow_pos]
@@ -154,18 +170,19 @@ def display_inventory(Inventory, current_Character, mode):
 						del inv[arrow_pos]	
 						del inventory[inventory.index(y[0])]
 						inv = list(InventoryDisplay(current_Character, 1))
-
-		count = 0			
 		screen.blit(menu_base, (0,0))
-		for i in range(len(inv)):
-			count += 1
-			ItemName = medievalFont.render(inv[i], True, (0,0,0))
+		# if arrow_pos > 16:
+		# 	tmp_inv = []
+		# 	for i in inv[(arrow_pos - 16):]:
+		# 		tmp_inv.append(i)
+		for i in range(len(tmp_inv)):
+			ItemName = medievalFont.render(tmp_inv[i], True, (0,0,0))
 			if arrow_pos == len(inv):
 				arrow_pos -= 1
 			if arrow_pos < 0:
 				arrow_pos += 1	
 			draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
-			screen.blit(ItemName, (470, 20 + 30 * count))
+			screen.blit(ItemName, (470, 20 + 30 * (i + 1)))
 		if current_Character == "Crow":
 			screen.blit(transform.scale(image.load("img/faces/crow.png").convert_alpha(), (130,185)),(30,35))			
 		elif current_Character == "Raven":
@@ -223,7 +240,10 @@ def save_dict():
 lvl = str(load_dict()[0]["lvl"])
 x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
 openedChests = load_dict()[0]["Chests"]
-inventory = load_dict()[0]["inv"]
+# inventory = load_dict()[0]["inv"]
+inventory = ['1','2','3','4','5','6','7','8','9','10',
+			 '11','12','13','14','15','16','17','18','19','20',
+			 '21','22','23','24','25','26','27','28','29','30']
 gold = load_dict()[0]["Gold"]
 npc_item = load_dict()[0]['npc_items']
 print(npc_item)
@@ -350,6 +370,7 @@ class NPC(sprite.Sprite):
 							self.sent = ''
 							self.s = 0	
 							self.text_y += 30
+							time.wait(600)
 						if self.s <= 1:
 							self.s += 1
 							self.sent = ''	

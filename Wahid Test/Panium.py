@@ -362,6 +362,73 @@ class NPC(sprite.Sprite):
 						time.wait(35)
 					self.n = 1	
 
+class Quest_NPC(sprite.Sprite):
+	def __init__(self, x, y, importance, speech, item, name):
+		sprite.Sprite.__init__(self)
+		self.type = importance
+		self.speech = speech
+		self.item = item
+		self.name = name
+		self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
+		self.rect = self.image.get_rect()
+		self.interact = False
+		self.display_text = False
+		self.x, self.y = x, y
+	def update(self):
+		self.rect.topleft = self.x + x_diff, self.y + y_diff
+	def display_speech(self, interact, display_text):
+		self.interact = interact
+		self.display_text = display_text
+		self.prog = 0
+		self.sent = ''
+		self.n = 0
+		self.s = 100
+		self.text_y = 30
+		if self.interact:
+			while self.display_text:
+				for evt in event.get():  
+					if evt.type == QUIT: 
+						self.display_text = False
+						self.disp = False
+					if evt.type == KEYDOWN:
+						if evt.key == K_z and self.prog == len(self.split) - 1:
+							if self.item != 'NULL' and self.name not in npc_item:
+								self.item_split = self.item.split(' // ')
+								for i in self.item_split:
+									inventory.append(i)
+								npc_item[self.name] = self.name
+							self.display_text = False
+							self.interact = False
+						if evt.key == K_SPACE:
+							if self.prog < len(self.split) - 1:
+								self.prog += 1	
+								self.n = 0
+								self.sent = ''
+								self.text_y = 30
+				mx,my=mouse.get_pos()
+				mb=mouse.get_pressed()
+				# print(mx,my)
+				screen.blit(dialogue_box, (0,0))
+				self.split = self.speech.split(' // ')
+				if self.n == 0:
+					for i in self.split[self.prog]:
+						self.sent += i
+						if i == '#':
+							self.sent = ''
+							self.s = 0	
+							self.text_y += 30
+							time.wait(650)
+						if self.s <= 1:
+							self.s += 1
+							self.sent = ''	
+						else:	
+							self.s = 100
+						screen.blit(timesNewRomanFont.render(self.sent, True, (150,150,150)), (45,self.text_y))
+						display.flip()
+						# time.wait(70)
+						time.wait(35)
+					self.n = 1
+
 class Store_Clerk(sprite.Sprite):
 	def __init__(self, x, y, tier):
 		sprite.Sprite.__init__(self)
@@ -565,7 +632,6 @@ while running:
 
 		npc_interact = sprite.spritecollide(player, npcs, False)	
 		if npc_interact and kp[K_SPACE]:
-			print(npc_interact[0].item)
 			npc_interact[0].display_speech(True, True)
 				
 

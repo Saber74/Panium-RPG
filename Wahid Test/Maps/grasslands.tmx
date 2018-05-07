@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="184">
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="196">
  <tileset firstgid="1" name="Revolution_Grasslands" tilewidth="32" tileheight="32" tilecount="190" columns="10">
   <image source="revolution_grasslands.png" trans="a349a4" width="320" height="608"/>
   <tile id="5">
@@ -152,7 +152,7 @@
    <properties>
     <property name="Dialogue" value="Hello there Nizar! // Is collision working yet? # Here, maybe a potion might help!"/>
     <property name="Name" value="Village Child Potion"/>
-    <property name="item" value="Potion"/>
+    <property name="item" value="Potion // Coffee // Cocaine"/>
    </properties>
   </object>
   <object id="183" name="NPC" type="0" x="773" y="391" width="20" height="30">
@@ -160,6 +160,62 @@
     <property name="Dialogue" value="Welcome to hell!!  ........ // I mean Massey... # Does it matter? # poop // Is this really just a test # .............. I am feeling uncomfortable. # Why? # KYS // Here is a legendary sword for your hard work!"/>
     <property name="Name" value="Hell Girl"/>
     <property name="item" value="Legendary Sword"/>
+   </properties>
+  </object>
+  <object id="184" name="NPC" type="2" x="275.333" y="331.667" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="welcome to the grasslands"/>
+    <property name="Name" value="generic"/>
+    <property name="item" value="NULL"/>
+   </properties>
+  </object>
+  <object id="189" name="NPC" type="2" x="496" y="999" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="welcome to the grasslands"/>
+    <property name="Name" value="generic"/>
+    <property name="item" value="NULL"/>
+   </properties>
+  </object>
+  <object id="190" name="NPC" type="2" x="692" y="1219" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="welcome to the grasslands"/>
+    <property name="Name" value="generic"/>
+    <property name="item" value="NULL"/>
+   </properties>
+  </object>
+  <object id="191" name="NPC" type="2" x="1080" y="1203" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="welcome to the grasslands"/>
+    <property name="Name" value="generic"/>
+    <property name="item" value="NULL"/>
+   </properties>
+  </object>
+  <object id="192" name="NPC" type="2" x="1098" y="793" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="welcome to the grasslands"/>
+    <property name="Name" value="generic"/>
+    <property name="item" value="NULL"/>
+   </properties>
+  </object>
+  <object id="193" name="NPC" type="2" x="1016" y="183" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="welcome to the grasslands"/>
+    <property name="Name" value="generic"/>
+    <property name="item" value="NULL"/>
+   </properties>
+  </object>
+  <object id="194" name="NPC" type="2" x="931" y="157" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="Shhhh... Nobody knows about this spot # Here take this, if I give you this you have to keep my secret! // This is a book of legends! # Never show anybody this piece of godliness. // This is the Guide To Do Collision Tutorial."/>
+    <property name="Name" value="Hidden Boy"/>
+    <property name="item" value="Guide To Do Collision // Computer // Brain"/>
+   </properties>
+  </object>
+  <object id="195" name="Quest_NPC" type="2" x="248" y="781" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="I have a quest for you. # Find the hidden boy and your mission will be complete"/>
+    <property name="Name" value="Village Child Potion"/>
+    <property name="item" value="Potion // Coffee // Cocaine"/>
    </properties>
   </object>
  </objectgroup>

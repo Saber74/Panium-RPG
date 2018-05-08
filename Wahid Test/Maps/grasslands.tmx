@@ -213,9 +213,13 @@
   </object>
   <object id="195" name="Quest_NPC" type="2" x="248" y="781" width="20" height="30">
    <properties>
-    <property name="Dialogue" value="I have a quest for you. # Find the hidden boy and your mission will be complete"/>
-    <property name="Name" value="Village Child Potion"/>
-    <property name="item" value="Potion // Coffee // Cocaine"/>
+    <property name="Complete" type="bool" value="false"/>
+    <property name="Dialogue" value="I have a quest for you. # Find the hidden boy and your mission will be complete."/>
+    <property name="Goal" value="Hidden Boy"/>
+    <property name="Key" value="Talk"/>
+    <property name="Name" value="Quest Tester"/>
+    <property name="Quest" type="bool" value="false"/>
+    <property name="item" value="Secret Journal"/>
    </properties>
   </object>
  </objectgroup>

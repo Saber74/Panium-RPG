@@ -29,6 +29,7 @@ gold = 100
 s = 5
 npc_item = {}
 c = 'NULL'
+quest_completion = {}
 menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
 dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
 currChar = "Crow"
@@ -55,6 +56,7 @@ def start_Screen():
 		display.flip() 
 	quit()
 def load_object(fname, chests, walls, portals):
+	global quest_completion
 	for tile_object in fname.objects:
 		if tile_object.name == 'wall':
 			obs = Obstacle(tile_object.x, tile_object.y, tile_object.width, tile_object.height)
@@ -71,6 +73,11 @@ def load_object(fname, chests, walls, portals):
 		elif tile_object.name == 'NPC':
 			npc = NPC(tile_object.x, tile_object.y, tile_object.type, tile_object.Dialogue, tile_object.item, tile_object.Name)	
 			npcs.add(npc)
+		elif tile_object.name == 'Quest_NPC':
+			quest_npc = Quest_NPC(tile_object.x, tile_object.y, tile_object.type, tile_object.Dialogue, tile_object.item, tile_object.Name, tile_object.Quest)	
+			if tile_object.Name not in quest_completion:
+				quest_completion[tile_object.Name] = [tile_object.Quest, tile_object.Key, tile_object.Goal, tile_object.Complete]
+			npcs.add(quest_npc)
 def levelSelect(lvl, chests, walls, portals):
 	if lvl == '0':
 		fname = load_pygame("Maps/STORE.tmx")
@@ -197,7 +204,8 @@ def save_dict():
 				 "inv": inventory,
 				 "Gold": gold,
 				 "npc_items": npc_item,
-				 "Current Charachter": currChar}
+				 "Current Charachter": currChar,
+				 "Quests": quest_completion}
 	item_value = {'Potion': 75,
 				  'Elixer': 50,
 				  'Sword': 25,
@@ -228,6 +236,8 @@ gold = load_dict()[0]["Gold"]
 npc_item = load_dict()[0]['npc_items']
 print(npc_item)
 currChar = load_dict()[0]["Current Charachter"]
+quest_completion = load_dict()[0]['Quests']
+print(quest_completion)
 
 Crow_HP = load_dict()[1]["HP"]
 
@@ -316,7 +326,7 @@ class NPC(sprite.Sprite):
 		self.sent = ''
 		self.n = 0
 		self.s = 100
-		self.text_y = 30
+		self.text_y = 60
 		if self.interact:
 			while self.display_text:
 				for evt in event.get():  
@@ -337,11 +347,12 @@ class NPC(sprite.Sprite):
 								self.prog += 1	
 								self.n = 0
 								self.sent = ''
-								self.text_y = 30
+								self.text_y = 60
 				mx,my=mouse.get_pos()
 				mb=mouse.get_pressed()
 				# print(mx,my)
 				screen.blit(dialogue_box, (0,0))
+				screen.blit(timesNewRomanFont.render(self.name + ':', True, (150,150,150)), (45,30))
 				self.split = self.speech.split(' // ')
 				if self.n == 0:
 					for i in self.split[self.prog]:
@@ -363,12 +374,13 @@ class NPC(sprite.Sprite):
 					self.n = 1	
 
 class Quest_NPC(sprite.Sprite):
-	def __init__(self, x, y, importance, speech, item, name):
+	def __init__(self, x, y, importance, speech, item, name, quest):
 		sprite.Sprite.__init__(self)
 		self.type = importance
 		self.speech = speech
 		self.item = item
 		self.name = name
+		self.quest = quest
 		self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
 		self.rect = self.image.get_rect()
 		self.interact = False
@@ -383,7 +395,7 @@ class Quest_NPC(sprite.Sprite):
 		self.sent = ''
 		self.n = 0
 		self.s = 100
-		self.text_y = 30
+		self.text_y = 60
 		if self.interact:
 			while self.display_text:
 				for evt in event.get():  
@@ -392,11 +404,11 @@ class Quest_NPC(sprite.Sprite):
 						self.disp = False
 					if evt.type == KEYDOWN:
 						if evt.key == K_z and self.prog == len(self.split) - 1:
-							if self.item != 'NULL' and self.name not in npc_item:
-								self.item_split = self.item.split(' // ')
-								for i in self.item_split:
-									inventory.append(i)
-								npc_item[self.name] = self.name
+							# if self.item != 'NULL' and self.name not in npc_item:
+							# 	self.item_split = self.item.split(' // ')
+							# 	for i in self.item_split:
+							# 		inventory.append(i)
+							# 	npc_item[self.name] = self.name
 							self.display_text = False
 							self.interact = False
 						if evt.key == K_SPACE:
@@ -404,11 +416,11 @@ class Quest_NPC(sprite.Sprite):
 								self.prog += 1	
 								self.n = 0
 								self.sent = ''
-								self.text_y = 30
+								self.text_y = 60
 				mx,my=mouse.get_pos()
 				mb=mouse.get_pressed()
-				# print(mx,my)
 				screen.blit(dialogue_box, (0,0))
+				screen.blit(timesNewRomanFont.render(self.name + ':', True, (150,150,150)), (45,30))
 				self.split = self.speech.split(' // ')
 				if self.n == 0:
 					for i in self.split[self.prog]:
@@ -566,6 +578,7 @@ while running:
 				inventory = []
 				openedChests = []
 				npc_item = {}
+				quest_completion = {}
 			if evt.key == K_b:
 				mode = 1 - mode	
 			if evt.key == K_o:
@@ -633,8 +646,6 @@ while running:
 		npc_interact = sprite.spritecollide(player, npcs, False)	
 		if npc_interact and kp[K_SPACE]:
 			npc_interact[0].display_speech(True, True)
-				
-
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			# print('s')

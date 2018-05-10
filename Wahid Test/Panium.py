@@ -54,6 +54,62 @@ def start_Screen():
 							  
 		display.flip() 
 	quit()
+def display_main_menu(Inventory, current_Character, mode):
+	m = transform.scale(image.load("img/menu/main_menu.png").convert_alpha(), (200, 500))
+	screen.blit(m, (100,50))
+	arrow_pos = 0
+	inventory_open = True
+	inv = list(Inventory)
+	while inventory_open:
+		for evt in event.get():  
+			if evt.type == KEYDOWN:
+				if evt.key == K_ESCAPE or evt.key == K_m:
+					if mode == "sell":
+						global c
+					arrow_pos += 1
+					return
+				if evt.key == K_UP:
+					arrow_pos -= 1
+				if evt.key == K_SPACE and len(inv) > 0:
+					if mode == 'inventory':
+						x = inv[arrow_pos]
+						y = x.split(" x")
+						for i in HP_items:
+							i = i.split(' ')
+							if y[0] in i:
+								print("HP +", i[1])
+								HP_Change(i[1])
+						del inv[arrow_pos]	
+						del inventory[inventory.index(y[0])]
+						inv = list(InventoryDisplay(current_Character, 1))
+					if mode == 'sell':
+						global gold
+						x = inv[arrow_pos]
+						y = x.split(" x")
+						try:
+							gold += load_dict()[3][y[0]]
+							print("You have gained", str(load_dict()[3][y[0]]), "gold!! Now you have", str(gold), "gold in total!!")
+						except:
+							gold += 100
+							print("You have gained", str(100), "gold!! Now you have", str(gold), "gold in total!!")
+						del inv[arrow_pos]	
+						del inventory[inventory.index(y[0])]
+						inv = list(InventoryDisplay(current_Character, 1))
+
+		count = 0			
+		screen.blit(m, (100,50))
+		for i in range(len(inv)):
+			count += 1
+			ItemName = medievalFont.render(inv[i], True, (0,0,0))
+			if arrow_pos == len(inv):
+				arrow_pos -= 1
+			if arrow_pos < 0:
+				arrow_pos += 1	
+			draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
+			screen.blit(ItemName, (470, 20 + 30 * count))
+		mx, my = mouse.get_pos()
+		# print(str(mx) + ', ' + str(my))
+		display.flip()	
 def load_object(fname, chests, walls, portals):
 	global quest_completion
 	for tile_object in fname.objects:
@@ -601,12 +657,13 @@ while running:
 			if evt.key == K_j:
 				# print(gold)	
 				print(quest_completion)	
+			if evt.key == K_m:
+				cm = cd[0]
+				display_main_menu(inventory, currChar, 'inventory')	
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
-	# print(myClock.get_fps())
-	# print(load_dict()[4])
 	# KEYBOARD MOVEMENT	
 	if mode == 0:
 		if currChar == "Crow":

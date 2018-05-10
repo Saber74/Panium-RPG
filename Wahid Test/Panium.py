@@ -437,6 +437,7 @@ class Quest_NPC(sprite.Sprite):
 		sprite.Sprite.__init__(self)
 		self.type = importance
 		self.speech = speech
+		print(self.speech)
 		self.item = item
 		self.name = name
 		self.quest = quest
@@ -459,6 +460,8 @@ class Quest_NPC(sprite.Sprite):
 		# if self.name in quest_completion and quest_completion[self.name][0] == 'false':
 		# 	quest_completion[self.name][0] = 'true'
 		# 	self.quest_speech = 1
+		if self.name in quest_completion and quest_completion[self.name][0] == 'true':
+			self.quest_speech = 1
 		if 	quest_completion[self.name][3] == 'true':
 			quest_completion[self.name][4] = 'true'
 			self.quest_speech = 2

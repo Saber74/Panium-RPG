@@ -5,6 +5,7 @@ import os
 import pickle as p
 WIDTH, HEIGHT = 800, 600 
 font.init()
+hi=False
 # WIDTH, HEIGHT = 1366, 768 
 size=(WIDTH, HEIGHT)
 os.environ['SDL_VIDEO_WINDOW_POS'] = '0,10'
@@ -37,6 +38,9 @@ currNum=0
 ########################################## USE IN FINAL PRODUCT ##########################################
 ######################################### Fighting Screen ################################################
 attackRect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0))
+attack1Rect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0))
+attack3Rect=Rect(round(WIDTH*2/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
+attack2Rect=Rect(round(WIDTH*1/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
 defenseRect=Rect(round(WIDTH*1/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
 itemRect=Rect(round(WIDTH*2/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
 ###########################################################################################
@@ -483,6 +487,9 @@ while running:
 					stage-=1
 			if evt.key==K_h:
 				stats[currNum][0]=30
+	if evt.type==MOUSEBUTTONUP:
+		if stage==1:
+			hi=True
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
@@ -715,7 +722,7 @@ while running:
 		############################################### BATTLE ###############################################
 		if turn == "Player" and stats[currNum][0] > 0 :
 			if stage==1:
-				if mb[0] and attackRect.collidepoint(mx,my) or kp[K_z]:
+				if hi and mb[0]and attackRect.collidepoint(mx,my) or kp[K_z]:
 					print(turn + "'s turn to attack!!")
 					for i in CrowZ:
 						FIGHTANIMATION(screen, enemy, battleBack)	
@@ -725,7 +732,8 @@ while running:
 					Enemy_HP -= Attack_DMG
 					turn = "Enemy"
 					stage=0
-				elif mb[0] and defenseRect.collidepoint(mx,my) or kp[K_x] and stats[currNum][-1]>=10:
+					hi=False
+				elif hi and mb[0] and defenseRect.collidepoint(mx,my) or kp[K_x] and stats[currNum][-1]>=10:
 					for i in CrowX:
 						FIGHTANIMATION(screen, enemy, battleBack)	
 						screen.blit(i,(300,100))
@@ -735,7 +743,7 @@ while running:
 					Enemy_HP -= Attack_DMG
 					turn = "Enemy"
 					stage=0
-				elif mb[0] and itemRect.collidepoint(mx,my) or kp[K_c] and stats[currNum][-1]>=5:
+				elif hi and mb[0] and itemRect.collidepoint(mx,my) or kp[K_c] and stats[currNum][-1]>=5:
 					for i in CrowC:
 						FIGHTANIMATION(screen, enemy, battleBack)	
 						screen.blit(i,(300,100))
@@ -767,4 +775,5 @@ while running:
 	# DRAW / RENDER         
 	display.flip()
 	myClock.tick(FPS)
+	print(hi)
 quit()

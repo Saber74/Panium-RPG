@@ -14,25 +14,19 @@ screen = display.set_mode(size)
 fireFont=font.Font("Breathe Fire.otf",30)
 #######################################fonts##############################
 #############battle variables
-dmg=0
 Enemy_HP=100
-hp=0
-defense=0
-magicdmg=0
-magicdefense=0
-luck=0
-mana=0
 charNum=0
 stage=0
-################# entry and openning pic and gif"""""""""""""""""""""''
+currNum=0
+################ entry and openning pic and gif"""""""""""""""""""""''
 # for i in range(0,71):
 # 	screen.fill((37,34,39))
 # 	screen.blit(image.load("Entry\output-%i.png"%i),(100,75))
 # 	display.update()
-# 	time.wait(100)
-#####rects
+	# time.wait(100)
+# #####rects
 # newGamerect=Rect(WIDTH//2-120,HEIGHT//2-30,200,75)
-# screen.blit(transform.scale(image.load("option2.jpg"),(WIDTH,HEIGHT)),(0,0))
+# screen.blit(transform.scale(image.load("option1.jpg"),(WIDTH,HEIGHT)),(0,0))
 # draw.rect(screen,(0,0,0),newGamerect,0)
 # display.update()
 # time.wait(5000)
@@ -50,7 +44,7 @@ myClock = time.Clock()
 FPS = 60
 x = y = n = 0
 save = False
-Player_HP = 40
+# stats[currNum][0] = 40
 battleAnimation=[]
 pressed = "NULL"
 frame = 0
@@ -233,20 +227,8 @@ def save_dict():
 				 "Gold": gold,
 				 "Current Charachter": currChar}
 
-	crow_data = {"HP": Crow_HP,
-				 "Attack": 7,
-				 "Defense": 5,
-				 "Magic Attack": 5,
-				 "Magic Defense": 5,
-				 "Dexterity": 1,
-				 "Mana": 100}	  	 
-	raven_data = {"HP": Raven_HP,
-				 "Attack": 0,
-				 "Defense": 0,
-				 "Magic Attack": 0,
-				 "Magic Defense": 0,
-				 "Dexterity":0,
-				 "Mana": 0}
+	crow_data = {'Crow': stats[0]}	 #'''stats are: Health,dmg,defense,Magic dmg,magic defence,mana''' 	 
+	raven_data = {"Raven": stats[1]}
 	item_value = {'Potion': 75,
 				  'Elixer': 50,
 				  'Sword': 25,
@@ -263,9 +245,6 @@ inventory = load_dict()[0]["inv"]
 gold = load_dict()[0]["Gold"]
 currChar = load_dict()[0]["Current Charachter"]
 
-Crow_HP = load_dict()[1]["HP"]
-
-Raven_HP = load_dict()[2]["HP"]
 
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
@@ -502,6 +481,8 @@ while running:
 			if evt.key==K_a:
 				if stage>0:
 					stage-=1
+			if evt.key==K_h:
+				stats[currNum][0]=30
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
@@ -510,10 +491,10 @@ while running:
 	if mode == 0:
 		if currChar == "Crow":
 			cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
-			currNum=1
+			currNum=0
 		elif currChar == "Raven":
 			cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
-			currNum=2
+			currNum=1
 		if kp[K_RIGHT]:
 			x_diff -= pan
 			R = True
@@ -559,21 +540,35 @@ while running:
 		npc_interact = sprite.spritecollide(player, npcs, False)	
 		if npc_interact:
 			print('npc')
-
+		draw.rect(screen,(255,255,255),Rect(player.rect.centerx,player.rect.bottom,100,10))
+		display.update()
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
-			# print('s')
-			# h = hit[0]
-			# if h.rect.collidepoint((player.rect.centerx, player.rect.bottom -20)):
-				# if player.rect.x > h.rect.x and L and not U and not D and not R:
-					# pan = 0
-				# elif player.rect.x < h.rect.x and R and not L and not U and not D:
-					# pan = 0
+			print('s')
+			print(hit)
+			h = hit[0]
+			if h.rect.collidepoint((player.rect.centerx, player.rect.bottom)):
+				if L:
+					if player.rect.centerx>h.rect.x:
+						pan=0
+				elif R:
+					if player.rect.centerx<h.rect.x:
+						pan=0
+				elif U:
+					if player.rect.bottom>h.rect.y:
+						pan=0
+				elif D:
+					if player.rect.bottom<h.rect.y:
+						pan=0
+				# if player.rect.x > h.rect.x and L:
+				# 	pan = 0
+				# elif player.rect.x < h.rect.x and R :
+				# 	pan = 0
 
-				# if player.rect.y > h.rect.y and U and not D and not R and not L:
-					# pan = 0
-				# elif player.rect.y < h.rect.y and D and not U and not R and not L:
-					# pan = 0	
+				# if player.rect.y > h.rect.y and U :
+				# 	pan = 0
+				# elif player.rect.y < h.rect.y and D :
+				# 	pan = 0	
 			pass		
 		tel = sprite.spritecollide(player, portals, False)
 		if tel:
@@ -611,13 +606,7 @@ while running:
 
 		##############################################Player Stat applying
 
-		dmg= load_dict()[currNum]["Attack"]
-		defense=load_dict()[currNum]["Defense"]
-		magicdmg=load_dict()[currNum]["Magic Attack"]
-		magicdefense=load_dict()[currNum]["Magic Defense"]
-		luck=load_dict()[currNum]["Dexterity"]
-		mana=load_dict()[currNum]["Mana"]
-
+		stats = [load_dict()[1]["Crow"], load_dict()[2]["Raven"]]
 
 		########################################### MOVEMENT ANIMATION ###########################################
 		if U:
@@ -640,11 +629,7 @@ while running:
 		########################################### MOVEMENT ANIMATION ###########################################
 	else:
 		if mode == 1:
-			t = r(0,1)
-			if t == 0:
-				turn = "Player"	
-			else:
-				turn = "Enemy"	
+			turn = "Player"		
 			print(turn,"GOES FIRST!!!")	
 			Enemy_HP = 100
 			print("PRESS SPACE TO ATTACK")
@@ -659,21 +644,21 @@ while running:
 		draw.rect(screen,(46,50,128),attackRect,0)
 		draw.rect(screen,(255,255,255),defenseRect,0)
 		draw.rect(screen,(210,75,146),itemRect,0)
-		for i in range(Player_HP//2):
+		for i in range(stats[currNum][0]//2):
 			draw.rect(screen,(255,0,0),Rect(x,round(HEIGHT*6/8),10,15))
 			x+=13
 		x=0
-		hpText=str("Player HP:%i"%Player_HP)
+		hpText=str("Player HP:"+str(stats[currNum][0]))
 		hpEdit=fireFont.render(hpText,True,(0,200,0))
 		screen.blit(hpEdit,(0,round(HEIGHT*6/8-40,0)))
-		for i in range(mana//2):
+		for i in range(stats[currNum][5]//2):
 			draw.rect(screen,(0,0,255),Rect(x,round(HEIGHT*6/8+50),10,15))
 			x+=13
 		x=0
-		manaText=str("Player Mana:%i"%mana)
+		manaText=str("Player Mana: "+str(stats[currNum][5]))
 		manaEdit=fireFont.render(manaText,True,(0,200,0))
 		screen.blit(manaEdit,(0,round(HEIGHT*6/8+20)))
-		enemyhp=str("name of enemy HP:%i"%Enemy_HP)
+		enemyhp=str("name of enemy HP: "+str(Enemy_HP))
 		enemyhpEdit=fireFont.render(enemyhp,True,(0,200,0))
 		screen.blit(enemyhpEdit,(0,0))
 		count=0
@@ -717,18 +702,18 @@ while running:
 			screen.blit(edit2,(round(50+WIDTH*1/3,0),round(HEIGHT*7/8+15,0)))
 			screen.blit(edit3,(round(WIDTH*2/3+50,0),round(HEIGHT*7/8+15,0)))
 			if attackRect.collidepoint(mx,my):
-				Attack_DMG = dmg*4
-				print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
+				Attack_DMG = stats[currNum][1]*4
+				print("Your attack will do",Attack_DMG,"damage to the enemy!!")	###[1 is dmg][3 is magic dmg]
 			elif defenseRect.collidepoint(mx,my):
-				Attack_DMG = magicdmg*5
-				print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
+				Attack_DMG = stats[currNum][3]*5
+				print("Your attack will do",Attack_DMG,"damage to the enemy!!") ###[1 is dmg][3 is magic dmg]	
 			elif itemRect.collidepoint(mx,my):
-				Attack_DMG = dmg*2+ magicdmg*2		
+				Attack_DMG = stats[currNum][3]*3+stats[currNum][1]*3	###[1 is dmg][3 is magic dmg]	
 				print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
 		########################################## ATTACK SELECTION ##########################################
 
 		############################################### BATTLE ###############################################
-		if turn == "Player" and Player_HP > 0 :
+		if turn == "Player" and stats[currNum][0] > 0 :
 			if stage==1:
 				if mb[0] and attackRect.collidepoint(mx,my) or kp[K_z]:
 					print(turn + "'s turn to attack!!")
@@ -740,23 +725,23 @@ while running:
 					Enemy_HP -= Attack_DMG
 					turn = "Enemy"
 					stage=0
-				elif mb[0] and defenseRect.collidepoint(mx,my) or kp[K_x] and mana>=10:
+				elif mb[0] and defenseRect.collidepoint(mx,my) or kp[K_x] and stats[currNum][-1]>=10:
 					for i in CrowX:
 						FIGHTANIMATION(screen, enemy, battleBack)	
 						screen.blit(i,(300,100))
 						time.wait(50)
 						display.flip()
-					mana-=10
+					stats[currNum][-1]-=10
 					Enemy_HP -= Attack_DMG
 					turn = "Enemy"
 					stage=0
-				elif mb[0] and itemRect.collidepoint(mx,my) or kp[K_c] and mana>=5:
+				elif mb[0] and itemRect.collidepoint(mx,my) or kp[K_c] and stats[currNum][-1]>=5:
 					for i in CrowC:
 						FIGHTANIMATION(screen, enemy, battleBack)	
 						screen.blit(i,(300,100))
 						time.wait(50)
 						display.flip()
-					mana-=5
+					stats[currNum][-1]
 					Enemy_HP -= Attack_DMG
 					turn = "Enemy"
 					stage=0
@@ -764,41 +749,21 @@ while running:
 			# elif stage==3:
 
 
-		# elif kp[K_x]:
-		# 	print(turn + "'s turn to attack!!")
-		# 	for i in CrowX:
-		# 		FIGHTANIMATION(screen, enemy, battleBack)	
-		# 		screen.blit(i,(300,100))
-		# 		time.wait(50)
-		# 		display.flip()
-		# 	Enemy_HP -= Attack_DMG
-		# 	print("Enemy HP:",Enemy_HP)
-		# 	turn = "Enemy"
-		# elif turn == "Player" and Player_HP > 0 and kp[K_c]:
-		# 	print(turn + "'s turn to attack!!")
-		# 	for i in CrowC:
-		# 		FIGHTANIMATION(screen, enemy, battleBack)	
-		# 		screen.blit(i,(300,100))
-		# 		time.wait(50)
-		# 		display.flip()
-		# 	Enemy_HP -= Attack_DMG
-		# 	print("Enemy HP:",Enemy_HP)
 		if turn == "Enemy" and Enemy_HP > 0:
 			time.wait(100)
-
 			print(turn + "'s turn to attack!!")
-			Player_HP -= 10
-			print("Player HP:",Player_HP)	
+			stats[currNum][0] -= stats[currNum][1]*3//stats[currNum][2] ###20 is enemy damage and must be changed soon
+			print("Player HP:",stats[currNum][0])	
 			turn = "Player"
-		if Player_HP <= 0 or Enemy_HP <= 0:	
-			if Player_HP <= 0:
+		if stats[currNum][0] <= 0 or Enemy_HP <= 0:	
+			if stats[currNum][0] <= 0:
 				print("YOU LOST!!")		
 			elif Enemy_HP <= 0:	
 				print("YOU WON!!")		
-			elif Player_HP <= 0 and Enemy_HP <= 0:
+			elif stats[currNum][0] <= 0 and Enemy_HP <= 0:
 				print("YOU LOST!!")		
 			mode = 0	
-		############################################### BATTLE ###############################################
+		##################################stage############# BATTLE ###############################################
 	# DRAW / RENDER         
 	display.flip()
 	myClock.tick(FPS)

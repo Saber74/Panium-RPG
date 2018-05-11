@@ -282,7 +282,7 @@ Raven_HP = load_dict()[2]["HP"]
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
-cm = image.load("SPRITES/Crow/Walk/Forward/Forward-0.png").convert_alpha()
+cm = image.load("SPRITES/Crow/Walk/Forward/0.png").convert_alpha()
 chest_open = []
 
 ############################################### ATTACK ANIMATIONS ###############################################
@@ -299,11 +299,11 @@ tier4 = ['Wind Staff', 'Wind Staff']
 ############################################# POSSIBLE CHEST ITEMS #############################################
 
 ############################################ LOADING MAP AND SPRITES ############################################
-for i in range(9):
-	crowWalkForward.append(image.load("SPRITES/Crow/Walk/Forward/Forward-%i.png" % (i + 1)).convert_alpha())
-	crowWalkRight.append(image.load("SPRITES/Crow/Walk/Right/Right-%i.png" % (i + 1)).convert_alpha())	
-	crowWalkDown.append(image.load("SPRITES/Crow/Walk/Back/Back-%i.png" % (i + 1)).convert_alpha())	
-	crowWalkLeft.append(image.load("SPRITES/Crow/Walk/Left/Left-%i.png" % (i + 1)).convert_alpha())	
+for i in range(3):
+	crowWalkForward.append(image.load("SPRITES/Crow/Walk/Forward/%i.png" % i).convert_alpha())
+	crowWalkRight.append(image.load("SPRITES/Crow/Walk/Right/%i.png" % i).convert_alpha())	
+	crowWalkDown.append(image.load("SPRITES/Crow/Walk/Back/%i.png" % i).convert_alpha())	
+	crowWalkLeft.append(image.load("SPRITES/Crow/Walk/Left/%i.png" % i).convert_alpha())	
 	########
 	ravenWalkForward.append(image.load("SPRITES/Raven/Walk/Up/%i.png" % i).convert_alpha())
 	ravenWalkRight.append(image.load("SPRITES/Raven/Walk/Right/%i.png" % i).convert_alpha())
@@ -650,8 +650,12 @@ while running:
 				elif pressed == "RIGHT":
 					cm = cr[0]
 				display_main_menu()
+		if evt.type == MOUSEBUTTONUP:
+			if evt.button == 1:
+				print("left click")		
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
+	print(x_diff,y_diff)
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
 	# KEYBOARD MOVEMENT	

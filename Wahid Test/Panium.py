@@ -54,62 +54,44 @@ def start_Screen():
 							  
 		display.flip() 
 	quit()
-def display_main_menu(Inventory, current_Character, mode):
-	m = transform.scale(image.load("img/menu/main_menu.png").convert_alpha(), (200, 500))
-	screen.blit(m, (100,50))
+def display_main_menu():
+	screen_back = screen.copy()
+	menu = transform.scale(image.load("img/menu/main_menu.png").convert_alpha(), (200, 500))
+	screen.blit(screen_back, (0,0))
+	screen.blit(menu, (100,50))
 	arrow_pos = 0
 	inventory_open = True
-	inv = list(Inventory)
+	options = ['Inventory', 'stuff2', 'stuff3', 'stuff4']
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
 				if evt.key == K_ESCAPE or evt.key == K_m:
 					if mode == "sell":
 						global c
-					arrow_pos += 1
 					return
+				if evt.key == K_DOWN:	
+					arrow_pos += 1
 				if evt.key == K_UP:
 					arrow_pos -= 1
-				if evt.key == K_SPACE and len(inv) > 0:
-					if mode == 'inventory':
-						x = inv[arrow_pos]
-						y = x.split(" x")
-						for i in HP_items:
-							i = i.split(' ')
-							if y[0] in i:
-								print("HP +", i[1])
-								HP_Change(i[1])
-						del inv[arrow_pos]	
-						del inventory[inventory.index(y[0])]
-						inv = list(InventoryDisplay(current_Character, 1))
-					if mode == 'sell':
-						global gold
-						x = inv[arrow_pos]
-						y = x.split(" x")
-						try:
-							gold += load_dict()[3][y[0]]
-							print("You have gained", str(load_dict()[3][y[0]]), "gold!! Now you have", str(gold), "gold in total!!")
-						except:
-							gold += 100
-							print("You have gained", str(100), "gold!! Now you have", str(gold), "gold in total!!")
-						del inv[arrow_pos]	
-						del inventory[inventory.index(y[0])]
-						inv = list(InventoryDisplay(current_Character, 1))
-
+				if evt.key == K_SPACE and len(options) > 0:
+					print(options[arrow_pos])
+					if options[arrow_pos] == 'Inventory':
+						InventoryDisplay(currChar, 0)
 		count = 0			
-		screen.blit(m, (100,50))
-		for i in range(len(inv)):
+		screen.blit(screen_back, (0,0))
+		screen.blit(menu, (100,50))
+		for i in range(len(options)):
 			count += 1
-			ItemName = medievalFont.render(inv[i], True, (0,0,0))
-			if arrow_pos == len(inv):
+			optionName = medievalFont.render(options[i], True, (0,0,0))
+			if arrow_pos == len(options):
 				arrow_pos -= 1
 			if arrow_pos < 0:
 				arrow_pos += 1	
-			draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
-			screen.blit(ItemName, (470, 20 + 30 * count))
+			draw.circle(screen, (0,0,0), (110,75 + 30 * arrow_pos), 6)
+			screen.blit(optionName, (120, 30 + 30 * count))
 		mx, my = mouse.get_pos()
 		# print(str(mx) + ', ' + str(my))
-		display.flip()	
+		display.flip()
 def load_object(fname, chests, walls, portals):
 	global quest_completion
 	for tile_object in fname.objects:
@@ -289,7 +271,6 @@ openedChests = load_dict()[0]["Chests"]
 inventory = load_dict()[0]["inv"]
 gold = load_dict()[0]["Gold"]
 npc_item = load_dict()[0]['npc_items']
-print(npc_item)
 currChar = load_dict()[0]["Current Charachter"]
 quest_completion = load_dict()[0]['Quests']
 print(quest_completion)
@@ -437,7 +418,6 @@ class Quest_NPC(sprite.Sprite):
 		sprite.Sprite.__init__(self)
 		self.type = importance
 		self.speech = speech
-		print(self.speech)
 		self.item = item
 		self.name = name
 		self.quest = quest
@@ -661,8 +641,15 @@ while running:
 				# print(gold)	
 				print(quest_completion)	
 			if evt.key == K_m:
-				cm = cd[0]
-				display_main_menu(inventory, currChar, 'inventory')	
+				if pressed == "UP":
+					cm = cf[0]
+				elif pressed == "DOWN":
+					cm = cd[0]
+				elif pressed == "LEFT":
+					cm = cl[0]
+				elif pressed == "RIGHT":
+					cm = cr[0]
+				display_main_menu()
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()

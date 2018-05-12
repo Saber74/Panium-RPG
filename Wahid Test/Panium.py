@@ -282,7 +282,7 @@ Raven_HP = load_dict()[2]["HP"]
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
-cm = image.load("SPRITES/Crow/Walk/Forward/0.png").convert_alpha()
+cm = image.load("SPRITES/Crow/Walk/Up/0.png").convert_alpha()
 chest_open = []
 
 ############################################### ATTACK ANIMATIONS ###############################################
@@ -300,9 +300,9 @@ tier4 = ['Wind Staff', 'Wind Staff']
 
 ############################################ LOADING MAP AND SPRITES ############################################
 for i in range(3):
-	crowWalkForward.append(image.load("SPRITES/Crow/Walk/Forward/%i.png" % i).convert_alpha())
+	crowWalkForward.append(image.load("SPRITES/Crow/Walk/Up/%i.png" % i).convert_alpha())
 	crowWalkRight.append(image.load("SPRITES/Crow/Walk/Right/%i.png" % i).convert_alpha())	
-	crowWalkDown.append(image.load("SPRITES/Crow/Walk/Back/%i.png" % i).convert_alpha())	
+	crowWalkDown.append(image.load("SPRITES/Crow/Walk/Down/%i.png" % i).convert_alpha())	
 	crowWalkLeft.append(image.load("SPRITES/Crow/Walk/Left/%i.png" % i).convert_alpha())	
 	########
 	ravenWalkForward.append(image.load("SPRITES/Raven/Walk/Up/%i.png" % i).convert_alpha())
@@ -771,13 +771,13 @@ while running:
 			cm = cl[frame]
 		else:
 			if pressed == "UP" or pressed == "NULL":
-				cm = cf[0]
+				cm = cf[1]
 			elif pressed == "DOWN":
-				cm = cd[0]
+				cm = cd[1]
 			elif pressed == "LEFT":
-				cm = cl[0]
+				cm = cl[1]
 			elif pressed == "RIGHT":
-				cm = cr[0]
+				cm = cr[1]
 		########################################### MOVEMENT ANIMATION ###########################################
 	else:
 		if mode == 1:

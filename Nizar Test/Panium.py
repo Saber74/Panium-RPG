@@ -16,6 +16,7 @@ fireFont=font.Font("Breathe Fire.otf",30)
 #######################################fonts##############################
 #############battle variables
 Enemy_HP=100
+xp=0
 charNum=0
 stage=0
 currNum=0
@@ -487,6 +488,8 @@ while running:
 					stage-=1
 			if evt.key==K_h:
 				stats[currNum][0]=30
+			if evt.key==K_m:
+				stage=10
 	if evt.type==MOUSEBUTTONUP:
 		if stage==1:
 			hi=True
@@ -494,6 +497,9 @@ while running:
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
+		# xp+=10
+		# screen.fill((255,255,255))
+		# screen.blit(image.load("pvw1854.png"),(WIDTH//4,HEIGHT//3))
 	# KEYBOARD MOVEMENT	
 	if mode == 0:
 		if currChar == "Crow":
@@ -767,7 +773,7 @@ while running:
 			if stats[currNum][0] <= 0:
 				print("YOU LOST!!")		
 			elif Enemy_HP <= 0:	
-				print("YOU WON!!")		
+				print("YOU WON!!")	
 			elif stats[currNum][0] <= 0 and Enemy_HP <= 0:
 				print("YOU LOST!!")		
 			mode = 0	
@@ -776,4 +782,5 @@ while running:
 	display.flip()
 	myClock.tick(FPS)
 	print(hi)
+
 quit()

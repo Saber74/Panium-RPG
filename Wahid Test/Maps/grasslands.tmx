@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="198">
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="201">
  <tileset firstgid="1" name="Revolution_Grasslands" tilewidth="32" tileheight="32" tilecount="190" columns="10">
   <image source="revolution_grasslands.png" trans="a349a4" width="320" height="608"/>
   <tile id="5">
@@ -244,6 +244,20 @@
     <property name="Dialogue" value="HALLLOO"/>
     <property name="Name" value="Stupid Boy"/>
     <property name="item" value="NULL"/>
+   </properties>
+  </object>
+  <object id="200" name="Quest_NPC" type="0" x="1007" y="864" width="20" height="30">
+   <properties>
+    <property name="Complete" type="bool" value="false"/>
+    <property name="Dialogue" value="Hi, I am the Grasslands Manager. I have a quest for you. # Go to the Desert and talk to the Desert Manager."/>
+    <property name="DialogueFinish" value="Welcome to the grasslands!"/>
+    <property name="DialogueQuest" value="The portal for the Desert is right in front of you."/>
+    <property name="Goal" value="Desert Manager"/>
+    <property name="Key" value="Talk"/>
+    <property name="Name" value="Grasslands Manager"/>
+    <property name="Quest" type="bool" value="false"/>
+    <property name="Received" type="bool" value="false"/>
+    <property name="item" value="Secret Journal"/>
    </properties>
   </object>
  </objectgroup>

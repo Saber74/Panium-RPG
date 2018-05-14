@@ -1,10 +1,10 @@
-from pygame import * 	
+from pygame import *
 from pytmx import *
 from random import randint as r
 import os
 import pickle as p
 WIDTH, HEIGHT = 800, 600 
-# WIDTH, HEIGHT = 1366, 768 
+# WIDTH, HEIGHT = 1366, 768
 size=(WIDTH, HEIGHT)
 os.environ['SDL_VIDEO_WINDOW_POS'] = '0,10'
 screen = display.set_mode(size)
@@ -29,7 +29,8 @@ gold = 100
 s = 5
 npc_item = {}
 c = 'NULL'
-menu_base = transform.scale(image.load("img/menu/selction.png").convert_alpha(),(WIDTH, HEIGHT))
+quit_stat = ''
+menu_base = transform.scale(image.load("img/menu/selection.png").convert_alpha(),(WIDTH, HEIGHT))
 dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
 currChar = "Crow"
 HP_items = ["Potion 50", "Meat 100", "Poison -50"]
@@ -55,19 +56,18 @@ def start_Screen():
 		display.flip() 
 	quit()
 def display_main_menu():
+	global running
 	screen_back = screen.copy()
 	menu = transform.scale(image.load("img/menu/main_menu.png").convert_alpha(), (200, 500))
 	screen.blit(screen_back, (0,0))
 	screen.blit(menu, (100,50))
 	arrow_pos = 0
 	inventory_open = True
-	options = ['Inventory', 'stuff2', 'stuff3', 'stuff4']
+	options = ['Inventory', 'stuff2', 'stuff3', 'stuff4', 'Exit', 'Quit']
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYDOWN:
 				if evt.key == K_ESCAPE or evt.key == K_m:
-					if mode == "sell":
-						global c
 					return
 				if evt.key == K_DOWN:	
 					arrow_pos += 1
@@ -77,6 +77,12 @@ def display_main_menu():
 					print(options[arrow_pos])
 					if options[arrow_pos] == 'Inventory':
 						InventoryDisplay(currChar, 0)
+					if options[arrow_pos] == 'Exit':
+						return
+					if options[arrow_pos] == 'Quit':
+						global quit_stat
+						quit_stat = 'quit'
+						return
 		count = 0			
 		screen.blit(screen_back, (0,0))
 		screen.blit(menu, (100,50))
@@ -216,6 +222,9 @@ def display_inventory(Inventory, current_Character, mode):
 			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
 		mx, my = mouse.get_pos()
 		# print(str(mx) + ', ' + str(my))
+		ass = screen.get_at((mx,my))
+		if ass == (0,0,0,255):
+			print(ass)
 		display.flip()
 
 	arrow_pos = 0
@@ -595,7 +604,7 @@ class Chest(sprite.Sprite):
 			print(self.c[item], "has been obtained!!")
 			del self.c[item]
 			openedChests.append(self.name)
-all_sprites = sprite.Group()                                 
+all_sprites = sprite.Group()
 walls = sprite.Group()
 chests = sprite.Group()
 portals = sprite.Group()
@@ -650,15 +659,13 @@ while running:
 				elif pressed == "RIGHT":
 					cm = cr[0]
 				display_main_menu()
-		if evt.type == MOUSEBUTTONUP:
-			if evt.button == 1:
-				print("left click")		
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
-	print(x_diff,y_diff)
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
 	# KEYBOARD MOVEMENT	
+	if quit_stat == 'quit':
+		running = False
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = Crow_HP
@@ -835,9 +842,9 @@ while running:
 				print("YOU WON!!")		
 			elif Player_HP <= 0 and Enemy_HP <= 0:
 				print("YOU LOST!!")		
-			mode = 0	
+			mode = 0
 		############################################### BATTLE ###############################################
-	# DRAW / RENDER         
+	# DRAW / RENDER
 	display.flip()
 	myClock.tick(FPS)
 quit()

@@ -43,8 +43,8 @@
   </object>
   <object id="8" name="NPC" type="2" x="1730" y="884" width="20" height="30">
    <properties>
-    <property name="Dialogue" value="This is the portal to the grasslands"/>
-    <property name="Name" value="generic"/>
+    <property name="Dialogue" value="Welcome to the Grasslands"/>
+    <property name="Name" value="Desert Manager"/>
     <property name="item" value="NULL"/>
    </properties>
   </object>

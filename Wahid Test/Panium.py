@@ -63,12 +63,10 @@ def display_main_menu():
 	screen.blit(menu, (100,50))
 	arrow_pos = 0
 	inventory_open = True
-	options = ['Inventory', 'stuff2', 'stuff3', 'stuff4', 'Exit', 'Quit']
+	options = ['Inventory', 'Statistics', 'Quests', 'Save', 'Exit', 'Quit']
 	while inventory_open:
 		for evt in event.get():  
-			if evt.type == KEYDOWN:
-				if evt.key == K_ESCAPE or evt.key == K_m:
-					return
+			if evt.type == KEYUP:
 				if evt.key == K_DOWN:	
 					arrow_pos += 1
 				if evt.key == K_UP:
@@ -83,6 +81,8 @@ def display_main_menu():
 						global quit_stat
 						quit_stat = 'quit'
 						return
+					if options[arrow_pos] == 'Save':
+						save_dict()	
 		count = 0			
 		screen.blit(screen_back, (0,0))
 		screen.blit(menu, (100,50))
@@ -105,7 +105,7 @@ def load_object(fname, chests, walls, portals):
 			obs = Obstacle(tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 			walls.add(obs)
 		elif tile_object.name == 'chest':
-			chest = Chest(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type, tile_object.ChestName)	
+			chest = Chest(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type, tile_object.ChestName, tile_object.Item)	
 			chests.add(chest)
 		elif tile_object.name == "Portal":
 			port = Portal(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type)	
@@ -299,13 +299,6 @@ Darkness1 = []
 for i in range(22):
 	Darkness1.append(image.load("SPRITES/Crow Attacks/%i.png" % i).convert_alpha())
 ############################################### ATTACK ANIMATIONS ###############################################
-
-############################################# POSSIBLE CHEST ITEMS #############################################
-tier1 = ["Potion", "Sword", "Shield", "Elixir", "Poison"]
-tier2 = ['Lightening Essence','Lightening Essence']
-tier3 = ['Sword of Water', 'Sword of Lightening', "Sword of Fire"]
-tier4 = ['Wind Staff', 'Wind Staff']
-############################################# POSSIBLE CHEST ITEMS #############################################
 
 ############################################ LOADING MAP AND SPRITES ############################################
 for i in range(3):
@@ -574,35 +567,25 @@ class Store_Clerk(sprite.Sprite):
 			display.flip()	
 
 class Chest(sprite.Sprite):
-	def __init__(self, x, y, w, h, tier, name):
+	def __init__(self, x, y, w, h, tier, name, item):
 		sprite.Sprite.__init__(self)
 		self.tier = tier
 		self.name = name
 		self.opened = False
+		self.item = item
 		self.images = [image.load("SPRITES/Chest/Tier" + str(self.tier) + "/0.png"),
 					   image.load("SPRITES/Chest/Tier" + str(self.tier) + "/1.png")]
 		self.prev_image = self.image = self.images[0] ; self.rect = Rect(x, y, w, h)
 		if self.name in openedChests:
 			self.image = self.images[1] 
 		self.x, self.y = x, y
-		self.c = tier1
 	def update(self):
 		global chest_open
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
 		if self.image == self.prev_image and self.opened and kp[K_SPACE]:
 			self.image = self.images[1]
-			if self.tier == '1':
-				self.c = tier1
-			elif self.tier == '2':	
-				self.c = tier2
-			elif self.tier == '3':
-				self.c = tier3
-			elif self.tier == '4':
-				self.c = tier4
-			item = r(0, len(self.c) - 1)
-			inventory.append(self.c[item])
-			print(self.c[item], "has been obtained!!")
-			del self.c[item]
+			inventory.append(self.item)
+			print(self.item, "has been obtained!!")
 			openedChests.append(self.name)
 all_sprites = sprite.Group()
 walls = sprite.Group()
@@ -623,9 +606,9 @@ while running:
 		if evt.type == QUIT: 
 			save_dict()
 			running = False
-		if evt.type == KEYDOWN:
+		if evt.type == KEYUP:
 			if evt.key == K_ESCAPE:
-				save_dict()
+				# save_dict()
 				running = False    	
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
@@ -633,8 +616,6 @@ while running:
 			if evt.key == K_2:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 				currChar = "Raven"
-			if evt.key == K_i:
-				InventoryDisplay(currChar, 0)
 			if evt.key == K_q:
 				inventory = []
 				openedChests = []

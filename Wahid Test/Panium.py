@@ -56,7 +56,6 @@ def start_Screen():
 		display.flip() 
 	quit()
 def display_main_menu():
-	global running
 	screen_back = screen.copy()
 	menu = transform.scale(image.load("img/menu/main_menu.png").convert_alpha(), (200, 500))
 	screen.blit(screen_back, (0,0))
@@ -67,6 +66,8 @@ def display_main_menu():
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYUP:
+				if evt.key == K_ESCAPE:
+					return
 				if evt.key == K_DOWN:	
 					arrow_pos += 1
 				if evt.key == K_UP:
@@ -98,6 +99,19 @@ def display_main_menu():
 		mx, my = mouse.get_pos()
 		# print(str(mx) + ', ' + str(my))
 		display.flip()
+def display_quest():
+	quest_thang = True
+	while quest_thang:
+
+		for evt in event.get():  
+			if evt.type == QUIT: 
+				quest_thang = False
+
+		mx,my=mouse.get_pos()
+		mb=mouse.get_pressed()
+							  
+		display.flip() 
+	quit()
 def load_object(fname, chests, walls, portals):
 	global quest_completion
 	for tile_object in fname.objects:
@@ -229,8 +243,11 @@ def display_inventory(Inventory, current_Character, mode):
 
 	arrow_pos = 0
 def HP_Change(HP):
-	global Crow_HP
-	Crow_HP += int(HP)
+	global Char_Stats
+	if currChar == 'Crow':
+		Char_Stats[0][2] += int(HP)
+	if currChar == 'Raven':
+		Char_Stats[1][2] += int(HP)
 # def Gold_Change(Gold):
 # 	global gold
 # 	gold += Gold	
@@ -257,18 +274,8 @@ def save_dict():
 				  'Sword': 25,
 				  'Shield': 25}  	 			  
 
-	crow_data = {"HP": Crow_HP,
-				 "Attack": 0,
-				 "Defense": 0,
-				 "Magic Attack": 0,
-				 "Magic Defense": 0,
-				 "Dexterity": 0}	  	 
-	raven_data = {"HP": Raven_HP,
-				 "Attack": 0,
-				 "Defense": 0,
-				 "Magic Attack": 0,
-				 "Magic Defense": 0,
-				 "Dexterity": 0}
+	crow_data = {"Stats": Char_Stats[0]}	  	 
+	raven_data = {"Stats": Char_Stats[1]}	  	 
 	p.dump(prog_data, open("prog.dat", "wb"))
 	p.dump(crow_data, open("crow_stats.dat", "wb"))	
 	p.dump(raven_data, open("raven_stats.dat", 'wb'))
@@ -284,10 +291,7 @@ currChar = load_dict()[0]["Current Charachter"]
 quest_completion = load_dict()[0]['Quests']
 print(quest_completion)
 
-Crow_HP = load_dict()[1]["HP"]
-
-Raven_HP = load_dict()[2]["HP"]
-
+Char_Stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
@@ -439,9 +443,6 @@ class Quest_NPC(sprite.Sprite):
 		self.n = 0
 		self.s = 100
 		self.text_y = 60
-		# if self.name in quest_completion and quest_completion[self.name][0] == 'false':
-		# 	quest_completion[self.name][0] = 'true'
-		# 	self.quest_speech = 1
 		if self.name in quest_completion and quest_completion[self.name][0] == 'true':
 			self.quest_speech = 1
 		if 	quest_completion[self.name][3] == 'true':
@@ -606,10 +607,13 @@ while running:
 		if evt.type == QUIT: 
 			save_dict()
 			running = False
-		if evt.type == KEYUP:
+		if evt.type == KEYDOWN:
+			if evt.key == K_i:
+				InventoryDisplay(currChar, 0)	
 			if evt.key == K_ESCAPE:
 				# save_dict()
 				running = False    	
+		if evt.type == KEYUP:
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 				currChar = "Crow"
@@ -628,8 +632,13 @@ while running:
 			if evt.key == K_p:
 				mixer.music.play()		
 			if evt.key == K_j:
-				# print(gold)	
-				print(quest_completion)	
+				if currChar == 'Crow':
+					Char_Stats[0][2] += 100 	
+					print(Char_Stats[0][2])
+				if currChar == 'Raven':
+					Char_Stats[1][2] += 100 	
+					print(Char_Stats[1][2])
+				print(Char_Stats)
 			if evt.key == K_m:
 				if pressed == "UP":
 					cm = cf[0]
@@ -649,10 +658,10 @@ while running:
 		running = False
 	if mode == 0:
 		if currChar == "Crow":
-			Player_HP = Crow_HP
+			Player_HP = Char_Stats[0][2]
 			cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 		elif currChar == "Raven":
-			Player_HP = Raven_HP
+			Player_HP = Char_Stats[1][2]
 			cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 		if kp[K_RIGHT]:
 			x_diff -= pan
@@ -683,6 +692,8 @@ while running:
 			pan = 5	
 			s = 5
 		# print(myClock.get_fps())	
+		# if myClock.get_fps() < 50:
+		# 	print("DROPPED FRAME")
 		# UPDATE
 		all_sprites.update()
 		npcs.update()

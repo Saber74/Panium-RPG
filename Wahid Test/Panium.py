@@ -97,9 +97,9 @@ def display_main_menu():
 	screen.blit(screen_back, (0,0))
 	screen.blit(menu, (100,50))
 	arrow_pos = 0
-	inventory_open = True
+	main = True
 	options = ['Inventory', 'Statistics', 'Quests', 'Save', 'Exit', 'Quit']
-	while inventory_open:
+	while main:
 		for evt in event.get():  
 			if evt.type == KEYUP:
 				if evt.key == K_ESCAPE:
@@ -193,6 +193,7 @@ def MapLoad(Map_Name):
 				tile = Map_Name.get_tile_image_by_gid(gid)
 				if tile:
 					screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff))
+					# screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff), Rect(x * Map_Name.tilewidth + x_diff, y * Map_Name.tileheight + y_diff, WIDTH * 10, HEIGHT * 10))
 def InventoryDisplay(current_Character, num):
 	inv = ''
 	for i in inventory:
@@ -218,13 +219,14 @@ def display_inventory(Inventory, current_Character, mode):
 	inv = list(Inventory)
 	while inventory_open:
 		for evt in event.get():  
-			if evt.type == KEYDOWN:
+			if evt.type == KEYUP:
 				if evt.key == K_ESCAPE or evt.key == K_i:
 					if mode == "sell":
 						global c
 						c = 'NULL'
 						return c
 					inventory_open = False
+			if evt.type == KEYDOWN:
 				if evt.key == K_DOWN:
 					arrow_pos += 1
 				if evt.key == K_UP:
@@ -664,9 +666,11 @@ while running:
 		if evt.type == QUIT: 
 			save_dict()
 			running = False
-		if evt.type == KEYDOWN:
+
+		if evt.type == KEYUP:
 			if evt.key == K_i:
 				InventoryDisplay(currChar, 0)	
+		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
 				# save_dict()
 				running = False    	
@@ -710,7 +714,7 @@ while running:
 				if stage>0:
 					stage-=1
 			if evt.key==K_h:
-				stats[currNum][0]=30
+				stats[currNum][2]=30
 			if evt.key==K_n:
 				stage=10	
 		if evt.type==MOUSEBUTTONUP:
@@ -908,7 +912,7 @@ while running:
 		if mode == 1:
 			turn = "Player"		
 			print(turn,"GOES FIRST!!!")	
-			Enemy_HP = 500
+			Enemy_HP = 100
 			print("PRESS SPACE TO ATTACK")
 			for i in battleAnimation:
 				screen.blit(i,(0,0))
@@ -921,11 +925,11 @@ while running:
 		draw.rect(screen,(46,50,128),attackRect,0)
 		draw.rect(screen,(255,255,255),defenseRect,0)
 		draw.rect(screen,(210,75,146),itemRect,0)
-		for i in range(stats[currNum][0]//2):
+		for i in range(stats[currNum][2]//2):
 			draw.rect(screen,(255,0,0),Rect(x,round(HEIGHT*6/8),10,15))
 			x+=13
 		x=0
-		hpText=str("Player HP:"+str(stats[currNum][0]))
+		hpText=str("Player HP:"+str(stats[currNum][2]))
 		hpEdit=fireFont.render(hpText,True,(0,200,0))
 		screen.blit(hpEdit,(0,round(HEIGHT*6/8-40,0)))
 		for i in range(stats[currNum][5]//2):
@@ -990,7 +994,7 @@ while running:
 		########################################## ATTACK SELECTION ##########################################
 
 		############################################### BATTLE ###############################################
-		if turn == "Player" and stats[currNum][0] > 0 :
+		if turn == "Player" and stats[currNum][2] > 0 :
 			if stage==1:
 				if battle and mb[0]and attackRect.collidepoint(mx,my) or kp[K_z]:
 					print(turn + "'s turn to attack!!")
@@ -1030,22 +1034,23 @@ while running:
 		if turn == "Enemy" and Enemy_HP > 0:
 			time.wait(100)
 			print(turn + "'s turn to attack!!")
-			stats[currNum][0] -= stats[currNum][1]*3//stats[currNum][2] ###20 is enemy damage and must be changed soon
-			print("Player HP:",stats[currNum][0])	
+			stats[currNum][2] -= stats[currNum][1]*3//stats[currNum][2] ###20 is enemy damage and must be changed soon
+			print("Player HP:",stats[currNum][2])	
 			turn = "Player"
-		if stats[currNum][0] <= 0 or Enemy_HP <= 0:	
-			if stats[currNum][0] <= 0:
+		if stats[currNum][2] <= 0 or Enemy_HP <= 0:	
+			if stats[currNum][2] <= 0:
 				print("YOU LOST!!")		
 			elif Enemy_HP <= 0:	
 				print("YOU WON!!")	
-			elif stats[currNum][0] <= 0 and Enemy_HP <= 0:
+			elif stats[currNum][2] <= 0 and Enemy_HP <= 0:
 				print("YOU LOST!!")		
 			mode = 0	
 		##################################stage############# BATTLE ###############################################
 	# DRAW / RENDER         
 	display.flip()
 	myClock.tick(FPS)
-	print(battle)
+	# print(battle)
+	# print(stats[currNum][2])
 		############################################### BATTLE ###############################################
 	# DRAW / RENDER
 	display.flip()

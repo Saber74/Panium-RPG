@@ -12,6 +12,42 @@ screen = display.set_mode(size)
 # screen = display.set_mode(size, FULLSCREEN)
 # width, height = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
 ########################################## USE IN FINAL PRODUCT ##########################################
+battle=False
+#####################################fonts##################################
+font.init()
+fireFont=font.Font("Breathe Fire.otf",30)
+#######################################fonts##############################
+#############battle variables
+Enemy_HP=100
+xp=0
+charNum=0
+stage=0
+currNum=0
+################ entry and openning pic and gif"""""""""""""""""""""''
+# for i in range(0,71):
+# 	screen.fill((37,34,39))
+# 	screen.blit(image.load("Entry\output-%i.png"%i),(100,75))
+# 	display.update()
+	# time.wait(100)
+# #####rects
+# newGamerect=Rect(WIDTH//2-120,HEIGHT//2-30,200,75)
+# screen.blit(transform.scale(image.load("option1.jpg"),(WIDTH,HEIGHT)),(0,0))
+# draw.rect(screen,(0,0,0),newGamerect,0)
+# display.update()
+# time.wait(5000)
+###################################entry and oppening pic and gif"
+########################################## USE IN FINAL PRODUCT ##########################################
+# screen = display.set_mode(size, FULLSCREEN)
+# width, height = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
+########################################## USE IN FINAL PRODUCT ##########################################
+######################################### Fighting Screen ################################################
+attackRect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0))
+attack1Rect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0))
+attack3Rect=Rect(round(WIDTH*2/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
+attack2Rect=Rect(round(WIDTH*1/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
+defenseRect=Rect(round(WIDTH*1/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
+itemRect=Rect(round(WIDTH*2/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
+###############################################
 myClock = time.Clock()
 FPS = 60
 x = y = n = 0
@@ -243,11 +279,11 @@ def display_inventory(Inventory, current_Character, mode):
 
 	arrow_pos = 0
 def HP_Change(HP):
-	global Char_Stats
+	global stats
 	if currChar == 'Crow':
-		Char_Stats[0][2] += int(HP)
+		stats[0][2] += int(HP)
 	if currChar == 'Raven':
-		Char_Stats[1][2] += int(HP)
+		stats[1][2] += int(HP)
 # def Gold_Change(Gold):
 # 	global gold
 # 	gold += Gold	
@@ -274,8 +310,8 @@ def save_dict():
 				  'Sword': 25,
 				  'Shield': 25}  	 			  
 
-	crow_data = {"Stats": Char_Stats[0]}	  	 
-	raven_data = {"Stats": Char_Stats[1]}	  	 
+	crow_data = {"Stats": stats[0]}	  	 
+	raven_data = {"Stats": stats[1]}	  	 
 	p.dump(prog_data, open("prog.dat", "wb"))
 	p.dump(crow_data, open("crow_stats.dat", "wb"))	
 	p.dump(raven_data, open("raven_stats.dat", 'wb'))
@@ -291,12 +327,33 @@ currChar = load_dict()[0]["Current Charachter"]
 quest_completion = load_dict()[0]['Quests']
 print(quest_completion)
 
-Char_Stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
+stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 cm = image.load("SPRITES/Crow/Walk/Up/0.png").convert_alpha()
 chest_open = []
+
+############################################### ATTACK ANIMATIONS ###############################################
+CrowZ = []
+CrowX=[]
+CrowC=[]
+RavenZ=[]
+RavenX=[]
+RavenC=[]
+for i in range(17):
+	CrowC.append(image.load("SPRITES/Crow Attacks/CrowC/%i.png" % i).convert_alpha())
+for i in range(19):
+	CrowX.append(image.load("SPRITES/Crow Attacks/CrowX/%i.png" % i).convert_alpha())
+for i in range(22):
+	CrowZ.append(image.load("SPRITES/Crow Attacks/CrowZ/%i.png" % i).convert_alpha())
+# for i in range():
+# 	RavenC.append(image.load("SPRITES/Raven Attacks/RavenC/%i.png" % i).convert_alpha())
+# for i in range():
+# 	RavenX.append(image.load("SPRITES/Raven Attacks/RavenX/%i.png" % i).convert_alpha())
+# for i in range():
+# 	RavenZ.append(image.load("SPRITES/Raven Attacks/RavenZ/%i.png" % i).convert_alpha())
+############################################### ATTACK ANIMATIONS ###############################################
 
 ############################################### ATTACK ANIMATIONS ###############################################
 Darkness1 = []
@@ -633,12 +690,12 @@ while running:
 				mixer.music.play()		
 			if evt.key == K_j:
 				if currChar == 'Crow':
-					Char_Stats[0][2] += 100 	
-					print(Char_Stats[0][2])
+					stats[0][2] += 100 	
+					print(stats[0][2])
 				if currChar == 'Raven':
-					Char_Stats[1][2] += 100 	
-					print(Char_Stats[1][2])
-				print(Char_Stats)
+					stats[1][2] += 100 	
+					print(stats[1][2])
+				print(stats)
 			if evt.key == K_m:
 				if pressed == "UP":
 					cm = cf[0]
@@ -649,19 +706,32 @@ while running:
 				elif pressed == "RIGHT":
 					cm = cr[0]
 				display_main_menu()
+			if evt.key==K_a:
+				if stage>0:
+					stage-=1
+			if evt.key==K_h:
+				stats[currNum][0]=30
+			if evt.key==K_n:
+				stage=10	
+		if evt.type==MOUSEBUTTONUP:
+			if stage==1:
+				battle=True		
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
+	# xp+=10
+	# screen.fill((255,255,255))
+	# screen.blit(image.load("pvw1854.png"),(WIDTH//4,HEIGHT//3))
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
 	if mode == 0:
 		if currChar == "Crow":
-			Player_HP = Char_Stats[0][2]
+			Player_HP = stats[0][2]
 			cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 		elif currChar == "Raven":
-			Player_HP = Char_Stats[1][2]
+			Player_HP = stats[1][2]
 			cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 		if kp[K_RIGHT]:
 			x_diff -= pan
@@ -779,16 +849,66 @@ while running:
 				cm = cr[1]
 		########################################### MOVEMENT ANIMATION ###########################################
 	else:
+		# if mode == 1:
+		# 	Attack_DMG = 20
+		# 	Selected_Attack = 'NONE'
+		# 	t = r(0,1)
+		# 	if t == 0:
+		# 		turn = "Player"	
+		# 	else:
+		# 		turn = "Enemy"	
+		# 	print(turn,"GOES FIRST!!!")	
+		# 	Enemy_HP = 100
+		# 	print("PRESS SPACE TO ATTACK")
+		# 	for i in battleAnimation:
+		# 		screen.blit(i,(0,0))
+		# 		time.wait(25)
+		# 		display.flip() 
+		# 	mode = 2	
+		# battleBack = transform.scale(image.load("img/battlebacks1/DarkSpace.png"), (WIDTH, HEIGHT))	
+		# enemy = image.load("img/enemies/Chimera.png")
+		# FIGHTANIMATION(screen, enemy, battleBack)	
+		# ########################################## ATTACK SELECTION ##########################################
+		# if kp[K_z]:
+		# 	Attack_DMG = 20
+		# 	print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
+		# elif kp[K_x]:
+		# 	Attack_DMG = 30
+		# 	print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
+		# elif kp[K_c]:
+		# 	Attack_DMG = 40		
+		# 	print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
+		# ########################################## ATTACK SELECTION ##########################################
+
+		# ############################################### BATTLE ###############################################
+		# if turn == "Player" and Player_HP > 0 and kp[K_SPACE]:
+		# 	print(turn + "'s turn to attack!!")
+		# 	for i in Darkness1:
+		# 		FIGHTANIMATION(screen, enemy, battleBack)	
+		# 		screen.blit(i,(300,100))
+		# 		time.wait(50)
+		# 		display.flip()
+		# 	Enemy_HP -= Attack_DMG
+		# 	print("Enemy HP:",Enemy_HP)
+		# 	turn = "Enemy"
+		# if turn == "Enemy" and Enemy_HP > 0:
+		# 	time.wait(100)
+		# 	print(turn + "'s turn to attack!!")
+		# 	Player_HP -= 10
+		# 	print("Player HP:",Player_HP)	
+		# 	turn = "Player"
+		# if Player_HP <= 0 or Enemy_HP <= 0:	
+		# 	if Player_HP <= 0:
+		# 		print("YOU LOST!!")		
+		# 	elif Enemy_HP <= 0:	
+		# 		print("YOU WON!!")		
+		# 	elif Player_HP <= 0 and Enemy_HP <= 0:
+		# 		print("YOU LOST!!")		
+		# 	mode = 0
 		if mode == 1:
-			Attack_DMG = 20
-			Selected_Attack = 'NONE'
-			t = r(0,1)
-			if t == 0:
-				turn = "Player"	
-			else:
-				turn = "Enemy"	
+			turn = "Player"		
 			print(turn,"GOES FIRST!!!")	
-			Enemy_HP = 100
+			Enemy_HP = 500
 			print("PRESS SPACE TO ATTACK")
 			for i in battleAnimation:
 				screen.blit(i,(0,0))
@@ -797,44 +917,135 @@ while running:
 			mode = 2	
 		battleBack = transform.scale(image.load("img/battlebacks1/DarkSpace.png"), (WIDTH, HEIGHT))	
 		enemy = image.load("img/enemies/Chimera.png")
-		FIGHTANIMATION(screen, enemy, battleBack)	
+		FIGHTANIMATION(screen, enemy, battleBack)
+		draw.rect(screen,(46,50,128),attackRect,0)
+		draw.rect(screen,(255,255,255),defenseRect,0)
+		draw.rect(screen,(210,75,146),itemRect,0)
+		for i in range(stats[currNum][0]//2):
+			draw.rect(screen,(255,0,0),Rect(x,round(HEIGHT*6/8),10,15))
+			x+=13
+		x=0
+		hpText=str("Player HP:"+str(stats[currNum][0]))
+		hpEdit=fireFont.render(hpText,True,(0,200,0))
+		screen.blit(hpEdit,(0,round(HEIGHT*6/8-40,0)))
+		for i in range(stats[currNum][5]//2):
+			draw.rect(screen,(0,0,255),Rect(x,round(HEIGHT*6/8+50),10,15))
+			x+=13
+		x=0
+		manaText=str("Player Mana: "+str(stats[currNum][5]))
+		manaEdit=fireFont.render(manaText,True,(0,200,0))
+		screen.blit(manaEdit,(0,round(HEIGHT*6/8+20)))
+		enemyhp=str("name of enemy HP: "+str(Enemy_HP))
+		enemyhpEdit=fireFont.render(enemyhp,True,(0,200,0))
+		screen.blit(enemyhpEdit,(0,0))
+		count=0
+		y=round(HEIGHT*1/8)
+		for i in range(Enemy_HP//2):
+			draw.rect(screen,(255,0,0),Rect(x,y,10,15))
+			x+=12
+			count+=1
+			if count%17==0:
+				y+=18
+				x=0
+		x=0
+		if stage==0:
+			text=str("Attack Skills")
+			text2=str("Defencive Skills")
+			text3=str("Items")
+			edit1=fireFont.render(text,True,(0,0,200))
+			edit2=fireFont.render(text2,True,(0,0,200))
+			edit3=fireFont.render(text3,True,(0,0,200))
+			screen.blit(edit1,(50,round(HEIGHT*7/8+15,0)))
+			screen.blit(edit2,(round(50+WIDTH*1/3,0),round(HEIGHT*7/8+15,0)))
+			screen.blit(edit3,(round(50+WIDTH*2/3,0),round(HEIGHT*7/8+15,0)))
+
+			if mb[0]:
+				if attackRect.collidepoint(mx,my):
+					stage=1
+				elif defenseRect.collidepoint(mx,my):
+					stage=2
+				elif itemRect.collidepoint(mx,my):
+					stage=3
 		########################################## ATTACK SELECTION ##########################################
-		if kp[K_z]:
-			Attack_DMG = 20
-			print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
-		elif kp[K_x]:
-			Attack_DMG = 30
-			print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
-		elif kp[K_c]:
-			Attack_DMG = 40		
-			print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
+		if stage==1:
+
+			text=str("Attack1")
+			text2=str("Attack2")
+			text3=str("Attack3")
+			edit1=fireFont.render(text,True,(0,0,200))
+			edit2=fireFont.render(text2,True,(0,0,200))
+			edit3=fireFont.render(text3,True,(0,0,200))
+			screen.blit(edit1,(50,round(HEIGHT*7/8+15,0)))
+			screen.blit(edit2,(round(50+WIDTH*1/3,0),round(HEIGHT*7/8+15,0)))
+			screen.blit(edit3,(round(WIDTH*2/3+50,0),round(HEIGHT*7/8+15,0)))
+			if attackRect.collidepoint(mx,my):
+				Attack_DMG = stats[currNum][1]*4
+				print("Your attack will do",Attack_DMG,"damage to the enemy!!")	###[1 is dmg][3 is magic dmg]
+			elif defenseRect.collidepoint(mx,my):
+				Attack_DMG = stats[currNum][3]*5
+				print("Your attack will do",Attack_DMG,"damage to the enemy!!") ###[1 is dmg][3 is magic dmg]	
+			elif itemRect.collidepoint(mx,my):
+				Attack_DMG = stats[currNum][3]*3+stats[currNum][1]*3	###[1 is dmg][3 is magic dmg]	
+				print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
 		########################################## ATTACK SELECTION ##########################################
 
 		############################################### BATTLE ###############################################
-		if turn == "Player" and Player_HP > 0 and kp[K_SPACE]:
-			print(turn + "'s turn to attack!!")
-			for i in Darkness1:
-				FIGHTANIMATION(screen, enemy, battleBack)	
-				screen.blit(i,(300,100))
-				time.wait(50)
-				display.flip()
-			Enemy_HP -= Attack_DMG
-			print("Enemy HP:",Enemy_HP)
-			turn = "Enemy"
+		if turn == "Player" and stats[currNum][0] > 0 :
+			if stage==1:
+				if battle and mb[0]and attackRect.collidepoint(mx,my) or kp[K_z]:
+					print(turn + "'s turn to attack!!")
+					for i in CrowZ:
+						FIGHTANIMATION(screen, enemy, battleBack)	
+						screen.blit(i,(300,100))
+						time.wait(50)
+						display.flip()
+					Enemy_HP -= Attack_DMG
+					turn = "Enemy"
+					stage=0
+					battle=False
+				elif battle and mb[0] and defenseRect.collidepoint(mx,my) or kp[K_x] and stats[currNum][-1]>=10:
+					for i in CrowX:
+						FIGHTANIMATION(screen, enemy, battleBack)	
+						screen.blit(i,(300,100))
+						time.wait(50)
+						display.flip()
+					stats[currNum][-1]-=10
+					Enemy_HP -= Attack_DMG
+					turn = "Enemy"
+					stage=0
+				elif battle and mb[0] and itemRect.collidepoint(mx,my) or kp[K_c] and stats[currNum][-1]>=5:
+					for i in CrowC:
+						FIGHTANIMATION(screen, enemy, battleBack)	
+						screen.blit(i,(300,100))
+						time.wait(50)
+						display.flip()
+					stats[currNum][-1]
+					Enemy_HP -= Attack_DMG
+					turn = "Enemy"
+					stage=0
+				# elif stage==2: ####for defencive items or other stuff??? idk we can decide on it later
+			# elif stage==3:
+
+
 		if turn == "Enemy" and Enemy_HP > 0:
 			time.wait(100)
 			print(turn + "'s turn to attack!!")
-			Player_HP -= 10
-			print("Player HP:",Player_HP)	
+			stats[currNum][0] -= stats[currNum][1]*3//stats[currNum][2] ###20 is enemy damage and must be changed soon
+			print("Player HP:",stats[currNum][0])	
 			turn = "Player"
-		if Player_HP <= 0 or Enemy_HP <= 0:	
-			if Player_HP <= 0:
+		if stats[currNum][0] <= 0 or Enemy_HP <= 0:	
+			if stats[currNum][0] <= 0:
 				print("YOU LOST!!")		
 			elif Enemy_HP <= 0:	
-				print("YOU WON!!")		
-			elif Player_HP <= 0 and Enemy_HP <= 0:
+				print("YOU WON!!")	
+			elif stats[currNum][0] <= 0 and Enemy_HP <= 0:
 				print("YOU LOST!!")		
-			mode = 0
+			mode = 0	
+		##################################stage############# BATTLE ###############################################
+	# DRAW / RENDER         
+	display.flip()
+	myClock.tick(FPS)
+	print(battle)
 		############################################### BATTLE ###############################################
 	# DRAW / RENDER
 	display.flip()

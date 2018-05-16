@@ -63,6 +63,7 @@ mode = 0
 speed = 0
 gold = 100
 s = 5
+step_counter = 0
 npc_item = {}
 c = 'NULL'
 quit_stat = ''
@@ -211,6 +212,8 @@ def InventoryDisplay(current_Character, num):
 		return s
 	elif num == 2:
 		display_inventory(s, current_Character, 'sell')	
+	elif num == 3:
+		display_inventory(s, current_Character, 'battle')	
 
 def display_inventory(Inventory, current_Character, mode):
 	screen.blit(menu_base, (0,0))
@@ -226,6 +229,7 @@ def display_inventory(Inventory, current_Character, mode):
 						c = 'NULL'
 						return c
 					inventory_open = False
+					return
 			if evt.type == KEYDOWN:
 				if evt.key == K_DOWN:
 					arrow_pos += 1
@@ -256,6 +260,20 @@ def display_inventory(Inventory, current_Character, mode):
 						del inv[arrow_pos]	
 						del inventory[inventory.index(y[0])]
 						inv = list(InventoryDisplay(current_Character, 1))
+					if mode == 'battle':
+						global used
+						x = inv[arrow_pos]
+						y = x.split(" x")
+						for i in HP_items:
+							i = i.split(' ')
+							if y[0] in i:
+								print("HP +", i[1])
+								HP_Change(i[1])
+						del inv[arrow_pos]	
+						del inventory[inventory.index(y[0])]
+						used = True
+						return used
+						# inv = list(InventoryDisplay(current_Character, 1))	
 
 		count = 0			
 		screen.blit(menu_base, (0,0))
@@ -667,9 +685,6 @@ while running:
 			save_dict()
 			running = False
 
-		if evt.type == KEYUP:
-			if evt.key == K_i:
-				InventoryDisplay(currChar, 0)	
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
 				# save_dict()
@@ -681,35 +696,38 @@ while running:
 			if evt.key == K_2:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 				currChar = "Raven"
-			if evt.key == K_q:
-				inventory = []
-				openedChests = []
-				npc_item = {}
-				quest_completion = {}
-			if evt.key == K_b:
-				mode = 1 - mode	
 			if evt.key == K_o:
 				mixer.music.stop()
 			if evt.key == K_p:
 				mixer.music.play()		
-			if evt.key == K_j:
-				if currChar == 'Crow':
-					stats[0][2] += 100 	
-					print(stats[0][2])
-				if currChar == 'Raven':
-					stats[1][2] += 100 	
-					print(stats[1][2])
-				print(stats)
-			if evt.key == K_m:
-				if pressed == "UP":
-					cm = cf[0]
-				elif pressed == "DOWN":
-					cm = cd[0]
-				elif pressed == "LEFT":
-					cm = cl[0]
-				elif pressed == "RIGHT":
-					cm = cr[0]
-				display_main_menu()
+			if evt.key == K_b:
+				mode = 1 - mode	
+			if mode == 0:	
+				if evt.key == K_i:
+					InventoryDisplay(currChar, 0)	
+				if evt.key == K_q:
+					inventory = []
+					openedChests = []
+					npc_item = {}
+					quest_completion = {}
+				if evt.key == K_j:
+					if currChar == 'Crow':
+						stats[0][2] += 100 	
+						print(stats[0][2])
+					if currChar == 'Raven':
+						stats[1][2] += 100 	
+						print(stats[1][2])
+					print(stats)
+				if evt.key == K_m:
+					if pressed == "UP":
+						cm = cf[0]
+					elif pressed == "DOWN":
+						cm = cd[0]
+					elif pressed == "LEFT":
+						cm = cl[0]
+					elif pressed == "RIGHT":
+						cm = cr[0]
+					display_main_menu()
 			if evt.key==K_a:
 				if stage>0:
 					stage-=1
@@ -717,6 +735,8 @@ while running:
 				stats[currNum][2]=30
 			if evt.key==K_n:
 				stage=10	
+			if evt.key == K_r:
+				mode = 0	
 		if evt.type==MOUSEBUTTONUP:
 			if stage==1:
 				battle=True		
@@ -730,6 +750,11 @@ while running:
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
+	encounter_steps = r(10,20)	
+	if int(step_counter) == encounter_steps:
+		step_counter = 0
+		mode = 1
+	print(step_counter)	
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = stats[0][2]
@@ -742,21 +767,25 @@ while running:
 			R = True
 			moving = True
 			pressed = "RIGHT"
+			step_counter += .2
 		elif kp[K_LEFT]:
 			x_diff += pan
 			L = True
 			moving = True
 			pressed = "LEFT"
+			step_counter += .2
 		elif kp[K_UP]:
 			y_diff += pan
 			U = True
 			moving = True
 			pressed = "UP"
+			step_counter += .2
 		elif kp[K_DOWN]:
 			y_diff -= pan
 			D = True
 			moving = True
 			pressed = "DOWN"
+			step_counter += .2
 		else:
 			x = y = 0	
 		if kp[K_LSHIFT]:
@@ -911,6 +940,7 @@ while running:
 		# 	mode = 0
 		if mode == 1:
 			turn = "Player"		
+			used = False
 			print(turn,"GOES FIRST!!!")	
 			Enemy_HP = 100
 			print("PRESS SPACE TO ATTACK")
@@ -994,6 +1024,7 @@ while running:
 		########################################## ATTACK SELECTION ##########################################
 
 		############################################### BATTLE ###############################################
+		# used = False
 		if turn == "Player" and stats[currNum][2] > 0 :
 			if stage==1:
 				if battle and mb[0]and attackRect.collidepoint(mx,my) or kp[K_z]:
@@ -1028,13 +1059,19 @@ while running:
 					turn = "Enemy"
 					stage=0
 				# elif stage==2: ####for defencive items or other stuff??? idk we can decide on it later
-			# elif stage==3:
-
+			elif stage==3 and len(inventory) > 0:
+				if used == False:
+					InventoryDisplay(currChar, 3)
+					stage = 1	
+				else:
+					print("You Have Already Used An Item!")	
 
 		if turn == "Enemy" and Enemy_HP > 0:
+			used = False
 			time.wait(100)
 			print(turn + "'s turn to attack!!")
-			stats[currNum][2] -= stats[currNum][1]*3//stats[currNum][2] ###20 is enemy damage and must be changed soon
+			# stats[currNum][2] -= stats[currNum][1]*3//stats[currNum][2] ###20 is enemy damage and must be changed soon
+			stats[currNum][2] -= 20 ###20 is enemy damage and must be changed soon
 			print("Player HP:",stats[currNum][2])	
 			turn = "Player"
 		if stats[currNum][2] <= 0 or Enemy_HP <= 0:	
@@ -1045,12 +1082,12 @@ while running:
 			elif stats[currNum][2] <= 0 and Enemy_HP <= 0:
 				print("YOU LOST!!")		
 			mode = 0	
+		print(used)
 		##################################stage############# BATTLE ###############################################
 	# DRAW / RENDER         
 	display.flip()
 	myClock.tick(FPS)
 	# print(battle)
-	# print(stats[currNum][2])
 		############################################### BATTLE ###############################################
 	# DRAW / RENDER
 	display.flip()

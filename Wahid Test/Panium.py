@@ -67,7 +67,6 @@ step_counter = 0
 npc_item = {}
 c = 'NULL'
 quit_stat = ''
-inv_dict = {}
 menu_base = transform.scale(image.load("img/menu/selection.png").convert_alpha(),(WIDTH, HEIGHT))
 dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
 currChar = "Crow"
@@ -75,7 +74,6 @@ HP_items = ["Potion 50", "Meat 100", "Poison -50"]
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
 mixer.init()# initializes the music mixer
 mixer.music.load("Audio/BGM/aaronwalz_veldarah.ama")
-print(inv_dict)
 mixer.music.stop()
 font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
@@ -199,7 +197,6 @@ def MapLoad(Map_Name):
 					# screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff), Rect(x * Map_Name.tilewidth + x_diff, y * Map_Name.tileheight + y_diff, WIDTH, HEIGHT))
 def InventoryDisplay(current_Character, num):
 	global inv_dict
-	# inv_dict = {}
 	inv = ''
 	for i in inventory:
 		number = 0
@@ -212,7 +209,10 @@ def InventoryDisplay(current_Character, num):
 	s = set(split)
 	for i in s:
 		s1 = i.split(' x')
-		inv_dict[s1[0]] = i
+		if s1[0] not in inventory:
+			inv_dict[s1[0]] = ''
+		else:
+			inv_dict[s1[0]] = i
 	if num == 0:
 		display_inventory(inv_dict, current_Character, 'inventory')	
 	elif num == 1:
@@ -223,16 +223,18 @@ def InventoryDisplay(current_Character, num):
 		display_inventory(inv_dict, current_Character, 'battle')	
 
 def display_inventory(Inventory, current_Character, mode):
+	global inv_dict
 	screen.blit(menu_base, (0,0))
 	arrow_pos = 0
 	inventory_open = True
-	print(Inventory)
-	inv = list(Inventory)
-	print(inv)
+	inv = []
+	for i in Inventory:
+		if inv_dict[i] != '':
+			inv.append(i)
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYUP:
-				if evt.key == K_ESCAPE or evt.key == K_i:
+				if evt.key == K_ESCAPE or evt.key == K_i and mode != 'sell':
 					if mode == "sell":
 						global c
 						c = 'NULL'
@@ -246,8 +248,10 @@ def display_inventory(Inventory, current_Character, mode):
 					arrow_pos -= 1
 				if evt.key == K_SPACE and len(inv) > 0:
 					if mode == 'inventory':
-						x = inv[arrow_pos]
+						x = inv_dict[inv[arrow_pos]]
 						y = x.split(" x")
+						if y[1] == '1':
+							inv_dict[y[0]] = ''
 						for i in HP_items:
 							i = i.split(' ')
 							if y[0] in i:
@@ -255,11 +259,17 @@ def display_inventory(Inventory, current_Character, mode):
 								HP_Change(i[1])
 						del inv[arrow_pos]	
 						del inventory[inventory.index(y[0])]
-						inv = list(InventoryDisplay(current_Character, 1))
+						tmp = InventoryDisplay(current_Character, 1)
+						inv = []
+						for i in tmp:
+							if inv_dict[i] != '':
+								inv.append(i)
 					if mode == 'sell':
 						global gold
-						x = inv[arrow_pos]
+						x = inv_dict[inv[arrow_pos]]
 						y = x.split(" x")
+						if y[1] == '1':
+							inv_dict[y[0]] = ''
 						try:
 							gold += load_dict()[3][y[0]]
 							print("You have gained", str(load_dict()[3][y[0]]), "gold!! Now you have", str(gold), "gold in total!!")
@@ -268,7 +278,11 @@ def display_inventory(Inventory, current_Character, mode):
 							print("You have gained", str(100), "gold!! Now you have", str(gold), "gold in total!!")
 						del inv[arrow_pos]	
 						del inventory[inventory.index(y[0])]
-						inv = list(InventoryDisplay(current_Character, 1))
+						tmp = InventoryDisplay(current_Character, 1)
+						inv = []
+						for i in tmp:
+							if inv_dict[i] != '':
+								inv.append(i)
 					if mode == 'battle':
 						global used
 						x = inv[arrow_pos]
@@ -368,7 +382,8 @@ def save_dict():
 				 "Gold": gold,
 				 "npc_items": npc_item,
 				 "Current Charachter": currChar,
-				 "Quests": quest_completion}
+				 "Quests": quest_completion,
+				 "inv_dict": inv_dict}
 	item_value = {'Potion': 75,
 				  'Elixer': 50,
 				  'Sword': 25,
@@ -388,7 +403,8 @@ gold = load_dict()[0]["Gold"]
 npc_item = load_dict()[0]['npc_items']
 currChar = load_dict()[0]["Current Charachter"]
 quest_completion = load_dict()[0]['Quests']
-print(quest_completion)
+inv_dict = load_dict()[0]['inv_dict']
+print(inv_dict)
 
 stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
@@ -762,7 +778,10 @@ while running:
 					# 	stats[1][2] += 100 	
 					# 	print(stats[1][2])
 					# print(stats)
-					print(inv_dict)
+					try:
+						print(inv_dict)
+					except:
+						pass	
 				if evt.key==K_a:
 					if stage>0:
 						stage-=1
@@ -1083,11 +1102,6 @@ while running:
 				print("YOU LOST!!")		
 			mode = 0	
 		print(used)
-		##################################stage############# BATTLE ###############################################
-	# DRAW / RENDER         
-	display.flip()
-	myClock.tick(FPS)
-	# print(battle)
 		############################################### BATTLE ###############################################
 	# DRAW / RENDER
 	display.flip()

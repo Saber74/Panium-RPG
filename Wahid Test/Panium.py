@@ -67,6 +67,7 @@ step_counter = 0
 npc_item = {}
 c = 'NULL'
 quit_stat = ''
+inv_dict = {}
 menu_base = transform.scale(image.load("img/menu/selection.png").convert_alpha(),(WIDTH, HEIGHT))
 dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
 currChar = "Crow"
@@ -74,6 +75,7 @@ HP_items = ["Potion 50", "Meat 100", "Poison -50"]
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
 mixer.init()# initializes the music mixer
 mixer.music.load("Audio/BGM/aaronwalz_veldarah.ama")
+print(inv_dict)
 mixer.music.stop()
 font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
@@ -196,6 +198,8 @@ def MapLoad(Map_Name):
 					screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff))
 					# screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff), Rect(x * Map_Name.tilewidth + x_diff, y * Map_Name.tileheight + y_diff, WIDTH, HEIGHT))
 def InventoryDisplay(current_Character, num):
+	global inv_dict
+	# inv_dict = {}
 	inv = ''
 	for i in inventory:
 		number = 0
@@ -206,20 +210,25 @@ def InventoryDisplay(current_Character, num):
 	split = inv.split(', ')
 	del split[split.index('')]
 	s = set(split)
+	for i in s:
+		s1 = i.split(' x')
+		inv_dict[s1[0]] = i
 	if num == 0:
-		display_inventory(s, current_Character, 'inventory')	
+		display_inventory(inv_dict, current_Character, 'inventory')	
 	elif num == 1:
-		return s
+		return inv_dict
 	elif num == 2:
-		display_inventory(s, current_Character, 'sell')	
+		display_inventory(inv_dict, current_Character, 'sell')	
 	elif num == 3:
-		display_inventory(s, current_Character, 'battle')	
+		display_inventory(inv_dict, current_Character, 'battle')	
 
 def display_inventory(Inventory, current_Character, mode):
 	screen.blit(menu_base, (0,0))
 	arrow_pos = 0
 	inventory_open = True
+	print(Inventory)
 	inv = list(Inventory)
+	print(inv)
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYUP:
@@ -274,27 +283,25 @@ def display_inventory(Inventory, current_Character, mode):
 						used = True
 						return used
 						# inv = list(InventoryDisplay(current_Character, 1))	
-
 		count = 0			
 		screen.blit(menu_base, (0,0))
 		for i in range(len(inv)):
 			count += 1
-			ItemName = medievalFont.render(inv[i], True, (0,0,0))
+			# print(inv[i])
+			ItemName = medievalFont.render(inv_dict[inv[i]], True, (0,0,0))
+			# print(inv_dict[inv[i]])
+			screen.blit(ItemName, (470, 20 + 30 * count))
 			if arrow_pos == len(inv):
 				arrow_pos -= 1
 			if arrow_pos < 0:
 				arrow_pos += 1	
 			draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
-			screen.blit(ItemName, (470, 20 + 30 * count))
 		if current_Character == "Crow":
 			screen.blit(transform.scale(image.load("img/faces/crow.png").convert_alpha(), (130,185)),(30,35))			
 		elif current_Character == "Raven":
 			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
 		mx, my = mouse.get_pos()
 		# print(str(mx) + ', ' + str(my))
-		ass = screen.get_at((mx,my))
-		if ass == (0,0,0,255):
-			print(ass)
 		display.flip()
 
 	arrow_pos = 0
@@ -366,7 +373,6 @@ def save_dict():
 				  'Elixer': 50,
 				  'Sword': 25,
 				  'Shield': 25}  	 			  
-
 	crow_data = {"Stats": stats[0]}	  	 
 	raven_data = {"Stats": stats[1]}	  	 
 	p.dump(prog_data, open("prog.dat", "wb"))
@@ -655,6 +661,7 @@ class Store_Clerk(sprite.Sprite):
 							if int(y[1]) <= gold:
 								print("You have bought a " + y[0] + '!!')
 								inventory.append(y[0])
+								# inv_dict
 								gold -= int(y[1])
 							if int(y[1]) > gold:
 								print("You don't have enough money!!")
@@ -748,13 +755,14 @@ while running:
 					npc_item = {}
 					quest_completion = {}
 				if evt.key == K_j:
-					if currChar == 'Crow':
-						stats[0][2] += 100 	
-						print(stats[0][2])
-					if currChar == 'Raven':
-						stats[1][2] += 100 	
-						print(stats[1][2])
-					print(stats)
+					# if currChar == 'Crow':
+					# 	stats[0][2] += 100 	
+					# 	print(stats[0][2])
+					# if currChar == 'Raven':
+					# 	stats[1][2] += 100 	
+					# 	print(stats[1][2])
+					# print(stats)
+					print(inv_dict)
 				if evt.key==K_a:
 					if stage>0:
 						stage-=1
@@ -774,18 +782,18 @@ while running:
 					elif pressed == "RIGHT":
 						cm = cr[0]
 					display_main_menu()
-			# if evt.key==K_a:
-			# 	if stage>0:
-			# 		stage-=1
-			# if evt.key==K_h:
-			# 	stats[currNum][2]=30
-			# if evt.key==K_n:
-			# 	stage=10	
-			# if evt.key == K_r:
-			# 	mode = 0	
-		# if evt.type==MOUSEBUTTONUP:
-		# 	if stage==1:
-		# 		battle=True		
+			if evt.key==K_a:
+				if stage>0:
+					stage-=1
+			if evt.key==K_h:
+				stats[currNum][2]=30
+			if evt.key==K_n:
+				stage=10	
+			if evt.key == K_r:
+				mode = 0	
+		if evt.type==MOUSEBUTTONUP:
+			if stage==1:
+				battle=True		
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
@@ -800,7 +808,7 @@ while running:
 	if int(step_counter) == encounter_steps:
 		step_counter = 0
 		mode = 1
-	print(step_counter)	
+	# print(step_counter)	
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = stats[0][2]

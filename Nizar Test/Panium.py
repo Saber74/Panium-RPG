@@ -20,6 +20,7 @@ xp=0
 charNum=0
 stage=0
 currNum=0
+enemy=[]
 ################ entry and openning pic and gif"""""""""""""""""""""''
 # for i in range(0,71):
 # 	screen.fill((37,34,39))
@@ -755,7 +756,7 @@ while running:
 						screen.blit(i,(300,100))
 						time.wait(50)
 						display.flip()
-					stats[currNum][-1]
+					stats[currNum][-1]-=5
 					Enemy_HP -= Attack_DMG
 					turn = "Enemy"
 					stage=0

@@ -17,7 +17,8 @@ mode=1
 xp=110
 statupgrade=0
 currlevel=0
-selected=""
+selecnum=0
+selectionList=["attack","defense","magic","magicdefense","health","mana"]
 arrowselected=""
 levelattackRect=Rect(WIDTH//2,round(HEIGHT*1/7),WIDTH//5,HEIGHT//10)
 leveldefenseRect=Rect(WIDTH//2,round(HEIGHT*2/7),WIDTH//5,HEIGHT//10)
@@ -59,6 +60,18 @@ while running:
 				levelup=True
 				time.wait(1000)		
 		if levelup:
+			if evt.type==KEYDOWN:
+				if evt.key==K_UP:
+					arrowselected="up"
+				elif evt.key==K_DOWN:
+					arrowselected="down"
+				elif evt.key==K_LEFT:
+					if selecnum!=0:
+						selecnum-=1
+				elif evt.key==K_RIGHT:
+					if selecnum!=len(selectionList)-1:
+						selecnum+=1
+			selected=selectionList[selecnum]
 			screen.fill((255,255,255))
 			screen.blit(uparrow,(75,HEIGHT//2-HEIGHT//7))
 			screen.blit(downarrow,(75,HEIGHT//2))
@@ -68,27 +81,6 @@ while running:
 			draw.rect(screen,(130, 82, 1),levelmagicdefenseRect,0)
 			draw.rect(screen,(130, 82, 1),levelhealthRect,0)
 			draw.rect(screen,(130, 82, 1),levelmanaRect,0)
-			if mb[0]:
-				if levelattackRect.collidepoint(mx,my):
-					selected="attack"
-					statupgrade=5
-				elif leveldefenseRect.collidepoint(mx,my):
-					selected="defense"
-					statupgrade=10
-				elif levelmagicRect.collidepoint(mx,my):
-					selected="magic"	
-				elif levelmagicdefenseRect.collidepoint(mx,my):
-					selected="magicdefense"	
-				elif levelhealthRect.collidepoint(mx,my):
-					selected="health"
-				elif levelmanaRect.collidepoint(mx,my):
-					selected="mana"
-				elif uparrowRect.collidepoint(mx,my):
-					arrowselected="up"
-					statupgrade+=1
-				elif downarrowRect.collidepoint(mx,my):
-					arrowselected="down"
-					statupgrade-1
 			if selected=="attack":
 				draw.rect(screen,(130, 82, 130),levelattackRect,0)			
 			elif selected=="defense":

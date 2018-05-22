@@ -93,13 +93,13 @@ def start_Screen():
 		display.flip() 
 	quit()
 def display_main_menu():
-	screen_back = screen.copy()
+	# screen_back = screen.copy()
 	menu = transform.scale(image.load("img/menu/main_menu.png").convert_alpha(), (200, 500))
 	screen.blit(screen_back, (0,0))
 	screen.blit(menu, (100,50))
 	arrow_pos = 0
-	main = True
 	options = ['Inventory', 'Statistics', 'Quests', 'Save', 'Exit', 'Quit']
+	main = True
 	while main:
 		for evt in event.get():  
 			if evt.type == KEYUP:
@@ -116,11 +116,13 @@ def display_main_menu():
 					if options[arrow_pos] == 'Exit':
 						return
 					if options[arrow_pos] == 'Quit':
+						save_menu('Quit')
 						global quit_stat
 						quit_stat = 'quit'
 						return
 					if options[arrow_pos] == 'Save':
-						save_dict()	
+						# save_dict()	
+						save_menu('')
 		count = 0			
 		screen.blit(screen_back, (0,0))
 		screen.blit(menu, (100,50))
@@ -136,6 +138,57 @@ def display_main_menu():
 		mx, my = mouse.get_pos()
 		# print(str(mx) + ', ' + str(my))
 		display.flip()
+def save_menu(purp):
+	menu = transform.scale(image.load("img/menu/main_menu_rotated.png").convert_alpha(), (500, 200))
+	y = 45
+	arrow_pos = 0
+	mode = 'save_select'
+	saving = True
+	while saving:
+		for evt in event.get():  
+			if evt.type == KEYUP:
+				if evt.key == K_ESCAPE:
+					saving = False
+					return
+				if evt.key == K_DOWN:	
+					y = 75
+				if evt.key == K_UP:
+					y = 45
+				if evt.key == K_SPACE:
+					if y == 45:
+						mode = 'saving'
+					if y == 75:
+						saving = False
+						return	
+		if mode == 'save_select':				
+			screen.blit(screen_back, (0,0))
+			screen.blit(menu, (0,0))
+			if purp == 'Quit':
+				screen.blit(medievalFont.render('Do you want to save before you quit?', True, (0,0,0)), (0, 0))
+			else:	
+				screen.blit(medievalFont.render('Do you want to save?', True, (0,0,0)), (0, 0))
+			screen.blit(medievalFont.render('Yes?', True, (0,0,0)), (20, 30))
+			screen.blit(medievalFont.render('No?', True, (0,0,0)), (20, 60))
+			draw.circle(screen, (0,0,0), (10,y), 6)
+		elif mode == 'saving':
+			screen.blit(menu, (0,0))
+			saving_txt = 'Saving.....'
+			saved_txt = 'Saved'
+			prog_txt = ''
+			for i in saving_txt:
+				prog_txt += i
+				screen.blit(medievalFont.render(prog_txt, True, (0,0,0)), (0, 0))
+				time.wait(100)
+				display.flip()	
+			time.wait(1000)
+			screen.blit(menu, (0,0))
+			screen.blit(medievalFont.render(saved_txt, True, (0,0,0)), (0, 0))
+			display.flip()
+			time.wait(1000)
+			save_dict()
+			saving = False
+			return		
+		display.flip()		
 def display_quest():
 	quest_thang = True
 	while quest_thang:
@@ -355,16 +408,12 @@ def Battle():
 		FIGHTANIMATION(screen, enemy, battleBack)
 		display.flip() 
 	quit()
-
 def HP_Change(HP):
 	global stats
 	if currChar == 'Crow':
 		stats[0][2] += int(HP)
 	if currChar == 'Raven':
 		stats[1][2] += int(HP)
-# def Gold_Change(Gold):
-# 	global gold
-# 	gold += Gold	
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
@@ -486,6 +535,7 @@ class Portal(sprite.Sprite):
 class NPC(sprite.Sprite):
 	def __init__(self, x, y, importance, speech, item, name):
 		sprite.Sprite.__init__(self)
+		global inv_dict
 		self.type = importance
 		self.speech = speech
 		self.item = item
@@ -521,6 +571,8 @@ class NPC(sprite.Sprite):
 								self.item_split = self.item.split(' // ')
 								for i in self.item_split:
 									inventory.append(i)
+									if i not in inv_dict:
+										inv_dict[i] = ''
 								npc_item[self.name] = self.name
 							self.display_text = False
 							self.interact = False
@@ -558,6 +610,7 @@ class NPC(sprite.Sprite):
 class Quest_NPC(sprite.Sprite):
 	def __init__(self, x, y, importance, speech, item, name, quest):
 		sprite.Sprite.__init__(self)
+		global inv_dict
 		self.type = importance
 		self.speech = speech
 		self.item = item
@@ -599,6 +652,8 @@ class Quest_NPC(sprite.Sprite):
 								self.item_split = self.item.split(' // ')
 								for i in self.item_split:
 									inventory.append(i)
+									if i not in inv_dict:
+										inv_dict[i] = ''
 								npc_item[self.name] = self.name
 							self.display_text = False
 							self.interact = False
@@ -746,7 +801,6 @@ while running:
 			running = False
 		if evt.type == KEYDOWN:
 			if evt.key == K_ESCAPE:
-				# save_dict()
 				running = False    	
 		if evt.type == KEYUP:
 			if evt.key == K_1:
@@ -770,6 +824,7 @@ while running:
 					openedChests = []
 					npc_item = {}
 					quest_completion = {}
+					inv_dict = {}
 				if evt.key == K_j:
 					# if currChar == 'Crow':
 					# 	stats[0][2] += 100 	
@@ -778,10 +833,7 @@ while running:
 					# 	stats[1][2] += 100 	
 					# 	print(stats[1][2])
 					# print(stats)
-					try:
-						print(inv_dict)
-					except:
-						pass	
+					print(inv_dict)
 				if evt.key==K_a:
 					if stage>0:
 						stage-=1
@@ -800,6 +852,7 @@ while running:
 						cm = cl[0]
 					elif pressed == "RIGHT":
 						cm = cr[0]
+					screen_back = screen.copy()	
 					display_main_menu()
 			if evt.key==K_a:
 				if stage>0:
@@ -823,10 +876,10 @@ while running:
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
-	encounter_steps = r(10,20)	
-	if int(step_counter) == encounter_steps:
-		step_counter = 0
-		mode = 1
+	# encounter_steps = r(10,20)	
+	# if int(step_counter) == encounter_steps:
+	# 	step_counter = 0
+	# 	mode = 1
 	# print(step_counter)	
 	if mode == 0:
 		if currChar == "Crow":
@@ -912,7 +965,6 @@ while running:
 					x_diff, y_diff = -1285, -495	
 				fname, tops = levelSelect(lvl, chests, walls, portals)
 				load_object(fname, chests, walls, portals)
-				
 		chest_open = sprite.spritecollide(player, chests, False)	
 		if chest_open and kp[K_SPACE]:
 			chest_open[0].opened = True
@@ -924,7 +976,6 @@ while running:
 				frame += 1
 				if frame >= len(crowWalkDown):
 					frame = 0
-		# print(x_diff,y_diff)			
 		############################################## Map Loading ##############################################
 		screen.fill(0)
 		MapLoad(fname)

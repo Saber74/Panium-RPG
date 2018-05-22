@@ -194,24 +194,32 @@ def save_menu(purp):
 def display_quest():
 	back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
 	selectedRect = Rect(0,0,800,200)
+	quest_dict = {}
+	display_txt = []
+	for i in quest_completion:
+		if quest_completion[i][0] == 'true':
+			quest_dict[i] = quest_completion[i][1] + ' with ' + quest_completion[i][2]
 	quest_thang = True
 	while quest_thang:
 		for evt in event.get():  
 			if evt.type == QUIT: 
-				quest_thang = False
+				quest_thang = False	
 			if evt.type == KEYUP:
 				if evt.key == K_ESCAPE:
 					quest_thang = False
 					return	
+				if evt.key == K_UP:
+					selectedRect.y -= 200
 				if evt.key == K_DOWN:
-					selectedRect.width += 200
-					print(selectedRect.width)
-
+					selectedRect.y += 200
 		mx,my=mouse.get_pos()
 		mb=mouse.get_pressed()
 		screen.blit(back, (0,0))
-		draw.rect(screen, (0,0,0), selectedRect)
-		display.flip() 
+		draw.rect(screen, (0,0,0), selectedRect, 5)
+		for i in quest_dict:
+			timesNewRomanFont.render(quest_completion[i], True, (0,0,0))
+		print(quest_dict)		
+		display.flip()
 def load_object(fname, chests, walls, portals):
 	global quest_completion
 	for tile_object in fname.objects:
@@ -382,42 +390,42 @@ def display_inventory(Inventory, current_Character, mode):
 		display.flip()
 
 	arrow_pos = 0
-def Battle():
-	turn = "Player"		
-	used = False
-	print(turn,"GOES FIRST!!!")	
-	Enemy_HP = 100
-	Player_HP = stats[0][2]
-	print("PRESS SPACE TO ATTACK")
-	for i in battleAnimation:
-		screen.blit(i,(0,0))
-		time.wait(25)
-		display.flip()
-	battle = True
-	while battle:
-		for evt in event.get():  
-			if evt.type == QUIT: 
-				battle = False
-			if evt.type == KEYDOWN:
-				if evt.key == K_ESCAPE:
-					battle = False
-					return
-				if evt.key==K_a:
-					if stage>0:
-						stage-=1
-				if evt.key==K_h:
-					stats[currNum][2]=30
-				if evt.key==K_n:
-					stage=10	
-				if evt.key == K_r:
-					return	
-		mx,my=mouse.get_pos()
-		mb=mouse.get_pressed()
-		battleBack = transform.scale(image.load("img/battlebacks1/DarkSpace.png"), (WIDTH, HEIGHT))	
-		enemy = image.load("img/enemies/Chimera.png")
-		FIGHTANIMATION(screen, enemy, battleBack)
-		display.flip() 
-	quit()
+# def Battle():
+# 	turn = "Player"		
+# 	used = False
+# 	print(turn,"GOES FIRST!!!")	
+# 	Enemy_HP = 100
+# 	Player_HP = stats[0][2]
+# 	print("PRESS SPACE TO ATTACK")
+# 	for i in battleAnimation:
+# 		screen.blit(i,(0,0))
+# 		time.wait(25)
+# 		display.flip()
+# 	battle = True
+# 	while battle:
+# 		for evt in event.get():  
+# 			if evt.type == QUIT: 
+# 				battle = False
+# 			if evt.type == KEYDOWN:
+# 				if evt.key == K_ESCAPE:
+# 					battle = False
+# 					return
+# 				if evt.key==K_a:
+# 					if stage>0:
+# 						stage-=1
+# 				if evt.key==K_h:
+# 					stats[currNum][2]=30
+# 				if evt.key==K_n:
+# 					stage=10	
+# 				if evt.key == K_r:
+# 					return	
+# 		mx,my=mouse.get_pos()
+# 		mb=mouse.get_pressed()
+# 		battleBack = transform.scale(image.load("img/battlebacks1/DarkSpace.png"), (WIDTH, HEIGHT))	
+# 		enemy = image.load("img/enemies/Chimera.png")
+# 		FIGHTANIMATION(screen, enemy, battleBack)
+# 		display.flip() 
+# 	quit()
 def HP_Change(HP):
 	global stats
 	if currChar == 'Crow':
@@ -825,7 +833,8 @@ while running:
 				mixer.music.play()		
 			if evt.key == K_b:
 				# mode = 1 - mode	
-				Battle()
+				# Battle()
+				pass
 			if mode == 0:	
 				if evt.key == K_i:
 					InventoryDisplay(currChar, 0)	
@@ -887,11 +896,11 @@ while running:
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
-	# encounter_steps = r(10,20)	
-	# if int(step_counter) == encounter_steps:
-	# 	step_counter = 0
-	# 	mode = 1
-	# print(step_counter)	
+	encounter_steps = r(10,20)	
+	if int(step_counter) == encounter_steps:
+		step_counter = 0
+		mode = 1
+	print(step_counter)	
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = stats[0][2]

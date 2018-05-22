@@ -12,17 +12,17 @@ screen = display.set_mode(size)
 # screen = display.set_mode(size, FULLSCREEN)
 # width, height = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
 ########################################## USE IN FINAL PRODUCT ##########################################
-battle=False
+battle = False
 #####################################fonts##################################
 font.init()
-fireFont=font.Font("Breathe Fire.otf",30)
+fireFont = font.Font("Breathe Fire.otf",30)
 #######################################fonts##############################
 #############battle variables
-Enemy_HP=100
-xp=0
-charNum=0
-stage=0
-currNum=0
+Enemy_HP = 100
+xp = 0
+charNum = 0
+stage = 0
+currNum = 0
 ################ entry and openning pic and gif"""""""""""""""""""""''
 # for i in range(0,71):
 # 	screen.fill((37,34,39))
@@ -113,16 +113,18 @@ def display_main_menu():
 					print(options[arrow_pos])
 					if options[arrow_pos] == 'Inventory':
 						InventoryDisplay(currChar, 0)
-					if options[arrow_pos] == 'Exit':
+					elif options[arrow_pos] == 'Exit':
 						return
-					if options[arrow_pos] == 'Quit':
+					elif options[arrow_pos] == 'Quit':
 						save_menu('Quit')
 						global quit_stat
 						quit_stat = 'quit'
 						return
-					if options[arrow_pos] == 'Save':
-						# save_dict()	
+					elif options[arrow_pos] == 'Save':
 						save_menu('')
+					elif options[arrow_pos] == 'Quests':
+						display_quest()	
+
 		count = 0			
 		screen.blit(screen_back, (0,0))
 		screen.blit(menu, (100,50))
@@ -190,18 +192,26 @@ def save_menu(purp):
 			return		
 		display.flip()		
 def display_quest():
+	back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
+	selectedRect = Rect(0,0,800,200)
 	quest_thang = True
 	while quest_thang:
-
 		for evt in event.get():  
 			if evt.type == QUIT: 
 				quest_thang = False
+			if evt.type == KEYUP:
+				if evt.key == K_ESCAPE:
+					quest_thang = False
+					return	
+				if evt.key == K_DOWN:
+					selectedRect.width += 200
+					print(selectedRect.width)
 
 		mx,my=mouse.get_pos()
 		mb=mouse.get_pressed()
-							  
+		screen.blit(back, (0,0))
+		draw.rect(screen, (0,0,0), selectedRect)
 		display.flip() 
-	quit()
 def load_object(fname, chests, walls, portals):
 	global quest_completion
 	for tile_object in fname.objects:
@@ -833,7 +843,8 @@ while running:
 					# 	stats[1][2] += 100 	
 					# 	print(stats[1][2])
 					# print(stats)
-					print(inv_dict)
+					# print(inv_dict)
+					print(quest_completion)
 				if evt.key==K_a:
 					if stage>0:
 						stage-=1

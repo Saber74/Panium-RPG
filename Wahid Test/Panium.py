@@ -213,9 +213,9 @@ def display_quest():
 				if quest_completion[i][3] == 'false':
 					prog_dict[i] = 'Progress: You have not talked with ' + quest_completion[i][2]
 			if quest_completion[i][3] == 'true':	
-				rec_dict[i] = 'Quest Complete: Talk to ' + i + ' to complete your quest!'
+				rec_dict[i] = 'Quest Completion: Talk to ' + i + ' to complete your quest!'
 			else:
-				rec_dict[i] = "Quest Complete: You haven't completed the quest yet!"
+				rec_dict[i] = "Quest Completion: You haven't completed the quest yet!"
 	for i in quest_dict:
 		t = timesNewRomanFont.render('Quest: ' + quest_dict[i], True, (0,0,0))
 		display_txt.append(t)	
@@ -611,29 +611,30 @@ class NPC(sprite.Sprite):
 					if evt.type == QUIT: 
 						self.display_text = False
 						self.disp = False
-					if evt.type == KEYDOWN:
-						if evt.key == K_z and self.prog == len(self.split) - 1:
-							if self.item != 'NULL' and self.name not in npc_item:
-								self.item_split = self.item.split(' // ')
-								for i in self.item_split:
-									inventory.append(i)
-									if i not in inv_dict:
-										inv_dict[i] = ''
-								npc_item[self.name] = self.name
-							self.display_text = False
-							self.interact = False
-						if evt.key == K_SPACE:
-							if self.prog < len(self.split) - 1:
-								self.prog += 1	
-								self.n = 0
-								self.sent = ''
-								self.text_y = 60
 				mx,my=mouse.get_pos()
 				mb=mouse.get_pressed()
+				kp = key.get_pressed()
 				# print(mx,my)
 				screen.blit(dialogue_box, (0,0))
 				screen.blit(timesNewRomanFont.render(self.name + ':', True, (150,150,150)), (45,30))
 				self.split = self.speech.split(' // ')
+				if kp[K_SPACE]:
+					if self.prog < len(self.split) - 1 and self.n == 1:
+						self.prog += 1	
+						self.n = 0
+						self.sent = ''
+						self.text_y = 60
+				if kp[K_z] and self.prog == len(self.split) - 1:
+					# if evt.key == K_z and self.prog == len(self.split) - 1:
+						if self.item != 'NULL' and self.name not in npc_item:
+							self.item_split = self.item.split(' // ')
+							for i in self.item_split:
+								inventory.append(i)
+								if i not in inv_dict:
+									inv_dict[i] = ''
+							npc_item[self.name] = self.name
+						self.display_text = False
+						self.interact = False		
 				if self.n == 0:
 					for i in self.split[self.prog]:
 						self.sent += i
@@ -689,31 +690,32 @@ class Quest_NPC(sprite.Sprite):
 					if evt.type == QUIT: 
 						self.display_text = False
 						self.disp = False
-					if evt.type == KEYDOWN:
-						if evt.key == K_z and self.prog == len(self.split) - 1:
-							if self.name in quest_completion and quest_completion[self.name][0] == 'false':
-								quest_completion[self.name][0] = 'true'
-								self.quest_speech = 1
-							if self.item != 'NULL' and self.name not in npc_item and quest_completion[self.name][3] == 'true':
-								self.item_split = self.item.split(' // ')
-								for i in self.item_split:
-									inventory.append(i)
-									if i not in inv_dict:
-										inv_dict[i] = ''
-								npc_item[self.name] = self.name
-							self.display_text = False
-							self.interact = False
-						if evt.key == K_SPACE:
-							if self.prog < len(self.split) - 1:
-								self.prog += 1	
-								self.n = 0
-								self.sent = ''
-								self.text_y = 60
 				mx,my=mouse.get_pos()
 				mb=mouse.get_pressed()
+				kp = key.get_pressed()
 				screen.blit(dialogue_box, (0,0))
 				screen.blit(timesNewRomanFont.render(self.name + ':', True, (150,150,150)), (45,30))
 				self.split = self.speech[self.quest_speech].split(' // ')
+				if kp[K_SPACE]:
+					if self.prog < len(self.split) - 1 and self.n == 1:
+						if self.prog < len(self.split) - 1:
+							self.prog += 1	
+							self.n = 0
+							self.sent = ''
+							self.text_y = 60
+				if kp[K_z] and self.prog == len(self.split) - 1:
+					if self.name in quest_completion and quest_completion[self.name][0] == 'false':
+						quest_completion[self.name][0] = 'true'
+						self.quest_speech = 1
+					if self.item != 'NULL' and self.name not in npc_item and quest_completion[self.name][3] == 'true':
+						self.item_split = self.item.split(' // ')
+						for i in self.item_split:
+							inventory.append(i)
+							if i not in inv_dict:
+								inv_dict[i] = ''
+						npc_item[self.name] = self.name
+					self.display_text = False
+					self.interact = False
 				if self.n == 0:
 					for i in self.split[self.prog]:
 						self.sent += i

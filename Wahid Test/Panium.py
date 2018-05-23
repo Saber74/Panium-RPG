@@ -195,7 +195,7 @@ def save_menu(purp):
 def display_quest():
 	back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
 	selectedRect = Rect(0,0,800,200)
-
+	display_range = 0
 	quest_dict = {}
 	display_txt = []
 
@@ -225,6 +225,7 @@ def display_quest():
 	for i in rec_dict:
 		t = timesNewRomanFont.render(rec_dict[i], True, (0,0,0))
 		rec_txt.append(t)	
+	counter = 0
 	quest_thang = True
 	while quest_thang:
 		for evt in event.get():  
@@ -234,20 +235,29 @@ def display_quest():
 				if evt.key == K_ESCAPE:
 					quest_thang = False
 					return	
-				if evt.key == K_UP:
-					selectedRect.y -= 200
-				if evt.key == K_DOWN:
-					selectedRect.y += 200
+				if evt.key == K_UP and display_range > 0:
+					if selectedRect.y == 0:
+						display_range -= 1
+					else:
+						selectedRect.y -= 200
+				if evt.key == K_DOWN and display_range <= len(display_txt):
+					if selectedRect.y == 400:
+						display_range += 1
+					else:	
+						selectedRect.y += 200
 				if evt.key == K_j:
 					print(quest_completion)	
 		mx,my=mouse.get_pos()
 		mb=mouse.get_pressed()
 		screen.blit(back, (0,0))
 		draw.rect(screen, (0,0,0), selectedRect, 5)
-		for i in range(len(display_txt)):
-			screen.blit(display_txt[i], (10, 0 + 200 * i))
-			screen.blit(prog_txt[i], (10, 25 + 200 * i))
-			screen.blit(rec_txt[i], (10, 50 + 200 * i))
+		# for i in range(display_range, len(display_text) + display_range):
+		for i in range(display_range, len(display_txt)):
+			screen.blit(display_txt[i], (10, 0 + 200 * counter))
+			screen.blit(prog_txt[i], (10, 25 + 200 * counter))
+			screen.blit(rec_txt[i], (10, 50 + 200 * counter))
+			counter += 1
+		counter = 0	
 		display.flip()
 def load_object(fname, chests, walls, portals):
 	global quest_completion

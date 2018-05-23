@@ -179,6 +179,7 @@ def save_menu(purp):
 			prog_txt = ''
 			for i in saving_txt:
 				prog_txt += i
+				screen.blit(menu, (0,0))
 				screen.blit(medievalFont.render(prog_txt, True, (0,0,0)), (0, 0))
 				time.wait(100)
 				display.flip()	
@@ -196,9 +197,26 @@ def display_quest():
 	selectedRect = Rect(0,0,800,200)
 	quest_dict = {}
 	display_txt = []
+
+	prog_dict = {}
+	prog_txt = []
+	
+	rec_dict = {}
+	rec_txt = []
 	for i in quest_completion:
 		if quest_completion[i][0] == 'true':
 			quest_dict[i] = quest_completion[i][1] + ' with ' + quest_completion[i][2]
+			if quest_completion[i][1] == 'Talk':
+				if quest_completion[i][3] == 'true':
+					prog_dict[i] = 'Progress: You have talked with ' + quest_completion[i][2]
+				if quest_completion[i][3] == 'false':
+					prog_dict[i] = 'Progress: You have not talked with ' + quest_completion[i][2]
+	for i in quest_dict:
+		t = timesNewRomanFont.render('Quest: ' + quest_dict[i], True, (0,0,0))
+		display_txt.append(t)	
+	for i in prog_dict:
+		t = timesNewRomanFont.render(prog_dict[i], True, (0,0,0))
+		prog_txt.append(t)	
 	quest_thang = True
 	while quest_thang:
 		for evt in event.get():  
@@ -212,13 +230,15 @@ def display_quest():
 					selectedRect.y -= 200
 				if evt.key == K_DOWN:
 					selectedRect.y += 200
+				if evt.key == K_j:
+					print(quest_completion)	
 		mx,my=mouse.get_pos()
 		mb=mouse.get_pressed()
 		screen.blit(back, (0,0))
 		draw.rect(screen, (0,0,0), selectedRect, 5)
-		for i in quest_dict:
-			timesNewRomanFont.render(quest_completion[i], True, (0,0,0))
-		print(quest_dict)		
+		for i in range(len(display_txt)):
+			screen.blit(display_txt[i], (10, 0 + 200 * i))
+			screen.blit(prog_txt[i], (10, 25 + 200 * i))
 		display.flip()
 def load_object(fname, chests, walls, portals):
 	global quest_completion
@@ -576,7 +596,6 @@ class NPC(sprite.Sprite):
 		for i in quest_completion:
 			if quest_completion[i][2] == self.name and quest_completion[i][3] == 'false' and quest_completion[i][0] == 'true':
 				quest_completion[i][3] = 'true'
-				print(quest_completion[i][3])
 		if self.interact:
 			while self.display_text:
 				for evt in event.get():  

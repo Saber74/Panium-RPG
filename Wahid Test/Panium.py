@@ -195,6 +195,7 @@ def save_menu(purp):
 def display_quest():
 	back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
 	selectedRect = Rect(0,0,800,200)
+
 	quest_dict = {}
 	display_txt = []
 
@@ -204,19 +205,26 @@ def display_quest():
 	rec_dict = {}
 	rec_txt = []
 	for i in quest_completion:
-		if quest_completion[i][0] == 'true':
+		if quest_completion[i][0] == 'true' and quest_completion[i][-1] == 'false':
 			quest_dict[i] = quest_completion[i][1] + ' with ' + quest_completion[i][2]
 			if quest_completion[i][1] == 'Talk':
 				if quest_completion[i][3] == 'true':
 					prog_dict[i] = 'Progress: You have talked with ' + quest_completion[i][2]
 				if quest_completion[i][3] == 'false':
 					prog_dict[i] = 'Progress: You have not talked with ' + quest_completion[i][2]
+			if quest_completion[i][3] == 'true':	
+				rec_dict[i] = 'Quest Complete: Talk to ' + i + ' to complete your quest!'
+			else:
+				rec_dict[i] = "Quest Complete: You haven't completed the quest yet!"
 	for i in quest_dict:
 		t = timesNewRomanFont.render('Quest: ' + quest_dict[i], True, (0,0,0))
 		display_txt.append(t)	
 	for i in prog_dict:
 		t = timesNewRomanFont.render(prog_dict[i], True, (0,0,0))
 		prog_txt.append(t)	
+	for i in rec_dict:
+		t = timesNewRomanFont.render(rec_dict[i], True, (0,0,0))
+		rec_txt.append(t)	
 	quest_thang = True
 	while quest_thang:
 		for evt in event.get():  
@@ -239,6 +247,7 @@ def display_quest():
 		for i in range(len(display_txt)):
 			screen.blit(display_txt[i], (10, 0 + 200 * i))
 			screen.blit(prog_txt[i], (10, 25 + 200 * i))
+			screen.blit(rec_txt[i], (10, 50 + 200 * i))
 		display.flip()
 def load_object(fname, chests, walls, portals):
 	global quest_completion
@@ -915,11 +924,11 @@ while running:
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
-	encounter_steps = r(10,20)	
-	if int(step_counter) == encounter_steps:
-		step_counter = 0
-		mode = 1
-	print(step_counter)	
+	# encounter_steps = r(10,20)	
+	# if int(step_counter) == encounter_steps:
+	# 	step_counter = 0
+	# 	mode = 1
+	# print(step_counter)	
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = stats[0][2]

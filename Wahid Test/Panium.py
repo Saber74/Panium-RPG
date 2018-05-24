@@ -235,29 +235,35 @@ def display_quest():
 				if evt.key == K_ESCAPE:
 					quest_thang = False
 					return	
-				if evt.key == K_UP and display_range > 0:
-					if selectedRect.y == 0:
+				if evt.key == K_UP:
+					if selectedRect.y == 0 and display_range > 0:
 						display_range -= 1
 					else:
-						selectedRect.y -= 200
-				if evt.key == K_DOWN and display_range <= len(display_txt):
+						if selectedRect.y > 0: 
+							selectedRect.y -= 200
+				if evt.key == K_DOWN:
 					if selectedRect.y == 400:
-						display_range += 1
+						if display_range < len(display_txt) % 3 and len(display_txt) % 3 != 0:
+							display_range += 1
+						else:
+							if display_range < len(display_txt):	
+								display_range += 1
 					else:	
-						selectedRect.y += 200
+						if selectedRect.y < 400:
+							selectedRect.y += 200
 				if evt.key == K_j:
 					print(quest_completion)	
 		mx,my=mouse.get_pos()
 		mb=mouse.get_pressed()
 		screen.blit(back, (0,0))
 		draw.rect(screen, (0,0,0), selectedRect, 5)
-		# for i in range(display_range, len(display_text) + display_range):
 		for i in range(display_range, len(display_txt)):
 			screen.blit(display_txt[i], (10, 0 + 200 * counter))
 			screen.blit(prog_txt[i], (10, 25 + 200 * counter))
 			screen.blit(rec_txt[i], (10, 50 + 200 * counter))
 			counter += 1
 		counter = 0	
+		print(selectedRect.y, display_range)
 		display.flip()
 def load_object(fname, chests, walls, portals):
 	global quest_completion

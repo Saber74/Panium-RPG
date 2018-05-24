@@ -243,8 +243,9 @@ def display_quest():
 							selectedRect.y -= 200
 				if evt.key == K_DOWN:
 					if selectedRect.y == 400:
-						if display_range < len(display_txt) % 3 and len(display_txt) % 3 != 0:
-							display_range += 1
+						if len(display_txt) % 3 != 0:
+							if display_range < len(display_txt) % 3:
+								display_range += 1
 						else:
 							if display_range < len(display_txt):	
 								display_range += 1

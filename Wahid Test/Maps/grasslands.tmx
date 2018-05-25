@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="205">
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="207">
  <tileset firstgid="1" name="Revolution_Grasslands" tilewidth="32" tileheight="32" tilecount="190" columns="10">
   <image source="revolution_grasslands.png" trans="a349a4" width="320" height="608"/>
   <tile id="5">
@@ -306,6 +306,27 @@
    <properties>
     <property name="Dialogue" value="HALLLOO"/>
     <property name="Name" value="ss"/>
+    <property name="item" value="NULL"/>
+   </properties>
+  </object>
+  <object id="205" name="Quest_NPC" type="0" x="17" y="1079" width="20" height="30">
+   <properties>
+    <property name="Complete" type="bool" value="false"/>
+    <property name="Dialogue" value="I have a quest for you. # Find the stupid boy and your mission will be complete."/>
+    <property name="DialogueFinish" value="Good job child"/>
+    <property name="DialogueQuest" value="Go on, find the jnaksj"/>
+    <property name="Goal" value="ssass"/>
+    <property name="Key" value="Talk"/>
+    <property name="Name" value="sass"/>
+    <property name="Quest" type="bool" value="false"/>
+    <property name="Received" type="bool" value="false"/>
+    <property name="item" value="Secret Journal"/>
+   </properties>
+  </object>
+  <object id="206" name="NPC" type="1" x="61" y="1082" width="20" height="30">
+   <properties>
+    <property name="Dialogue" value="HALLLOO"/>
+    <property name="Name" value="ssass"/>
     <property name="item" value="NULL"/>
    </properties>
   </object>

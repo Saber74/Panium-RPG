@@ -247,13 +247,13 @@ def display_quest():
 							if display_range < len(display_txt) % 3:
 								display_range += 1
 						else:
-							if display_range < len(display_txt):	
+							if display_range < len(display_txt) - 3:	
 								display_range += 1
 					else:	
 						if selectedRect.y < 400:
 							selectedRect.y += 200
 				if evt.key == K_j:
-					print(quest_completion)	
+					print(len(quest_completion))	
 		mx,my=mouse.get_pos()
 		mb=mouse.get_pressed()
 		screen.blit(back, (0,0))
@@ -655,6 +655,9 @@ class NPC(sprite.Sprite):
 				if self.n == 0:
 					for i in self.split[self.prog]:
 						self.sent += i
+						if kp[K_SPACE] and len(self.sent) != len(self.split[self.prog]):
+							self.sent = self.split[self.prog]
+							self.n = 1
 						if i == '#':
 							self.sent = ''
 							self.s = 0	

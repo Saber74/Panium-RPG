@@ -1011,19 +1011,22 @@ while running:
 			npc_interact[0].display_speech(True, True)
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
-			# print('s')
-			# h = hit[0]
-			# if h.rect.collidepoint((player.rect.centerx, player.rect.bottom -20)):
-				# if player.rect.x > h.rect.x and L and not U and not D and not R:
-					# pan = 0
-				# elif player.rect.x < h.rect.x and R and not L and not U and not D:
-					# pan = 0
-
-				# if player.rect.y > h.rect.y and U and not D and not R and not L:
-					# pan = 0
-				# elif player.rect.y < h.rect.y and D and not U and not R and not L:
-					# pan = 0	
-			pass		
+			if player.rect.colliderect(hit[0].rect):
+				if player.rect.x > hit[0].rect.x and L:
+					pan = 0
+					x_diff -= 6
+				elif player.rect.y < hit[0].rect.y and D:
+					pan = 0
+					y_diff += 6
+				elif player.rect.y > hit[0].rect.y and U:
+					pan = 0
+					y_diff -= 6
+				elif player.rect.x < hit[0].rect.x and R:
+					pan = 0
+					x_diff += 6
+				else:
+					pan = 1
+		print(x_diff,y_diff)				
 		tel = sprite.spritecollide(player, portals, False)
 		if tel:
 				lvl = tel[-1].type

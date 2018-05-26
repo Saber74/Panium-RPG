@@ -1013,19 +1013,21 @@ while running:
 		if hit:
 			if player.rect.colliderect(hit[0].rect):
 				if player.rect.x > hit[0].rect.x and L:
-					pan = 0
-					x_diff -= 6
+					# pan = 0	
+					x_diff -= pan
 				elif player.rect.y < hit[0].rect.y and D:
-					pan = 0
-					y_diff += 6
+					# pan = 0
+					y_diff += pan
 				elif player.rect.y > hit[0].rect.y and U:
-					pan = 0
-					y_diff -= 6
+					# pan = 0
+					y_diff -= pan
 				elif player.rect.x < hit[0].rect.x and R:
-					pan = 0
-					x_diff += 6
-				else:
-					pan = 1
+					# pan = 0
+					x_diff += pan
+				npcs.update()
+				chests.update()	
+				# else:
+				# 	pan = 1
 		print(x_diff,y_diff)				
 		tel = sprite.spritecollide(player, portals, False)
 		if tel:

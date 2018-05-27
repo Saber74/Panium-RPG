@@ -23,6 +23,7 @@ xp = 0
 charNum = 0
 stage = 0
 currNum = 0
+rec = False
 ################ entry and openning pic and gif"""""""""""""""""""""''
 # for i in range(0,71):
 # 	screen.fill((37,34,39))
@@ -79,7 +80,7 @@ font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
 medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
 fancyFont=font.Font("FONTS/Friedolin.ttf", 95)
-def start_Screen():
+def start_screen():
 	running = True
 	while running:
 
@@ -112,7 +113,7 @@ def display_main_menu():
 				if evt.key == K_SPACE and len(options) > 0:
 					print(options[arrow_pos])
 					if options[arrow_pos] == 'Inventory':
-						InventoryDisplay(currChar, 0)
+						InventoryDisplay(currChar, 0, inventory)
 					elif options[arrow_pos] == 'Exit':
 						return
 					elif options[arrow_pos] == 'Quit':
@@ -289,6 +290,9 @@ def load_object(fname, chests, walls, portals):
 			if tile_object.Name not in quest_completion:
 				quest_completion[tile_object.Name] = [tile_object.Quest, tile_object.Key, tile_object.Goal, tile_object.Complete, tile_object.Received]
 			npcs.add(quest_npc)
+		# elif tile_object.name == 'MAP_INFO':
+		# 	global x_diff ; global y_diff
+		# 	x_diff, y_diff = int(tile_object.Pos_x), int(tile_object.Pos_y)
 def levelSelect(lvl, chests, walls, portals):
 	if lvl == '0':
 		fname = load_pygame("Maps/STORE.tmx")
@@ -312,24 +316,38 @@ def MapLoad(Map_Name):
 				if tile:
 					screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff))
 					# screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff), Rect(x * Map_Name.tilewidth + x_diff, y * Map_Name.tileheight + y_diff, WIDTH, HEIGHT))
-def InventoryDisplay(current_Character, num):
+def InventoryDisplay(current_Character, num, inventory):
 	global inv_dict
 	inv = ''
-	for i in inventory:
-		number = 0
-		for n in inventory:
-			if i == n:
-				number += 1
-		inv += i + ' ' + 'x' + str(number) + ', '
-	split = inv.split(', ')
-	del split[split.index('')]
-	s = set(split)
-	for i in s:
-		s1 = i.split(' x')
-		if s1[0] not in inventory:
-			inv_dict[s1[0]] = ''
-		else:
-			inv_dict[s1[0]] = i
+	inventory = inventory
+	if num != 5:
+		for i in inventory:
+			number = 0
+			for n in inventory:
+				if i == n:
+					number += 1
+			inv += i + ' ' + 'x' + str(number) + ', '
+		split = inv.split(', ')
+		print(split)
+		del split[split.index('')]
+		s = set(split)
+		for i in s:
+			s1 = i.split(' x')
+			if s1[0] not in inventory:
+				inv_dict[s1[0]] = ''
+			else:
+				inv_dict[s1[0]] = i
+	else:
+		split = inventory.split(' // ')
+		for i in split:
+			number = 0
+			for n in split:
+				if i == n:
+					number += 1
+			if i + ' ' + 'x' + str(number) not in inv:		
+				inv += i + ' ' + 'x' + str(number) + ' // '
+		print(inv)		
+
 	if num == 0:
 		display_inventory(inv_dict, current_Character, 'inventory')	
 	elif num == 1:
@@ -338,7 +356,9 @@ def InventoryDisplay(current_Character, num):
 		display_inventory(inv_dict, current_Character, 'sell')	
 	elif num == 3:
 		display_inventory(inv_dict, current_Character, 'battle')	
-
+	elif num == 5:
+		alert_display(inv, 1)	
+			
 def display_inventory(Inventory, current_Character, mode):
 	global inv_dict
 	screen.blit(menu_base, (0,0))
@@ -376,7 +396,7 @@ def display_inventory(Inventory, current_Character, mode):
 								HP_Change(i[1])
 						del inv[arrow_pos]	
 						del inventory[inventory.index(y[0])]
-						tmp = InventoryDisplay(current_Character, 1)
+						tmp = InventoryDisplay(current_Character, 1, inventory)
 						inv = []
 						for i in tmp:
 							if inv_dict[i] != '':
@@ -395,7 +415,7 @@ def display_inventory(Inventory, current_Character, mode):
 							print("You have gained", str(100), "gold!! Now you have", str(gold), "gold in total!!")
 						del inv[arrow_pos]	
 						del inventory[inventory.index(y[0])]
-						tmp = InventoryDisplay(current_Character, 1)
+						tmp = InventoryDisplay(current_Character, 1, inventory)
 						inv = []
 						for i in tmp:
 							if inv_dict[i] != '':
@@ -413,7 +433,7 @@ def display_inventory(Inventory, current_Character, mode):
 						del inventory[inventory.index(y[0])]
 						used = True
 						return used
-						# inv = list(InventoryDisplay(current_Character, 1))	
+						# inv = list(InventoryDisplay(current_Character, 1, inventory))	
 		count = 0			
 		screen.blit(menu_base, (0,0))
 		for i in range(len(inv)):
@@ -436,42 +456,39 @@ def display_inventory(Inventory, current_Character, mode):
 		display.flip()
 
 	arrow_pos = 0
-# def Battle():
-# 	turn = "Player"		
-# 	used = False
-# 	print(turn,"GOES FIRST!!!")	
-# 	Enemy_HP = 100
-# 	Player_HP = stats[0][2]
-# 	print("PRESS SPACE TO ATTACK")
-# 	for i in battleAnimation:
-# 		screen.blit(i,(0,0))
-# 		time.wait(25)
-# 		display.flip()
-# 	battle = True
-# 	while battle:
-# 		for evt in event.get():  
-# 			if evt.type == QUIT: 
-# 				battle = False
-# 			if evt.type == KEYDOWN:
-# 				if evt.key == K_ESCAPE:
-# 					battle = False
-# 					return
-# 				if evt.key==K_a:
-# 					if stage>0:
-# 						stage-=1
-# 				if evt.key==K_h:
-# 					stats[currNum][2]=30
-# 				if evt.key==K_n:
-# 					stage=10	
-# 				if evt.key == K_r:
-# 					return	
-# 		mx,my=mouse.get_pos()
-# 		mb=mouse.get_pressed()
-# 		battleBack = transform.scale(image.load("img/battlebacks1/DarkSpace.png"), (WIDTH, HEIGHT))	
-# 		enemy = image.load("img/enemies/Chimera.png")
-# 		FIGHTANIMATION(screen, enemy, battleBack)
-# 		display.flip() 
-# 	quit()
+
+def alert_display(item, mode):
+	item = item
+	n = 0
+	text_y = 60
+	alert = True
+	while alert:
+		for evt in event.get():  
+			if evt.type == QUIT: 
+				alert = False
+			if evt.type == KEYUP:
+				# if evt.key == K_z:
+				# 	alert = False
+				# 	return	
+				if evt.key == K_ESCAPE:
+					alert = False
+					return	
+		mx,my=mouse.get_pos()
+		mb=mouse.get_pressed()
+		kp = key.get_pressed()
+		if n == 0:
+			screen.blit(dialogue_box, (0,0))
+			screen.blit(timesNewRomanFont.render('You have received the following items:', True, (150,150,150)), (45, 30))
+			if mode == 1:
+				split = item.split(' // ')
+				for i in range(len(split)):
+					screen.blit(timesNewRomanFont.render(split[i], True, (150,150,150)), (45, text_y + 30 * i))
+					time.wait(1000)
+					display.flip()
+			n = 1	
+		display.flip() 
+	quit()
+
 def HP_Change(HP):
 	global stats
 	if currChar == 'Crow':
@@ -577,7 +594,8 @@ class Player(sprite.Sprite):
 		self.rect.midbottom = (self.x,self.y)
 	def update(self):
 		self.image = cm
-		self.x, self.y = x, y
+		self.rect = self.image.get_rect()
+		self.rect.x, self.rect.y = self.x, self.y - self.rect.height
 
 class Obstacle(sprite.Sprite):
 	def __init__(self, x, y, w, h):
@@ -631,7 +649,6 @@ class NPC(sprite.Sprite):
 				mx,my=mouse.get_pos()
 				mb=mouse.get_pressed()
 				kp = key.get_pressed()
-				# print(mx,my)
 				screen.blit(dialogue_box, (0,0))
 				screen.blit(timesNewRomanFont.render(self.name + ':', True, (150,150,150)), (45,30))
 				self.split = self.speech.split(' // ')
@@ -650,14 +667,12 @@ class NPC(sprite.Sprite):
 								if i not in inv_dict:
 									inv_dict[i] = ''
 							npc_item[self.name] = self.name
+							InventoryDisplay(currChar, 5, self.item)
 						self.display_text = False
 						self.interact = False		
 				if self.n == 0:
 					for i in self.split[self.prog]:
 						self.sent += i
-						if kp[K_SPACE] and len(self.sent) != len(self.split[self.prog]):
-							self.sent = self.split[self.prog]
-							self.n = 1
 						if i == '#':
 							self.sent = ''
 							self.s = 0	
@@ -670,7 +685,6 @@ class NPC(sprite.Sprite):
 							self.s = 100
 						screen.blit(timesNewRomanFont.render(self.sent, True, (150,150,150)), (45,self.text_y))
 						display.flip()
-						# time.wait(70)
 						time.wait(35)
 					self.n = 1	
 
@@ -821,7 +835,7 @@ class Store_Clerk(sprite.Sprite):
 					ItemName = medievalFont.render(self.selection[i], True, (0,0,0))			
 					screen.blit(ItemName, (105, 90 + 30 * i))
 			if self.event == 'sell': 
-				InventoryDisplay(currChar, 2)
+				InventoryDisplay(currChar, 2, inventory)
 				self.event = c
 			mx, my = mouse.get_pos()
 			# print(str(mx) + ', ' + str(my))
@@ -845,9 +859,12 @@ class Chest(sprite.Sprite):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
 		if self.image == self.prev_image and self.opened and kp[K_SPACE]:
 			self.image = self.images[1]
-			inventory.append(self.item)
-			print(self.item, "has been obtained!!")
+			self.split = self.item.split(' // ')
 			openedChests.append(self.name)
+			for i in self.split:
+				inventory.append(i)
+				print(i, "has been obtained!!")
+			InventoryDisplay(currChar, 5, self.item)
 all_sprites = sprite.Group()
 walls = sprite.Group()
 chests = sprite.Group()
@@ -887,7 +904,7 @@ while running:
 				pass
 			if mode == 0:	
 				if evt.key == K_i:
-					InventoryDisplay(currChar, 0)	
+					InventoryDisplay(currChar, 0, inventory)	
 				if evt.key == K_q:
 					inventory = []
 					openedChests = []
@@ -909,6 +926,8 @@ while running:
 						stage-=1
 				if evt.key==K_h:
 					stats[currNum][2]=30
+				if evt.key==K_x:
+					rec = not rec
 				if evt.key==K_n:
 					stage=10	
 				if evt.key == K_r:
@@ -951,6 +970,8 @@ while running:
 	# 	step_counter = 0
 	# 	mode = 1
 	# print(step_counter)	
+	if rec:
+		draw.rect(screen, (0,0,0), player.rect)
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = stats[0][2]
@@ -990,7 +1011,7 @@ while running:
 		else:
 			pan = 5	
 			s = 5
-		# print(myClock.get_fps())	
+		print(myClock.get_fps())	
 		# if myClock.get_fps() < 50:
 		# 	print("DROPPED FRAME")
 		# UPDATE
@@ -1012,26 +1033,20 @@ while running:
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			if player.rect.colliderect(hit[0].rect):
-				if player.rect.x > hit[0].rect.x and L:
-					# pan = 0	
+				if L:
 					x_diff -= pan
-				elif player.rect.y < hit[0].rect.y and D:
-					# pan = 0
+				elif D:
 					y_diff += pan
-				elif player.rect.y > hit[0].rect.y and U:
-					# pan = 0
+				elif U:
 					y_diff -= pan
-				elif player.rect.x < hit[0].rect.x and R:
-					# pan = 0
+				elif R:
 					x_diff += pan
 				npcs.update()
 				chests.update()	
-				# else:
-				# 	pan = 1
-		print(x_diff,y_diff)				
+				clerks.update()
 		tel = sprite.spritecollide(player, portals, False)
 		if tel:
-				lvl = tel[-1].type
+				lvl = tel[0].type
 				if lvl == '0':
 					x_diff, y_diff = 240, 100	
 				elif lvl == '1':
@@ -1206,7 +1221,7 @@ while running:
 				# elif stage==2: ####for defencive items or other stuff??? idk we can decide on it later
 			elif stage==3 and len(inventory) > 0:
 				if used == False:
-					InventoryDisplay(currChar, 3)
+					InventoryDisplay(currChar, 3, inventory)
 					stage = 1	
 				else:
 					print("You Have Already Used An Item!")	

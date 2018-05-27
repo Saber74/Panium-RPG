@@ -82,6 +82,6 @@
   <object id="5" name="Portal" type="1" x="143" y="315" width="32" height="6"/>
   <object id="6" name="wall" x="1" y="-3" width="319" height="53"/>
   <object id="7" name="wall" x="0" y="127" width="319" height="31"/>
-  <object id="14" name="Clerk" type="1" x="145" y="81" width="29" height="53"/>
+  <object id="14" name="Clerk" type="1" x="203" y="166.333" width="29" height="53"/>
  </objectgroup>
 </map>

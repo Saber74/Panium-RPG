@@ -433,16 +433,13 @@ def display_inventory(Inventory, current_Character, mode):
 						del inventory[inventory.index(y[0])]
 						used = True
 						return used
-						# inv = list(InventoryDisplay(current_Character, 1, inventory))	
 		count = 0			
 		screen.blit(menu_base, (0,0))
 		if arrow_pos > len(inv):
 			arrow_pos = len(inv)
 		for i in range(len(inv)):
 			count += 1
-			# print(inv[i])
 			ItemName = medievalFont.render(inv_dict[inv[i]], True, (0,0,0))
-			# print(inv_dict[inv[i]])
 			screen.blit(ItemName, (470, 20 + 30 * count))
 			if arrow_pos == len(inv):
 				arrow_pos -= 1
@@ -454,7 +451,6 @@ def display_inventory(Inventory, current_Character, mode):
 		elif current_Character == "Raven":
 			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
 		mx, my = mouse.get_pos()
-		# print(str(mx) + ', ' + str(my))
 		display.flip()
 
 	arrow_pos = 0
@@ -818,7 +814,6 @@ class Store_Clerk(sprite.Sprite):
 							if int(y[1]) <= gold:
 								print("You have bought a " + y[0] + '!!')
 								inventory.append(y[0])
-								# inv_dict
 								gold -= int(y[1])
 							if int(y[1]) > gold:
 								print("You don't have enough money!!")

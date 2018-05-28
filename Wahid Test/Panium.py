@@ -111,7 +111,6 @@ def display_main_menu():
 				if evt.key == K_UP:
 					arrow_pos -= 1
 				if evt.key == K_SPACE and len(options) > 0:
-					print(options[arrow_pos])
 					if options[arrow_pos] == 'Inventory':
 						InventoryDisplay(currChar, 0, inventory)
 					elif options[arrow_pos] == 'Exit':
@@ -139,7 +138,6 @@ def display_main_menu():
 			draw.circle(screen, (0,0,0), (110,75 + 30 * arrow_pos), 6)
 			screen.blit(optionName, (120, 30 + 30 * count))
 		mx, my = mouse.get_pos()
-		# print(str(mx) + ', ' + str(my))
 		display.flip()
 def save_menu(purp):
 	menu = transform.scale(image.load("img/menu/main_menu_rotated.png").convert_alpha(), (500, 200))
@@ -259,6 +257,8 @@ def display_quest():
 		mb=mouse.get_pressed()
 		screen.blit(back, (0,0))
 		draw.rect(screen, (0,0,0), selectedRect, 5)
+		if len(display_txt) <= 3 and display_range > 0:
+			display_range = 0
 		for i in range(display_range, len(display_txt)):
 			screen.blit(display_txt[i], (10, 0 + 200 * counter))
 			screen.blit(prog_txt[i], (10, 25 + 200 * counter))
@@ -328,8 +328,8 @@ def InventoryDisplay(current_Character, num, inventory):
 					number += 1
 			inv += i + ' ' + 'x' + str(number) + ', '
 		split = inv.split(', ')
-		print(split)
 		del split[split.index('')]
+		print('split: ',split)
 		s = set(split)
 		for i in s:
 			s1 = i.split(' x')
@@ -346,7 +346,7 @@ def InventoryDisplay(current_Character, num, inventory):
 					number += 1
 			if i + ' ' + 'x' + str(number) not in inv:		
 				inv += i + ' ' + 'x' + str(number) + ' // '
-		print(inv)		
+		print('inv: ',inv)		
 
 	if num == 0:
 		display_inventory(inv_dict, current_Character, 'inventory')	
@@ -436,6 +436,8 @@ def display_inventory(Inventory, current_Character, mode):
 						# inv = list(InventoryDisplay(current_Character, 1, inventory))	
 		count = 0			
 		screen.blit(menu_base, (0,0))
+		if arrow_pos > len(inv):
+			arrow_pos = len(inv)
 		for i in range(len(inv)):
 			count += 1
 			# print(inv[i])
@@ -466,10 +468,10 @@ def alert_display(item, mode):
 		for evt in event.get():  
 			if evt.type == QUIT: 
 				alert = False
-			if evt.type == KEYUP:
-				# if evt.key == K_z:
-				# 	alert = False
-				# 	return	
+			if evt.type == KEYDOWN:
+				if evt.key == K_z:
+					alert = False
+					return	
 				if evt.key == K_ESCAPE:
 					alert = False
 					return	
@@ -479,12 +481,13 @@ def alert_display(item, mode):
 		if n == 0:
 			screen.blit(dialogue_box, (0,0))
 			screen.blit(timesNewRomanFont.render('You have received the following items:', True, (150,150,150)), (45, 30))
-			if mode == 1:
-				split = item.split(' // ')
-				for i in range(len(split)):
-					screen.blit(timesNewRomanFont.render(split[i], True, (150,150,150)), (45, text_y + 30 * i))
-					time.wait(1000)
-					display.flip()
+			split = item.split(' // ')
+			if '' in split:
+				del split[split.index('')]
+			for i in range(len(split)):
+				screen.blit(timesNewRomanFont.render(split[i], True, (150,150,150)), (45, text_y + 30 * i))
+				# time.wait(100)
+				display.flip()
 			n = 1	
 		display.flip() 
 	quit()
@@ -534,9 +537,9 @@ npc_item = load_dict()[0]['npc_items']
 currChar = load_dict()[0]["Current Charachter"]
 quest_completion = load_dict()[0]['Quests']
 inv_dict = load_dict()[0]['inv_dict']
-print(inv_dict)
 
 stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
+stats[0][2] = 10000
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
@@ -747,6 +750,7 @@ class Quest_NPC(sprite.Sprite):
 							inventory.append(i)
 							if i not in inv_dict:
 								inv_dict[i] = ''
+						InventoryDisplay(currChar, 5, self.item)		
 						npc_item[self.name] = self.name
 					self.display_text = False
 					self.interact = False
@@ -838,7 +842,6 @@ class Store_Clerk(sprite.Sprite):
 				InventoryDisplay(currChar, 2, inventory)
 				self.event = c
 			mx, my = mouse.get_pos()
-			# print(str(mx) + ', ' + str(my))
 			display.flip()	
 
 class Chest(sprite.Sprite):
@@ -880,6 +883,7 @@ print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) 
 running = True
 key.set_repeat(100,100)
 while running:
+	print(len(inventory))
 	for evt in event.get():  
 		if evt.type == QUIT: 
 			save_dict()
@@ -965,7 +969,7 @@ while running:
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
-	# encounter_steps = r(10,20)	
+	# encounter_steps = r(10,80)	
 	# if int(step_counter) == encounter_steps:
 	# 	step_counter = 0
 	# 	mode = 1
@@ -1009,9 +1013,9 @@ while running:
 			pan = 10
 			s = 2
 		else:
-			pan = 5	
+			pan = 5
 			s = 5
-		print(myClock.get_fps())	
+		# print(myClock.get_fps())	
 		# if myClock.get_fps() < 50:
 		# 	print("DROPPED FRAME")
 		# UPDATE
@@ -1045,7 +1049,7 @@ while running:
 				chests.update()	
 				clerks.update()
 		tel = sprite.spritecollide(player, portals, False)
-		if tel:
+		if tel and kp[K_SPACE]:
 				lvl = tel[0].type
 				if lvl == '0':
 					x_diff, y_diff = 240, 100	

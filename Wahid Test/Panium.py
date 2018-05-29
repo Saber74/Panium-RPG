@@ -303,6 +303,9 @@ def levelSelect(lvl, chests, walls, portals):
 	if lvl == '2':
 		fname = load_pygame("Maps/desert.tmx")
 		tops = load_pygame("Maps/blank.tmx")
+	if lvl == '3':
+		fname = load_pygame("Maps/Town.tmx")
+		tops = load_pygame("Maps/blank.tmx")
 	kill = [chests, walls, portals, clerks, npcs]
 	for i in kill:
 		for n in i:
@@ -984,6 +987,7 @@ while running:
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
+	print(screen.get_at((mx,my)))
 	U = R = D = L = moving = False
 	# xp+=10
 	# screen.fill((255,255,255))
@@ -1079,6 +1083,8 @@ while running:
 					x_diff, y_diff = -545, -580
 				elif lvl == '2':
 					x_diff, y_diff = -1285, -495	
+				elif lvl == '3':
+					x_diff, y_diff = 0, 0	
 				fname, tops = levelSelect(lvl, chests, walls, portals)
 				load_object(fname, chests, walls, portals)
 		chest_open = sprite.spritecollide(player, chests, False)	

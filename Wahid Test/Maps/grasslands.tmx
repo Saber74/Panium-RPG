@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="209">
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="210">
  <tileset firstgid="1" name="Revolution_Grasslands" tilewidth="32" tileheight="32" tilecount="190" columns="10">
   <image source="revolution_grasslands.png" trans="a349a4" width="320" height="608"/>
   <tile id="5">
@@ -330,11 +330,6 @@
     <property name="item" value="NULL"/>
    </properties>
   </object>
-  <object id="207" name="MAP_INFO" x="8" y="2" width="50" height="56">
-   <properties>
-    <property name="Pos_x" value="0"/>
-    <property name="Pos_y" value="0"/>
-   </properties>
-  </object>
+  <object id="209" name="Portal" type="3" x="0.666667" y="1.33335" width="84" height="53.3333"/>
  </objectgroup>
 </map>

@@ -283,7 +283,7 @@ def load_object(fname, chests, walls, portals):
 			clerk = Store_Clerk(tile_object.x, tile_object.y, tile_object.type)
 			clerks.add(clerk)
 		elif tile_object.name == 'NPC':
-			npc = NPC(tile_object.x, tile_object.y, tile_object.type, tile_object.Dialogue, tile_object.item, tile_object.Name)	
+			npc = NPC(tile_object.x, tile_object.y, tile_object.type, [tile_object.Dialogue], tile_object.item, tile_object.Name)	
 			npcs.add(npc)
 		elif tile_object.name == 'Quest_NPC':
 			quest_npc = Quest_NPC(tile_object.x, tile_object.y, tile_object.type, [tile_object.Dialogue, tile_object.DialogueQuest, tile_object.DialogueFinish], tile_object.item, tile_object.Name, tile_object.Quest)	
@@ -365,6 +365,9 @@ def display_inventory(Inventory, current_Character, mode):
 	arrow_pos = 0
 	inventory_open = True
 	inv = []
+	display_range = 0
+	tmp_inv = []
+	counter = 0
 	for i in Inventory:
 		if inv_dict[i] != '':
 			inv.append(i)
@@ -380,12 +383,25 @@ def display_inventory(Inventory, current_Character, mode):
 					return
 			if evt.type == KEYDOWN:
 				if evt.key == K_DOWN:
-					arrow_pos += 1
+					if arrow_pos == 16 and display_range < 16:	
+						if display_range < len(inv) - 17:
+							display_range += 1
+						# display_range += 1
+					if arrow_pos < 16:
+						arrow_pos += 1
+					if counter < len(inv):	
+						counter += 1
 				if evt.key == K_UP:
-					arrow_pos -= 1
+					if arrow_pos == 0 and display_range > 0:
+						display_range -= 1	
+					if arrow_pos > 0:
+						arrow_pos -= 1
+					if counter > 0:	
+						counter -= 1
 				if evt.key == K_SPACE and len(inv) > 0:
 					if mode == 'inventory':
-						x = inv_dict[inv[arrow_pos]]
+						x = inv_dict[inv[counter]]
+						print(x)
 						y = x.split(" x")
 						if y[1] == '1':
 							inv_dict[y[0]] = ''
@@ -394,7 +410,7 @@ def display_inventory(Inventory, current_Character, mode):
 							if y[0] in i:
 								print("HP +", i[1])
 								HP_Change(i[1])
-						del inv[arrow_pos]	
+						del inv[counter]	
 						del inventory[inventory.index(y[0])]
 						tmp = InventoryDisplay(current_Character, 1, inventory)
 						inv = []
@@ -403,7 +419,7 @@ def display_inventory(Inventory, current_Character, mode):
 								inv.append(i)
 					if mode == 'sell':
 						global gold
-						x = inv_dict[inv[arrow_pos]]
+						x = inv_dict[inv[counter]]
 						y = x.split(" x")
 						if y[1] == '1':
 							inv_dict[y[0]] = ''
@@ -413,7 +429,7 @@ def display_inventory(Inventory, current_Character, mode):
 						except:
 							gold += 100
 							print("You have gained", str(100), "gold!! Now you have", str(gold), "gold in total!!")
-						del inv[arrow_pos]	
+						del inv[counter]	
 						del inventory[inventory.index(y[0])]
 						tmp = InventoryDisplay(current_Character, 1, inventory)
 						inv = []
@@ -422,30 +438,40 @@ def display_inventory(Inventory, current_Character, mode):
 								inv.append(i)
 					if mode == 'battle':
 						global used
-						x = inv[arrow_pos]
+						x = inv[counter]
 						y = x.split(" x")
 						for i in HP_items:
 							i = i.split(' ')
 							if y[0] in i:
 								print("HP +", i[1])
 								HP_Change(i[1])
-						del inv[arrow_pos]	
+						del inv[counter]	
 						del inventory[inventory.index(y[0])]
 						used = True
 						return used
 		count = 0			
 		screen.blit(menu_base, (0,0))
+		tmp_inv = []	
+		for i in range(display_range, len(inv)):
+			tmp_inv.append(inv[i])	
 		if arrow_pos > len(inv):
 			arrow_pos = len(inv)
-		for i in range(len(inv)):
-			count += 1
-			ItemName = medievalFont.render(inv_dict[inv[i]], True, (0,0,0))
-			screen.blit(ItemName, (470, 20 + 30 * count))
-			if arrow_pos == len(inv):
-				arrow_pos -= 1
-			if arrow_pos < 0:
-				arrow_pos += 1	
-			draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
+		if counter >= len(inv) - 1:	
+			counter = len(inv) - 1
+		if len(inv) - 17 < display_range:
+			display_range = len(inv) - 17
+		print(display_range)	
+		# print(tmp_inv)	
+		for i in range(len(tmp_inv)):
+			if i <= 16:
+				count += 1
+				ItemName = medievalFont.render(inv_dict[tmp_inv[i]], True, (0,0,0))
+				screen.blit(ItemName, (470, 20 + 30 * count))
+				if arrow_pos == len(inv):
+					arrow_pos -= 1
+				if arrow_pos < 0:
+					arrow_pos += 1	
+				draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
 		if current_Character == "Crow":
 			screen.blit(transform.scale(image.load("img/faces/crow.png").convert_alpha(), (130,185)),(30,35))			
 		elif current_Character == "Raven":
@@ -541,7 +567,9 @@ ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 cm = image.load("SPRITES/Crow/Walk/Up/0.png").convert_alpha()
 chest_open = []
-
+for i in range(3):
+	for i in range(30):
+		inventory.append(str(i))
 ############################################### ATTACK ANIMATIONS ###############################################
 CrowZ = []
 CrowX=[]
@@ -619,6 +647,7 @@ class NPC(sprite.Sprite):
 		global inv_dict
 		self.type = importance
 		self.speech = speech
+		print(self.speech)
 		self.item = item
 		self.name = name
 		self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
@@ -650,7 +679,7 @@ class NPC(sprite.Sprite):
 				kp = key.get_pressed()
 				screen.blit(dialogue_box, (0,0))
 				screen.blit(timesNewRomanFont.render(self.name + ':', True, (150,150,150)), (45,30))
-				self.split = self.speech.split(' // ')
+				self.split = self.speech[0].split(' // ')
 				if kp[K_SPACE]:
 					if self.prog < len(self.split) - 1 and self.n == 1:
 						self.prog += 1	

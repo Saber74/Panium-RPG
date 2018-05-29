@@ -329,14 +329,13 @@ def InventoryDisplay(current_Character, num, inventory):
 			inv += i + ' ' + 'x' + str(number) + ', '
 		split = inv.split(', ')
 		del split[split.index('')]
-		print('split: ',split)
-		s = set(split)
-		for i in s:
+		for i in split:
 			s1 = i.split(' x')
 			if s1[0] not in inventory:
 				inv_dict[s1[0]] = ''
 			else:
 				inv_dict[s1[0]] = i
+		print(inv_dict)			
 	else:
 		split = inventory.split(' // ')
 		for i in split:
@@ -346,7 +345,6 @@ def InventoryDisplay(current_Character, num, inventory):
 					number += 1
 			if i + ' ' + 'x' + str(number) not in inv:		
 				inv += i + ' ' + 'x' + str(number) + ' // '
-		print('inv: ',inv)		
 
 	if num == 0:
 		display_inventory(inv_dict, current_Character, 'inventory')	
@@ -368,9 +366,12 @@ def display_inventory(Inventory, current_Character, mode):
 	display_range = 0
 	tmp_inv = []
 	counter = 0
+	Inventory = Inventory
 	for i in Inventory:
+		print(inv_dict[i])
 		if inv_dict[i] != '':
 			inv.append(i)
+	print('inv', inv)
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYUP:
@@ -454,12 +455,14 @@ def display_inventory(Inventory, current_Character, mode):
 		tmp_inv = []	
 		for i in range(display_range, len(inv)):
 			tmp_inv.append(inv[i])	
+		print('tmp_inv', tmp_inv)	
 		if arrow_pos > len(inv):
 			arrow_pos = len(inv)
 		if counter >= len(inv) - 1:	
 			counter = len(inv) - 1
-		if len(inv) - 17 < display_range:
-			display_range = len(inv) - 17
+		if len(inv) > 16:	
+			if len(inv) - 17 < display_range:
+				display_range = len(inv) - 17
 		print(display_range)	
 		# print(tmp_inv)	
 		for i in range(len(tmp_inv)):
@@ -559,7 +562,6 @@ npc_item = load_dict()[0]['npc_items']
 currChar = load_dict()[0]["Current Charachter"]
 quest_completion = load_dict()[0]['Quests']
 inv_dict = load_dict()[0]['inv_dict']
-
 stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
 stats[0][2] = 10000
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
@@ -567,9 +569,6 @@ ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 cm = image.load("SPRITES/Crow/Walk/Up/0.png").convert_alpha()
 chest_open = []
-for i in range(3):
-	for i in range(30):
-		inventory.append(str(i))
 ############################################### ATTACK ANIMATIONS ###############################################
 CrowZ = []
 CrowX=[]
@@ -687,7 +686,6 @@ class NPC(sprite.Sprite):
 						self.sent = ''
 						self.text_y = 60
 				if kp[K_z] and self.prog == len(self.split) - 1:
-					# if evt.key == K_z and self.prog == len(self.split) - 1:
 						if self.item != 'NULL' and self.name not in npc_item:
 							self.item_split = self.item.split(' // ')
 							for i in self.item_split:

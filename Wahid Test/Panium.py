@@ -990,6 +990,7 @@ while running:
 	print(screen.get_at((mx,my)))
 	U = R = D = L = moving = False
 	# xp+=10
+	
 	# screen.fill((255,255,255))
 	# screen.blit(image.load("pvw1854.png"),(WIDTH//4,HEIGHT//3))
 	# KEYBOARD MOVEMENT	

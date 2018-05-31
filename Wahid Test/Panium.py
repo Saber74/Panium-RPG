@@ -305,7 +305,7 @@ def levelSelect(lvl, chests, walls, portals):
 		tops = load_pygame("Maps/blank.tmx")
 	if lvl == '3':
 		fname = load_pygame("Maps/Town.tmx")
-		tops = load_pygame("Maps/blank.tmx")
+		tops = load_pygame("Maps/Town_Tops.tmx")
 	kill = [chests, walls, portals, clerks, npcs]
 	for i in kill:
 		for n in i:
@@ -649,7 +649,6 @@ class NPC(sprite.Sprite):
 		global inv_dict
 		self.type = importance
 		self.speech = speech
-		print(self.speech)
 		self.item = item
 		self.name = name
 		self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
@@ -987,7 +986,6 @@ while running:
 	mx,my=mouse.get_pos()
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
-	print(screen.get_at((mx,my)))
 	U = R = D = L = moving = False
 	# xp+=10
 	
@@ -1076,7 +1074,7 @@ while running:
 				chests.update()	
 				clerks.update()
 		tel = sprite.spritecollide(player, portals, False)
-		if tel and kp[K_SPACE]:
+		if tel: #and kp[K_SPACE]:
 				lvl = tel[0].type
 				if lvl == '0':
 					x_diff, y_diff = 240, 100	

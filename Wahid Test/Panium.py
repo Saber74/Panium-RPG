@@ -28,8 +28,7 @@ rec = False
 # for i in range(0,71):
 # 	screen.fill((37,34,39))
 # 	screen.blit(image.load("Entry\output-%i.png"%i),(100,75))
-# 	display.update()
-	# time.wait(100)
+# 	display.update() # time.wait(100)
 # #####rects
 # newGamerect=Rect(WIDTH//2-120,HEIGHT//2-30,200,75)
 # screen.blit(transform.scale(image.load("option1.jpg"),(WIDTH,HEIGHT)),(0,0))
@@ -283,7 +282,7 @@ def load_object(fname, chests, walls, portals):
 			clerk = Store_Clerk(tile_object.x, tile_object.y, tile_object.type)
 			clerks.add(clerk)
 		elif tile_object.name == 'NPC':
-			npc = NPC(tile_object.x, tile_object.y, tile_object.type, [tile_object.Dialogue], tile_object.item, tile_object.Name)	
+			npc = NPC(tile_object.x, tile_object.y, tile_object.type, [tile_object.Dialogue], tile_object.item, tile_object.Name, tile_object.width, tile_object.height)	
 			npcs.add(npc)
 		elif tile_object.name == 'Quest_NPC':
 			quest_npc = Quest_NPC(tile_object.x, tile_object.y, tile_object.type, [tile_object.Dialogue, tile_object.DialogueQuest, tile_object.DialogueFinish], tile_object.item, tile_object.Name, tile_object.Quest)	
@@ -644,15 +643,21 @@ class Portal(sprite.Sprite):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff		
 
 class NPC(sprite.Sprite):
-	def __init__(self, x, y, importance, speech, item, name):
+	def __init__(self, x, y, importance, speech, item, name, width, height):
 		sprite.Sprite.__init__(self)
 		global inv_dict
 		self.type = importance
 		self.speech = speech
 		self.item = item
 		self.name = name
-		self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
-		self.rect = self.image.get_rect()
+		self.width, self.height = width, height
+		if self.type != '00':
+			self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
+			self.rect = self.image.get_rect()
+		else:
+			self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
+			self.image = transform.scale(self.image, (int(self.width), int(self.height)))
+			self.rect = self.image.get_rect()
 		self.interact = False
 		self.display_text = False
 		self.x, self.y = x, y

@@ -24,6 +24,7 @@ charNum = 0
 stage = 0
 currNum = 0
 rec = False
+pre_coord = []
 ################ entry and openning pic and gif"""""""""""""""""""""''
 # for i in range(0,71):
 # 	screen.fill((37,34,39))
@@ -266,6 +267,7 @@ def display_quest():
 		counter = 0	
 		print(selectedRect.y, display_range)
 		display.flip()
+x_diff, y_diff = 0, 0		
 def load_object(fname, chests, walls, portals):
 	global quest_completion
 	for tile_object in fname.objects:
@@ -289,9 +291,6 @@ def load_object(fname, chests, walls, portals):
 			if tile_object.Name not in quest_completion:
 				quest_completion[tile_object.Name] = [tile_object.Quest, tile_object.Key, tile_object.Goal, tile_object.Complete, tile_object.Received]
 			npcs.add(quest_npc)
-		# elif tile_object.name == 'MAP_INFO':
-		# 	global x_diff ; global y_diff
-		# 	x_diff, y_diff = int(tile_object.Pos_x), int(tile_object.Pos_y)
 def levelSelect(lvl, chests, walls, portals):
 	if lvl == '0':
 		fname = load_pygame("Maps/STORE.tmx")
@@ -306,8 +305,8 @@ def levelSelect(lvl, chests, walls, portals):
 		fname = load_pygame("Maps/Town.tmx")
 		tops = load_pygame("Maps/Town_Tops.tmx")
 	if lvl == '4':
-		fname = load_pygame("Maps/merchant_store.tmx")
-		tops = load_pygame("Maps/merchant_store_tops.tmx")
+		fname = load_pygame("Maps/snow_place.tmx")
+		tops = load_pygame("Maps/snow_place_tops.tmx")
 	kill = [chests, walls, portals, clerks, npcs]
 	for i in kill:
 		for n in i:
@@ -340,7 +339,6 @@ def InventoryDisplay(current_Character, num, inventory):
 				inv_dict[s1[0]] = ''
 			else:
 				inv_dict[s1[0]] = i
-		print(inv_dict)			
 	else:
 		split = inventory.split(' // ')
 		for i in split:
@@ -373,10 +371,8 @@ def display_inventory(Inventory, current_Character, mode):
 	counter = 0
 	Inventory = Inventory
 	for i in Inventory:
-		print(inv_dict[i])
 		if inv_dict[i] != '':
 			inv.append(i)
-	print('inv', inv)
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYUP:
@@ -407,7 +403,6 @@ def display_inventory(Inventory, current_Character, mode):
 				if evt.key == K_SPACE and len(inv) > 0:
 					if mode == 'inventory':
 						x = inv_dict[inv[counter]]
-						print(x)
 						y = x.split(" x")
 						if y[1] == '1':
 							inv_dict[y[0]] = ''
@@ -460,7 +455,6 @@ def display_inventory(Inventory, current_Character, mode):
 		tmp_inv = []	
 		for i in range(display_range, len(inv)):
 			tmp_inv.append(inv[i])	
-		print('tmp_inv', tmp_inv)	
 		if arrow_pos > len(inv):
 			arrow_pos = len(inv)
 		if counter >= len(inv) - 1:	
@@ -468,8 +462,6 @@ def display_inventory(Inventory, current_Character, mode):
 		if len(inv) > 16:	
 			if len(inv) - 17 < display_range:
 				display_range = len(inv) - 17
-		print(display_range)	
-		# print(tmp_inv)	
 		for i in range(len(tmp_inv)):
 			if i <= 16:
 				count += 1
@@ -917,7 +909,7 @@ running = True
 key.set_repeat(100,100)
 while running:
 	print(x_diff, y_diff)
-	print(len(inventory))
+	print(pre_coord)
 	for evt in event.get():  
 		if evt.type == QUIT: 
 			save_dict()
@@ -1085,15 +1077,22 @@ while running:
 				clerks.update()
 		tel = sprite.spritecollide(player, portals, False)
 		if tel: #and kp[K_SPACE]:
+				pre_coord.append([lvl, x_diff, y_diff])
+
 				lvl = tel[0].type
-				if lvl == '0':
-					x_diff, y_diff = 240, 100	
-				elif lvl == '1':
-					x_diff, y_diff = -545, -580
-				elif lvl == '2':
-					x_diff, y_diff = -1285, -495	
-				elif lvl == '3':
-					x_diff, y_diff = 0, 0	
+				for i in pre_coord:
+					if i[0] == lvl:
+						x_diff, y_diff = i[1], i[2] - 50
+				# if lvl == '0':
+				# 	x_diff, y_diff = 240, 100	
+				# elif lvl == '1':
+				# 	x_diff, y_diff = -545, -580
+				# elif lvl == '2':
+				# 	x_diff, y_diff = -1285, -495	
+				# elif lvl == '3':
+				# 	x_diff, y_diff = 0, 0	
+				# elif lvl == '4':
+				# 	x_diff, y_diff = 105, -5	
 				fname, tops = levelSelect(lvl, chests, walls, portals)
 				load_object(fname, chests, walls, portals)
 		chest_open = sprite.spritecollide(player, chests, False)	

@@ -305,6 +305,9 @@ def levelSelect(lvl, chests, walls, portals):
 	if lvl == '3':
 		fname = load_pygame("Maps/Town.tmx")
 		tops = load_pygame("Maps/Town_Tops.tmx")
+	if lvl == '4':
+		fname = load_pygame("Maps/merchant_store.tmx")
+		tops = load_pygame("Maps/merchant_store_tops.tmx")
 	kill = [chests, walls, portals, clerks, npcs]
 	for i in kill:
 		for n in i:
@@ -555,7 +558,8 @@ def save_dict():
 	p.dump(raven_data, open("raven_stats.dat", 'wb'))
 	p.dump(item_value, open("item_value.dat", 'wb'))
 
-lvl = str(load_dict()[0]["lvl"])
+# lvl = str(load_dict()[0]["lvl"])
+lvl = '4'
 x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
 openedChests = load_dict()[0]["Chests"]
 inventory = load_dict()[0]["inv"]
@@ -912,6 +916,7 @@ print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) 
 running = True
 key.set_repeat(100,100)
 while running:
+	print(x_diff, y_diff)
 	print(len(inventory))
 	for evt in event.get():  
 		if evt.type == QUIT: 

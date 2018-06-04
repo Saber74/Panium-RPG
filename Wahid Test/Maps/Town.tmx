@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextobjectid="45">
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextobjectid="48">
  <tileset firstgid="1" name="Revolution_Grasslands" tilewidth="32" tileheight="32" tilecount="190" columns="10">
   <image source="revolution_grasslands.png" trans="a349a4" width="320" height="608"/>
   <tile id="5">
@@ -363,8 +363,8 @@
   <object id="20" name="wall" type="0" x="367" y="119" width="20" height="30"/>
   <object id="21" name="NPC" type="00" x="511" y="93" width="33" height="30">
    <properties>
-    <property name="Dialogue" value="This is the royal courtyard! # North - Grasslands"/>
-    <property name="Name" value="Courtyard"/>
+    <property name="Dialogue" value="This is Lill whin! # North - Grasslands"/>
+    <property name="Name" value="Lill whin"/>
     <property name="item" value="NULL"/>
    </properties>
   </object>

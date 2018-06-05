@@ -24,6 +24,8 @@ charNum = 0
 stage = 0
 currNum = 0
 rec = False
+
+pre_coord = []
 ################ entry and openning pic and gif"""""""""""""""""""""''
 # for i in range(0,71):
 # 	screen.fill((37,34,39))
@@ -293,16 +295,16 @@ def levelSelect(lvl, chests, walls, portals):
 	if lvl == '0':
 		fname = load_pygame("Maps/STORE.tmx")
 		tops = load_pygame("Maps/blank.tmx")
-	if lvl == '1':
+	elif lvl == '1':
 		fname = load_pygame("Maps/grasslands.tmx")
 		tops = load_pygame("Maps/over0.tmx")
-	if lvl == '2':
+	elif lvl == '2':
 		fname = load_pygame("Maps/desert.tmx")
 		tops = load_pygame("Maps/blank.tmx")
-	if lvl == '3':
+	elif lvl == '3':
 		fname = load_pygame("Maps/Town.tmx")
 		tops = load_pygame("Maps/Town_Tops.tmx")
-	if lvl == '4':
+	elif lvl == '4':
 		fname = load_pygame("Maps/snow_place.tmx")
 		tops = load_pygame("Maps/snow_place_tops.tmx")
 	kill = [chests, walls, portals, clerks, npcs]
@@ -548,7 +550,6 @@ def save_dict():
 	p.dump(raven_data, open("raven_stats.dat", 'wb'))
 	p.dump(item_value, open("item_value.dat", 'wb'))
 
-# lvl = '2'
 lvl = str(load_dict()[0]["lvl"])
 x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
 openedChests = load_dict()[0]["Chests"]
@@ -557,6 +558,7 @@ gold = load_dict()[0]["Gold"]
 npc_item = load_dict()[0]['npc_items']
 currChar = load_dict()[0]["Current Charachter"]
 quest_completion = load_dict()[0]['Quests']
+print(quest_completion)
 inv_dict = load_dict()[0]['inv_dict']
 stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
 stats[0][2] = 10000
@@ -1070,9 +1072,15 @@ while running:
 				chests.update()	
 				clerks.update()
 		tel = sprite.spritecollide(player, portals, False)
+		print(pre_coord) 
 		if tel: #and kp[K_SPACE]:
+			pre_coord.append([lvl, x_diff, y_diff])
 			lvl = tel[0].type
 			x_diff, y_diff = int(tel[0].xd), int(tel[0].yd)
+			for i in pre_coord:
+				if i[0] == lvl:
+					x_diff, y_diff = i[1], i[2] - 50
+					
 			fname, tops = levelSelect(lvl, chests, walls, portals)
 			load_object(fname, chests, walls, portals)
 		chest_open = sprite.spritecollide(player, chests, False)	

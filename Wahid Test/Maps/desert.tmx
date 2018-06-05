@@ -13,7 +13,12 @@
     <property name="Item" value="Potion"/>
    </properties>
   </object>
-  <object id="3" name="Portal" type="1" x="1654.67" y="887.333" width="53.3333" height="19.3333"/>
+  <object id="3" name="Portal" type="1" x="1654.67" y="887.333" width="53.3333" height="19.3333">
+   <properties>
+    <property name="xd" type="int" value="-545"/>
+    <property name="yd" type="int" value="-580"/>
+   </properties>
+  </object>
   <object id="4" name="NPC" type="2" x="1451" y="1202" width="20" height="30">
    <properties>
     <property name="Dialogue" value="welcome to the desert"/>

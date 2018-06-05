@@ -9,8 +9,8 @@ size=(WIDTH, HEIGHT)
 os.environ['SDL_VIDEO_WINDOW_POS'] = '0,10'
 screen = display.set_mode(size)
 ########################################## USE IN FINAL PRODUCT ##########################################
-# screen = display.set_mode(size, FULLSCREEN)
-# width, height = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
+screen = display.set_mode(size, FULLSCREEN)
+width, height = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
 ########################################## USE IN FINAL PRODUCT ##########################################
 battle = False
 #####################################fonts##################################
@@ -24,7 +24,6 @@ charNum = 0
 stage = 0
 currNum = 0
 rec = False
-pre_coord = []
 ################ entry and openning pic and gif"""""""""""""""""""""''
 # for i in range(0,71):
 # 	screen.fill((37,34,39))
@@ -267,7 +266,6 @@ def display_quest():
 		counter = 0	
 		print(selectedRect.y, display_range)
 		display.flip()
-x_diff, y_diff = 0, 0		
 def load_object(fname, chests, walls, portals):
 	global quest_completion
 	for tile_object in fname.objects:
@@ -278,7 +276,7 @@ def load_object(fname, chests, walls, portals):
 			chest = Chest(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type, tile_object.ChestName, tile_object.Item)	
 			chests.add(chest)
 		elif tile_object.name == "Portal":
-			port = Portal(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type)	
+			port = Portal(tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.type, tile_object.xd, tile_object.yd)	
 			portals.add(port)
 		elif tile_object.name == "Clerk":
 			clerk = Store_Clerk(tile_object.x, tile_object.y, tile_object.type)
@@ -550,8 +548,8 @@ def save_dict():
 	p.dump(raven_data, open("raven_stats.dat", 'wb'))
 	p.dump(item_value, open("item_value.dat", 'wb'))
 
-# lvl = str(load_dict()[0]["lvl"])
-lvl = '4'
+# lvl = '2'
+lvl = str(load_dict()[0]["lvl"])
 x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
 openedChests = load_dict()[0]["Chests"]
 inventory = load_dict()[0]["inv"]
@@ -630,10 +628,11 @@ class Obstacle(sprite.Sprite):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
 
 class Portal(sprite.Sprite):
-	def __init__(self, x, y, w, h, location):
+	def __init__(self, x, y, w, h, location, xd, yd):
 		sprite.Sprite.__init__(self)
 		self.rect = Rect(x, y, w, h)
 		self.x, self.y = x, y
+		self.xd, self.yd = xd, yd
 		self.type = location
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff		
@@ -909,7 +908,6 @@ running = True
 key.set_repeat(100,100)
 while running:
 	print(x_diff, y_diff)
-	print(pre_coord)
 	for evt in event.get():  
 		if evt.type == QUIT: 
 			save_dict()
@@ -928,10 +926,6 @@ while running:
 				mixer.music.stop()
 			if evt.key == K_p:
 				mixer.music.play()		
-			if evt.key == K_b:
-				# mode = 1 - mode	
-				# Battle()
-				pass
 			if mode == 0:	
 				if evt.key == K_i:
 					InventoryDisplay(currChar, 0, inventory)	
@@ -1077,24 +1071,10 @@ while running:
 				clerks.update()
 		tel = sprite.spritecollide(player, portals, False)
 		if tel: #and kp[K_SPACE]:
-				pre_coord.append([lvl, x_diff, y_diff])
-
-				lvl = tel[0].type
-				for i in pre_coord:
-					if i[0] == lvl:
-						x_diff, y_diff = i[1], i[2] - 50
-				# if lvl == '0':
-				# 	x_diff, y_diff = 240, 100	
-				# elif lvl == '1':
-				# 	x_diff, y_diff = -545, -580
-				# elif lvl == '2':
-				# 	x_diff, y_diff = -1285, -495	
-				# elif lvl == '3':
-				# 	x_diff, y_diff = 0, 0	
-				# elif lvl == '4':
-				# 	x_diff, y_diff = 105, -5	
-				fname, tops = levelSelect(lvl, chests, walls, portals)
-				load_object(fname, chests, walls, portals)
+			lvl = tel[0].type
+			x_diff, y_diff = int(tel[0].xd), int(tel[0].yd)
+			fname, tops = levelSelect(lvl, chests, walls, portals)
+			load_object(fname, chests, walls, portals)
 		chest_open = sprite.spritecollide(player, chests, False)	
 		if chest_open and kp[K_SPACE]:
 			chest_open[0].opened = True

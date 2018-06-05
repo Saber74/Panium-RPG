@@ -80,7 +80,12 @@
   <object id="12" name="wall" x="320.273" y="88.33" width="448" height="32"/>
   <object id="13" name="wall" x="3.3635" y="-23" width="253.273" height="32"/>
   <object id="14" name="wall" x="318" y="-29" width="448" height="32"/>
-  <object id="15" name="Portal" type="1" x="260.667" y="-64" width="54.6667" height="53.3333"/>
+  <object id="15" name="Portal" type="1" x="260.667" y="-64" width="54.6667" height="53.3333">
+   <properties>
+    <property name="xd" type="int" value="-305"/>
+    <property name="yd" type="int" value="-1180"/>
+   </properties>
+  </object>
   <object id="16" name="wall" x="-28" y="-12" width="30" height="132"/>
   <object id="18" name="wall" x="746" y="-12" width="15" height="132"/>
   <object id="19" name="info" x="-42" y="214" width="460" height="134"/>

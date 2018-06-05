@@ -351,7 +351,12 @@
   <object id="11" name="wall" x="263.333" y="122" width="33.3333" height="36"/>
   <object id="12" name="wall" x="1.33333" y="-1" width="382.667" height="66.6667"/>
   <object id="14" name="wall" x="508.666" y="0" width="290.667" height="68"/>
-  <object id="15" name="Portal" type="1" x="387" y="-17.6667" width="116" height="19.3333"/>
+  <object id="15" name="Portal" type="1" x="387" y="-17.6667" width="116" height="19.3333">
+   <properties>
+    <property name="xd" type="int" value="105"/>
+    <property name="yd" type="int" value="-5"/>
+   </properties>
+  </object>
   <object id="17" name="wall" x="26.6667" y="707.667" width="442.667" height="64"/>
   <object id="19" name="NPC" type="0" x="367" y="118" width="20" height="30">
    <properties>

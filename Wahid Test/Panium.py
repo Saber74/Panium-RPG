@@ -24,8 +24,6 @@ charNum = 0
 stage = 0
 currNum = 0
 rec = False
-
-pre_coord = []
 ################ entry and openning pic and gif"""""""""""""""""""""''
 # for i in range(0,71):
 # 	screen.fill((37,34,39))
@@ -310,6 +308,7 @@ def levelSelect(lvl, chests, walls, portals):
 	elif lvl == '5':
 		fname = load_pygame("Maps/insidehouse1.tmx")
 		tops = load_pygame("Maps/blank.tmx")
+		player.re = True
 	kill = [chests, walls, portals, clerks, npcs]
 	for i in kill:
 		for n in i:
@@ -322,7 +321,6 @@ def MapLoad(Map_Name):
 				tile = Map_Name.get_tile_image_by_gid(gid)
 				if tile:
 					screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff))
-					# screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff), Rect(x * Map_Name.tilewidth + x_diff, y * Map_Name.tileheight + y_diff, WIDTH, HEIGHT))
 def InventoryDisplay(current_Character, num, inventory):
 	global inv_dict
 	inv = ''
@@ -619,8 +617,14 @@ class Player(sprite.Sprite):
 		self.x, self.y = x, y
 		self.rect = self.image.get_rect()
 		self.rect.midbottom = (self.x,self.y)
+		self.re = False
 	def update(self):
-		self.image = cm
+		if lvl != '5':
+		 self.re = False	
+		if self.re:
+			self.image = transform.scale(cm, (15,20))
+		else:	
+			self.image = cm
 		self.rect = self.image.get_rect()
 		self.rect.x, self.rect.y = self.x, self.y - self.rect.height
 
@@ -1075,15 +1079,9 @@ while running:
 				chests.update()	
 				clerks.update()
 		tel = sprite.spritecollide(player, portals, False)
-		print(pre_coord) 
 		if tel: #and kp[K_SPACE]:
-			pre_coord.append([lvl, x_diff, y_diff])
 			lvl = tel[0].type
 			x_diff, y_diff = int(tel[0].xd), int(tel[0].yd)
-			for i in pre_coord:
-				if i[0] == lvl:
-					x_diff, y_diff = i[1], i[2] - 50
-					
 			fname, tops = levelSelect(lvl, chests, walls, portals)
 			load_object(fname, chests, walls, portals)
 		chest_open = sprite.spritecollide(player, chests, False)	

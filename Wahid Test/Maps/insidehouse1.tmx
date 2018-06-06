@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="16" tileheight="16" infinite="0" nextobjectid="26">
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="16" tileheight="16" infinite="0" nextobjectid="27">
  <tileset firstgid="1" name="hyptosis_tile-art-batch-1" tilewidth="16" tileheight="16" tilecount="3600" columns="60">
   <image source="ART/Pack1/hyptosis_tile-art-batch-1.png" width="960" height="960"/>
  </tileset>
@@ -130,5 +130,11 @@
   <object id="23" name="wall" x="98" y="102.667" width="9.33333" height="14"/>
   <object id="24" name="wall" x="66.6667" y="99.3333" width="9.33333" height="16.6667"/>
   <object id="25" name="wall" x="66.6667" y="65.3333" width="42.6667" height="24"/>
+  <object id="26" name="Portal" type="3" x="116.667" y="296" width="84" height="16.6666">
+   <properties>
+    <property name="xd" type="int" value="310"/>
+    <property name="yd" type="int" value="10"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

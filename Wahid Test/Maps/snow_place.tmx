@@ -102,10 +102,10 @@
     <property name="Item" value="Wood Sword"/>
    </properties>
   </object>
-  <object id="25" name="Portal" type="3" x="1010.48" y="281.885" width="84" height="53.3333" rotation="89.7512">
+  <object id="25" name="Portal" type="3" x="986.48" y="281.885" width="84" height="53.3333" rotation="89.7512">
    <properties>
-    <property name="xd" type="int" value="0"/>
-    <property name="yd" type="int" value="0"/>
+    <property name="xd" type="int" value="-20"/>
+    <property name="yd" type="int" value="275"/>
    </properties>
   </object>
  </objectgroup>

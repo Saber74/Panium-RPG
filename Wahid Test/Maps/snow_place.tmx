@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="30" height="17" tilewidth="32" tileheight="32" infinite="0" nextobjectid="25">
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="30" height="17" tilewidth="32" tileheight="32" infinite="0" nextobjectid="26">
  <tileset firstgid="1" name="revolution_snow" tilewidth="32" tileheight="32" tilecount="154" columns="11">
   <image source="revolution_snow.png" trans="a349a4" width="352" height="448"/>
  </tileset>
@@ -100,6 +100,12 @@
    <properties>
     <property name="ChestName" value="asdsdlansdkjnknkjnsakjndkjanskjdnkjansdkmnakjsndf;lkcan;lsdkn;lkna;wjee dclkn ;oLK ;LJ sdkjnc.jasndc"/>
     <property name="Item" value="Wood Sword"/>
+   </properties>
+  </object>
+  <object id="25" name="Portal" type="3" x="1010.48" y="281.885" width="84" height="53.3333" rotation="89.7512">
+   <properties>
+    <property name="xd" type="int" value="0"/>
+    <property name="yd" type="int" value="0"/>
    </properties>
   </object>
  </objectgroup>

@@ -9,8 +9,8 @@ size=(WIDTH, HEIGHT)
 os.environ['SDL_VIDEO_WINDOW_POS'] = '0,10'
 screen = display.set_mode(size)
 ########################################## USE IN FINAL PRODUCT ##########################################
-screen = display.set_mode(size, FULLSCREEN)
-width, height = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
+# screen = display.set_mode(size, FULLSCREEN)
+# width, height = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
 ########################################## USE IN FINAL PRODUCT ##########################################
 battle = False
 #####################################fonts##################################
@@ -307,6 +307,9 @@ def levelSelect(lvl, chests, walls, portals):
 	elif lvl == '4':
 		fname = load_pygame("Maps/snow_place.tmx")
 		tops = load_pygame("Maps/snow_place_tops.tmx")
+	elif lvl == '5':
+		fname = load_pygame("Maps/insidehouse1.tmx")
+		tops = load_pygame("Maps/blank.tmx")
 	kill = [chests, walls, portals, clerks, npcs]
 	for i in kill:
 		for n in i:

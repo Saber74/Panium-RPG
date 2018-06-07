@@ -264,7 +264,6 @@ def display_quest():
 			screen.blit(rec_txt[i], (10, 50 + 200 * counter))
 			counter += 1
 		counter = 0	
-		print(selectedRect.y, display_range)
 		display.flip()
 def load_object(fname, chests, walls, portals):
 	global quest_completion
@@ -306,9 +305,9 @@ def levelSelect(lvl, chests, walls, portals):
 		fname = load_pygame("Maps/snow_place.tmx")
 		tops = load_pygame("Maps/snow_place_tops.tmx")
 	elif lvl == '5':
-		fname = load_pygame("Maps/insidehouse1.tmx")
+		fname = load_pygame("Maps/house1.tmx")
 		tops = load_pygame("Maps/blank.tmx")
-		player.re = True
+		# player.re = True
 	kill = [chests, walls, portals, clerks, npcs]
 	for i in kill:
 		for n in i:

@@ -353,8 +353,8 @@
   <object id="14" name="wall" x="508.666" y="0" width="290.667" height="68"/>
   <object id="15" name="Portal" type="1" x="387" y="-17.6667" width="116" height="19.3333">
    <properties>
-    <property name="xd" type="int" value="105"/>
-    <property name="yd" type="int" value="-5"/>
+    <property name="xd" type="int" value="0"/>
+    <property name="yd" type="int" value="0"/>
    </properties>
   </object>
   <object id="17" name="wall" x="26.6667" y="707.667" width="442.667" height="64"/>

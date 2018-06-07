@@ -943,6 +943,11 @@ while running:
 					npc_item = {}
 					quest_completion = {}
 					inv_dict = {}
+				if evt.key == K_l:
+					fname, tops = levelSelect(lvl, chests, walls, portals)
+					load_object(fname, chests, walls, portals)
+					print("reload")
+					time.wait(100)
 				if evt.key == K_j:
 					# if currChar == 'Crow':
 					# 	stats[0][2] += 100 	
@@ -992,7 +997,7 @@ while running:
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
 	# xp+=10
-	
+	print(openedChests)
 	# screen.fill((255,255,255))
 	# screen.blit(image.load("pvw1854.png"),(WIDTH//4,HEIGHT//3))
 	# KEYBOARD MOVEMENT	

@@ -348,12 +348,6 @@
     <property name="item" value="NULL"/>
    </properties>
   </object>
-  <object id="209" name="Portal" type="3" x="277.333" y="4.66668" width="84" height="53.3333">
-   <properties>
-    <property name="xd" type="int" value="0"/>
-    <property name="yd" type="int" value="0"/>
-   </properties>
-  </object>
   <object id="212" name="Portal" type="4" x="-2.66667" y="-27.6666" width="36" height="53.3333">
    <properties>
     <property name="xd" type="int" value="130"/>

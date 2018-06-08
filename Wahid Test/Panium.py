@@ -308,6 +308,9 @@ def levelSelect(lvl, chests, walls, portals):
 		fname = load_pygame("Maps/house1.tmx")
 		tops = load_pygame("Maps/blank.tmx")
 		# player.re = True
+	elif lvl == '6':
+		fname = load_pygame('Maps/house2.tmx')	
+		tops = load_pygame("Maps/blank.tmx")
 	kill = [chests, walls, portals, clerks, npcs]
 	for i in kill:
 		for n in i:

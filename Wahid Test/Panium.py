@@ -289,6 +289,10 @@ def load_object(fname, chests, walls, portals):
 				quest_completion[tile_object.Name] = [tile_object.Quest, tile_object.Key, tile_object.Goal, tile_object.Complete, tile_object.Received]
 			npcs.add(quest_npc)
 def levelSelect(lvl, chests, walls, portals):
+	kill = [chests, walls, portals, clerks, npcs]
+	for i in kill:
+		for n in i:
+			n.kill()	
 	if lvl == '0':
 		fname = load_pygame("Maps/STORE.tmx")
 		tops = load_pygame("Maps/blank.tmx")
@@ -311,10 +315,13 @@ def levelSelect(lvl, chests, walls, portals):
 	elif lvl == '6':
 		fname = load_pygame('Maps/house2.tmx')	
 		tops = load_pygame("Maps/blank.tmx")
-	kill = [chests, walls, portals, clerks, npcs]
-	for i in kill:
-		for n in i:
-			n.kill()	
+	elif lvl == '7':
+		fname = load_pygame('Maps/STORE2.tmx')	
+		tops = load_pygame("Maps/blank.tmx")
+	elif lvl == '8':
+		fname = load_pygame('Maps/DUNGEON.tmx')	
+		tops = load_pygame("Maps/blank.tmx")
+		
 	return fname, tops		
 def MapLoad(Map_Name):
 	for layer in Map_Name.visible_layers:

@@ -71,14 +71,23 @@ menu_base = transform.scale(image.load("img/menu/selection.png").convert_alpha()
 dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
 currChar = "Crow"
 HP_items = ["Potion 50", "Meat 100", "Poison -50"]
-mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
-mixer.init()# initializes the music mixer
-mixer.music.load("Audio/BGM/aaronwalz_veldarah.ama")
-mixer.music.stop()
 font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
 medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
 fancyFont=font.Font("FONTS/Friedolin.ttf", 95)
+##################################################### MUSIC #####################################################
+def music(channel, music, length):
+	channels[channel].play(music, length)
+mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
+mixer.init() 
+mixer.set_num_channels(4) ###setting number of channels up
+channels = [mixer.Channel(0), mixer.Channel(1), mixer.Channel(2)]
+music_selection = [mixer.Sound("Music/bgm/Village.wav"), mixer.Sound("Music/bgm/Castle.wav")]
+sound_selection = [mixer.Sound("Music/se/The Greatest Pokemon Sound Effects (1).wav")]
+for i in channels:
+	i.set_volume(0.3)
+music(0, music_selection[0], -1)
+##################################################### MUSIC #####################################################
 def start_screen():
 	running = True
 	while running:
@@ -940,8 +949,14 @@ while running:
 			if evt.key == K_2:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 				currChar = "Raven"
+			if evt.key == K_3:
+				music(0, music_selection[0], -1)	
+			if evt.key == K_4:
+				music(0, music_selection[1], -1)	
 			if evt.key == K_o:
 				mixer.music.stop()
+				for i in channels:
+					i.stop()
 			if evt.key == K_p:
 				mixer.music.play()		
 			if mode == 0:	
@@ -1081,14 +1096,18 @@ while running:
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			if player.rect.colliderect(hit[0].rect):
-				if L:
-					x_diff -= pan
-				elif D:
-					y_diff += pan
-				elif U:
-					y_diff -= pan
-				elif R:
-					x_diff += pan
+				channels[2].set_volume(.5)
+				if moving:
+					if not channels[2].get_busy():
+						music(2, sound_selection[0], 0)
+					if L:
+						x_diff -= pan
+					elif D:
+						y_diff += pan
+					elif U:
+						y_diff -= pan
+					elif R:
+						x_diff += pan
 				npcs.update()
 				chests.update()	
 				clerks.update()

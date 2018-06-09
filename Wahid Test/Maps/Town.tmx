@@ -358,18 +358,18 @@
    </properties>
   </object>
   <object id="17" name="wall" x="26.6667" y="707.667" width="442.667" height="64"/>
-  <object id="19" name="NPC" type="0" x="367" y="118" width="20" height="30">
+  <object id="19" name="NPC" type="0" x="356.333" y="160.667" width="20" height="30">
    <properties>
     <property name="Dialogue" value="Hello there little prince and princess, here take this potion and this candy! # Remember!  # Sharing is caring!"/>
     <property name="Name" value="Royal Servant"/>
     <property name="item" value="Potion // Candy"/>
    </properties>
   </object>
-  <object id="20" name="wall" type="0" x="367" y="119" width="20" height="30"/>
+  <object id="20" name="wall" type="0" x="356.333" y="161.667" width="20" height="30"/>
   <object id="21" name="NPC" type="00" x="511" y="93" width="33" height="30">
    <properties>
     <property name="Dialogue" value="This is Lill whin! # North - Grasslands"/>
-    <property name="Name" value="Lill whin"/>
+    <property name="Name" value="Message Board"/>
     <property name="item" value="NULL"/>
    </properties>
   </object>

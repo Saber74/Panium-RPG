@@ -319,7 +319,7 @@ def levelSelect(lvl, chests, walls, portals):
 		fname = load_pygame('Maps/STORE2.tmx')	
 		tops = load_pygame("Maps/blank.tmx")
 	elif lvl == '8':
-		fname = load_pygame('Maps/DUNGEON.tmx')	
+		fname = load_pygame('Maps/goodhouse1.tmx')	
 		tops = load_pygame("Maps/blank.tmx")
 		
 	return fname, tops		

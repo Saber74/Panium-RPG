@@ -199,43 +199,43 @@
   <object id="20" name="wall" x="128" y="288" width="32" height="32"/>
   <object id="30" name="NPC" type="00" x="309.5" y="279.5" width="51" height="49">
    <properties>
-    <property name="Dialogue" value="HALLLOO"/>
-    <property name="Name" value="Skully Boi 2"/>
-    <property name="item" value="Skunk"/>
+    <property name="Dialogue" value=".............................."/>
+    <property name="Name" value="My Love"/>
+    <property name="item" value="NULL"/>
    </properties>
   </object>
   <object id="31" name="NPC" type="00" x="471.5" y="440.5" width="51" height="49">
    <properties>
-    <property name="Dialogue" value="HALLLOO"/>
-    <property name="Name" value="Skully Boi 4"/>
-    <property name="item" value="Skunk"/>
+    <property name="Dialogue" value=".............................."/>
+    <property name="Name" value="My Love"/>
+    <property name="item" value="NULL"/>
    </properties>
   </object>
   <object id="32" name="NPC" type="00" x="534.5" y="214.5" width="51" height="49">
    <properties>
-    <property name="Dialogue" value="HALLLOO"/>
-    <property name="Name" value="Skully Boi 3"/>
-    <property name="item" value="Skunk"/>
+    <property name="Dialogue" value=".............................."/>
+    <property name="Name" value="My Love"/>
+    <property name="item" value="NULL"/>
    </properties>
   </object>
   <object id="33" name="NPC" type="00" x="117.5" y="280.5" width="51" height="49">
    <properties>
-    <property name="Dialogue" value="HALLLOO"/>
-    <property name="Name" value="Skully Boi 1"/>
-    <property name="item" value="Skunk"/>
+    <property name="Dialogue" value=".............................."/>
+    <property name="Name" value="My Love"/>
+    <property name="item" value="NULL"/>
    </properties>
   </object>
   <object id="34" name="NPC" type="00" x="215.5" y="504.5" width="51" height="49">
    <properties>
-    <property name="Dialogue" value="HALLLOO"/>
-    <property name="Name" value="Skully Boi 5"/>
-    <property name="item" value="Skunk"/>
+    <property name="Dialogue" value=".............................."/>
+    <property name="Name" value="My Love"/>
+    <property name="item" value="NULL"/>
    </properties>
   </object>
   <object id="35" name="chest" type="1" x="69.3333" y="99" width="61.3333" height="60">
    <properties>
     <property name="ChestName" value="nigel is an oy"/>
-    <property name="Item" value="Chill"/>
+    <property name="Item" value="Chilli"/>
    </properties>
   </object>
   <object id="36" name="wall" x="70.6673" y="100.5" width="33.3333" height="36"/>

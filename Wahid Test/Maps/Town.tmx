@@ -345,7 +345,7 @@
   <object id="10" name="chest" type="2" x="262.667" y="122" width="61.3333" height="60">
    <properties>
     <property name="ChestName" value="ZSDJKfKLJSDNcfSDO{nvlKSJxcvl, nASKLdvL:&lt;SMxklhbSKLDMvn KLSHDB vf"/>
-    <property name="Item" value="Sword"/>
+    <property name="Item" value="Adamantium Sword"/>
    </properties>
   </object>
   <object id="11" name="wall" x="263.333" y="122" width="33.3333" height="36"/>

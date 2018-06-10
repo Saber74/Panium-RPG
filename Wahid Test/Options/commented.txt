@@ -1,0 +1,12 @@
+################ entry and openning pic and gif"""""""""""""""""""""''
+# for i in range(0,71):
+# 	screen.fill((37,34,39))
+# 	screen.blit(image.load("Entry\output-%i.png"%i),(100,75))
+# 	display.update() # time.wait(100)
+# #####rects
+# newGamerect=Rect(WIDTH//2-120,HEIGHT//2-30,200,75)
+# screen.blit(transform.scale(image.load("option1.jpg"),(WIDTH,HEIGHT)),(0,0))
+# draw.rect(screen,(0,0,0),newGamerect,0)
+# display.update()
+# time.wait(5000)
+###################################entry and oppening pic and gif"

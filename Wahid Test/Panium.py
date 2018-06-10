@@ -15,7 +15,7 @@ screen = display.set_mode(size)
 battle = False
 #####################################fonts##################################
 font.init()
-fireFont = font.Font("Breathe Fire.otf",30)
+fireFont = font.Font("FONTS/Breathe Fire.otf",30)
 #######################################fonts##############################
 #############battle variables
 Enemy_HP = 100
@@ -23,23 +23,6 @@ xp = 0
 charNum = 0
 stage = 0
 currNum = 0
-rec = False
-################ entry and openning pic and gif"""""""""""""""""""""''
-# for i in range(0,71):
-# 	screen.fill((37,34,39))
-# 	screen.blit(image.load("Entry\output-%i.png"%i),(100,75))
-# 	display.update() # time.wait(100)
-# #####rects
-# newGamerect=Rect(WIDTH//2-120,HEIGHT//2-30,200,75)
-# screen.blit(transform.scale(image.load("option1.jpg"),(WIDTH,HEIGHT)),(0,0))
-# draw.rect(screen,(0,0,0),newGamerect,0)
-# display.update()
-# time.wait(5000)
-###################################entry and oppening pic and gif"
-########################################## USE IN FINAL PRODUCT ##########################################
-# screen = display.set_mode(size, FULLSCREEN)
-# width, height = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
-########################################## USE IN FINAL PRODUCT ##########################################
 ######################################### Fighting Screen ################################################
 attackRect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0))
 attack1Rect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0))
@@ -50,8 +33,6 @@ itemRect=Rect(round(WIDTH*2/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-rou
 ###############################################
 myClock = time.Clock()
 FPS = 60
-x = y = n = 0
-save = False
 Player_HP = 100
 battleAnimation = []
 pressed = "NULL"
@@ -60,7 +41,6 @@ counter = 0
 x_diff = y_diff = 0
 pan = 1
 mode = 0
-speed = 0
 gold = 100
 s = 5
 step_counter = 0
@@ -70,7 +50,11 @@ quit_stat = ''
 menu_base = transform.scale(image.load("img/menu/selection.png").convert_alpha(),(WIDTH, HEIGHT))
 dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
 currChar = "Crow"
-HP_items = ["Potion 50", "Meat 100", "Poison -50"]
+
+HP_items = ["Potion // 50", "Meat // 100", "Poison // -50", "Chilli // 100"]
+Attack_items = ["Wood Sword // 2", "Stone Sword // 3", "Iron Sword // 5", "Diamond Sword // 8", 'Adamantium Sword // 10']
+Defence_items = ["Leather Armour // 4", "Iron Armour // 7", "Diamond Armour // 9", "Adamantium Armour 12"]
+
 font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
 medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
@@ -82,43 +66,319 @@ mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is act
 mixer.init() 
 mixer.set_num_channels(4) ###setting number of channels up
 channels = [mixer.Channel(0), mixer.Channel(1), mixer.Channel(2)]
-music_selection = [mixer.Sound("Music/bgm/Village.wav"), mixer.Sound("Music/bgm/Castle.wav")]
-sound_selection = [mixer.Sound("Music/se/The Greatest Pokemon Sound Effects (1).wav")]
-for i in channels:
-	i.set_volume(0.3)
-music(0, music_selection[0], -1)
+music_selection = [mixer.Sound("Music/bgm/Village.wav"), mixer.Sound("Music/bgm/Castle.wav"), mixer.Sound("Music/bgm/Starting.wav")]
+sound_selection = [mixer.Sound("Music/se/The Greatest Pokemon Sound Effects (1).wav"), mixer.Sound("Music/se/GUI sel decision.ogg"), mixer.Sound("music/se/Door exit.ogg")]
+channels[0].set_volume(.1)
+channels[1].set_volume(.2)
+channels[2].set_volume(.5)
 ##################################################### MUSIC #####################################################
-def start_screen():
+def load_dict():
+	prog_data = p.load(open("prog.dat", 'rb'))
+	crow_data = p.load(open("crow_stats.dat", 'rb'))
+	item_value = p.load(open("item_value.dat", 'rb'))
+	raven_data = p.load(open("raven_stats.dat", 'rb'))
+	return prog_data, crow_data, raven_data, item_value
+lvl = str(load_dict()[0]["lvl"])
+x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
+openedChests = load_dict()[0]["Chests"]
+inventory = load_dict()[0]["inv"]
+gold = load_dict()[0]["Gold"]
+npc_item = load_dict()[0]['npc_items']
+currChar = load_dict()[0]["Current Charachter"]
+quest_completion = load_dict()[0]['Quests']
+print(quest_completion)
+inv_dict = load_dict()[0]['inv_dict']
+stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
+stats[0][2] = 10000
+selections = ['Windowed', "On", 'On']
+def introscreen():
+	firsttime=True
+	# intromix=mixer.Sound("Music/bgm/Starting.wav") ###creating a sound object that can be played in the channel ##this only works with wav and of something
+	# channel1.play(intromix,-1) ###playing the actual "Sound" the number is the loop which is infinity
+	music(0, music_selection[2], -1)
+
+	channels[0].set_volume(0.7) ##to set volume for things so you don't get deaf
+	# yes=image.load("yes_notclicked.png")
+	# yes_clicked=image.load("yes_clicked.png")
+	# no=image.load("no_notclicked.png")
+	# no_clicked=image.load("no_clicked.png")
+	######################################rects###################
+	yesRect=Rect(180,255,200,120)
+	noRect=Rect(470,255,170,120)
+	newGameRect=Rect(380,400,240,65)
+	continueGameRect=Rect(470,470,320,75)
+	quitRect=Rect(0,425,140,55)
+	###################################################
+	go=False #bolean for checking click on quit
+	init()
+	global quit_stat
 	running = True
 	while running:
-
 		for evt in event.get():  
 			if evt.type == QUIT: 
 				running = False
-
+			if evt.type == KEYUP:
+				if evt.key == K_ESCAPE:
+					quit_stat = 'quit'
+					return
 		mx,my=mouse.get_pos()
 		mb=mouse.get_pressed()
-							  
-		display.flip() 
-	quit()
+		#################################intro gif######################################3
+		if firsttime==True:
+			for i in range(3):
+				for i in range(0,16):
+					# screen.fill((37,34,39))
+					screen.blit(image.load("ezgif-4-9108664653-gif-im/%i.gif"%i),(100,75))
+					display.update()
+					time.wait(50)
+			firsttime=False
+		###########################################################
+
+		###############################################graphics for the intro screen including text and pictures########################
+		screen.blit(transform.scale(image.load("olga-antonenko-monolith-final.jpg"),(WIDTH,HEIGHT)),(0,0))
+		# draw.rect(screen,(216, 163, 149),newGameRect,0)
+		# draw.rect(screen,(216,163,149),continueGameRect,0)
+		# draw.rect(screen,(100,100,100),quitRect,10)
+		# titleFont=font.Font("Carta_Magna-line-demo-FFP.ttf",45)
+		titleFontcont=font.Font("Carta_Magna-line-demo-FFP.ttf",85)
+		smalltextFont=font.Font("Carta_Magna-line-demo-FFP.ttf",50)
+		quitFont=font.Font("Carta_Magna-line-demo-FFP.ttf",40)
+		newGametext=str("New Game")
+		continueGameText=str("Continue Game")
+		# title=str("The battle of")
+		titlecont=str("PANIUM")
+		quitText=str("QUIT")
+		quitEdit=quitFont.render(quitText,True,(255,0,0))
+		# titleEdit=titleFont.render(title,True,(125,44,23))
+		titleEditcont=titleFontcont.render(titlecont,True,(255,99,71))
+		newGameEdit=smalltextFont.render(newGametext,True,(255,163,149))
+		continueGameEdit=smalltextFont.render(continueGameText,True,(255,163,149))
+		# screen.blit(titleEdit,(430,0))
+		screen.blit(titleEditcont,(60,-10))
+		screen.blit(newGameEdit,(380,400))
+		screen.blit(continueGameEdit,(470,470))
+		screen.blit(quitEdit,(10,420))
+		######################################################################################
+		copy=screen.copy()
+		############################collision to call each function on the intro screen when required
+		surf = Surface((WIDTH,HEIGHT), SRCALPHA)
+		if newGameRect.collidepoint(mx,my):
+			newGameEdit=smalltextFont.render(newGametext,True,(255,31,80))
+			screen.blit(newGameEdit,(380,400))
+			if mb[0]:
+				global x_diff, y_diff, openedChests, inventory, gold, npc_item, currChar, quest_completion, inv_dict, stats, lvl
+				lvl = '5'
+				x_diff, y_diff = 90, -15
+				openedChests = []
+				inventory = []
+				gold = 0
+				npc_item = {}
+				currChar = "Raven"
+				quest_completion = {}
+				inv_dict = {}
+				stats = [[3, 3, 3, 3, 3, 3, 3, 3], [3, 3, 3, 3, 3, 3, 3, 3]]
+				stats[1][2] = 10000
+				for i in range(255):
+					time.wait(10)
+					surf.fill((0,0,0,i))
+					screen.blit(surf, (0,0))
+					display.flip()
+				return
+		elif continueGameRect.collidepoint(mx,my):
+			continueGameEdit=smalltextFont.render(continueGameText,True,(255,31,80))	
+			screen.blit(continueGameEdit,(470,470))
+			if mb[0]:
+				for i in range(255):
+					time.wait(10)
+					surf.fill((0,0,0,i))
+					screen.blit(surf, (0,0))
+					display.flip()
+				return
+		elif quitRect.collidepoint(mx,my):
+			quitEdit=quitFont.render(quitText,True,(255,31,80))
+			screen.blit(quitEdit,(10,420))
+			if mb[0]:
+				go=True
+
+		if go:	####are you sure you want to quit###############################################################3
+			screen.blit(transform.scale(image.load("olga-antonenko-monolith-final.jpg"),(WIDTH,HEIGHT)),(0,0))
+			# draw.rect(screen,(255,9,99),noRect,10)
+			# draw.rect(screen,(255,9,99),yesRect,10)
+			# screen.blit(yes,(100,300))
+			# screen.blit(no,(600,300))
+			confirmquit=font.Font("Something Strange.ttf",110)
+			yesnoFont=font.Font("Something Strange.ttf",130)
+			text=str("Are you a coward?")
+			yesText=str("YES")
+			noText=str("NO")
+			yesInfo=yesnoFont.render(yesText,True,(0,0,0))
+			noInfo=yesnoFont.render(noText,True,(0,0,0))
+			info=confirmquit.render(text,True,(255,255,255))
+			screen.blit(yesInfo,(200,250))
+			screen.blit(noInfo,(500,250))
+			screen.blit(info,(30,50))
+			display.update()
+			if yesRect.collidepoint((mx,my)):
+				yesInfo=yesnoFont.render(yesText,True,(255,0,0))
+				screen.blit(yesInfo,(200,250))
+				# screen.blit(yes_clicked,(100,300))
+				if mb[0]:
+					# quit()
+					quit_stat = 'quit'
+					return
+			elif noRect.collidepoint((mx,my)):
+				noInfo=yesnoFont.render(noText,True,(255,0,0))
+				screen.blit(noInfo,(500,250))
+				# screen.blit(no_clicked,(600,300))
+				if mb[0]:
+					# screen.blit(copy,(0,0))
+					go=False
+		display.flip()
+				########################################################################################
+# introscreen()
+if quit_stat == 'quit':
+	running = False
+def poop(list1,num,currlevel):
+	# init()
+	mode=1
+	xp=110
+	statuspgrade=0
+	upgrade=0
+	selecnum=0
+	point=5
+	stablepoint=5
+	selectionList=["attack","defense","magic","magicdefense","health","mana"]
+	arrowselected=""
+	levelattackRect=Rect(275,200,200,50)
+	leveldefenseRect=Rect(550,200,200,50)
+	levelmagicRect=Rect(275,350,200,50)
+	levelmagicdefenseRect=Rect(550,350,200,50)
+	levelhealthRect=Rect(275,500,200,50)
+	levelmanaRect=Rect(550,500,200,50)
+	running = True
+	x=0
+	uparrow=image.load("sortup.png")
+	downarrow=image.load("sortdown.png")
+	uparrowclicked=image.load("sortupclicked.png")
+	downarrowclicked=image.load("sortdownclicked.png")
+	downarrowRect=Rect(75,HEIGHT//2,132,65)
+	uparrowRect=Rect(75,HEIGHT//2-HEIGHT//7,132,65)
+	backlevel=transform.scale(image.load("img/battlebacks1/Translucent.png"), (WIDTH, HEIGHT))	
+	numFont=font.Font("Carta_Magna-line-demo-FFP.ttf",85)
+	levelup=False
+	while running:
+		for evt in event.get():  
+			if evt.type == QUIT: 
+				running = False
+			if evt.type==KEYDOWN:
+				if evt.key == K_k:
+					levelup = not levelup
+				if levelup:
+					if evt.key==K_UP:
+						arrowselected="up"
+						if point>0:
+							upgrade+=1
+							point-=1
+					elif evt.key==K_DOWN:
+						arrowselected="down"
+						if point<=stablepoint:
+							upgrade-=1
+							point+=1
+					elif evt.key==K_LEFT:
+						if selecnum!=0:
+							selecnum-=1
+					elif evt.key==K_RIGHT:
+						if selecnum!=len(selectionList)-1:
+							selecnum+=1
+		mode=2
+		mx,my=mouse.get_pos()
+		mb=mouse.get_pressed()
+		# screen.fill((255,255,255))
+		# screen.blit
+		if mode==2:
+			# charlevel,xp=levelup(7,xp)
+			draw.rect(screen,(211,211,211),Rect(WIDTH//4,HEIGHT//2,WIDTH//2,HEIGHT//20))
+			for i in range(xp//10):
+				draw.rect(screen,(18,107,60),Rect(WIDTH//4+x,HEIGHT//2,WIDTH//2//10,HEIGHT//20))
+				x=WIDTH//2//10*i
+				time.wait(100)
+				display.flip()
+				if i>=10:
+					xp-=100
+					currlevel+=1
+					levelup=True
+					time.wait(1000)		
+					selected=selectionList[selecnum]
+					# screen.fill((255,255,255))
+					attackstat=numFont.render(str(list1[num][3]),True,(255,0,0))
+					hpstat=numFont.render(str(list1[num][2]),True,(255,0,0))
+					defencestat=numFont.render(str(list1[num][4]),True,(255,0,0))
+					magicstat=numFont.render(str(list1[num][5]),True,(255,0,0))
+					magicdefstat=numFont.render(str(list1[num][6]),True,(255,0,0))
+					manastat=numFont.render(str(list1[num][7]),True,(255,0,0))
+					screen.blit(uparrow,(75,HEIGHT//2-HEIGHT//7))
+					screen.blit(downarrow,(75,HEIGHT//2))
+					draw.rect(screen,(150,220,255),levelattackRect,0)
+					draw.rect(screen,(150,220,255),leveldefenseRect,0)
+					draw.rect(screen,(150,220,255),levelmagicRect,0)
+					draw.rect(screen,(150,220,255),levelmagicdefenseRect,0)
+					draw.rect(screen,(150,220,255),levelhealthRect,0)
+					draw.rect(screen,(150,220,255),levelmanaRect,0)
+					if selected=="attack":
+						draw.rect(screen,(140, 82, 150),levelattackRect,0)	
+						upgrade=list1[num][3]		
+					elif selected=="defense":
+						draw.rect(screen,(140, 82, 150),leveldefenseRect,0)
+						upgrade=list1[num][4]
+					elif selected=="magic":
+						draw.rect(screen,(140, 82, 150),levelmagicRect,0)
+						upgrade=list1[num][5]
+					elif selected=="magicdefense":
+						draw.rect(screen,(140, 82, 150),levelmagicdefenseRect,0)
+						upgrade=list1[num][6]
+					elif selected=="health":
+						draw.rect(screen,(140, 82, 150),levelhealthRect,0)
+						upgrade=list1[num][2]
+					elif selected=="mana":
+						draw.rect(screen,(140, 82, 150),levelmanaRect,0)
+						upgrade=list1[num][7]
+					if arrowselected=="up":
+						screen.blit(uparrowclicked,(75,HEIGHT//2-HEIGHT//7))
+					elif arrowselected=="down":
+						screen.blit(downarrowclicked,(75,HEIGHT//2))
+					screen.blit(attackstat,(138,100))
+					screen.blit(defencestat,(275,100))
+					screen.blit(magicstat,(138,175))
+					screen.blit(magicdefstat,(275,175))
+					screen.blit(hpstat,(138,250))
+					screen.blit(manastat,(275,250))
+					screen.blit(backlevel,(0,0))
+					print(upgrade)	
+	display.flip() 
+	quit()	
 def display_main_menu():
 	# screen_back = screen.copy()
+	global screen, size, WIDTH, HEIGHT 
 	menu = transform.scale(image.load("img/menu/main_menu.png").convert_alpha(), (200, 500))
 	screen.blit(screen_back, (0,0))
 	screen.blit(menu, (100,50))
 	arrow_pos = 0
-	options = ['Inventory', 'Statistics', 'Quests', 'Save', 'Exit', 'Quit']
+	options = ['Inventory', 'Statistics', 'Quests', 'Save', "Options", 'Exit', 'Quit']
 	main = True
 	while main:
 		for evt in event.get():  
 			if evt.type == KEYUP:
-				if evt.key == K_ESCAPE:
+				if evt.key == K_ESCAPE or evt.key == K_z:
+					music(2, sound_selection[1], 0)
 					return
 				if evt.key == K_DOWN:	
+					music(2, sound_selection[1], 0)
 					arrow_pos += 1
 				if evt.key == K_UP:
+					music(2, sound_selection[1], 0)
 					arrow_pos -= 1
 				if evt.key == K_SPACE and len(options) > 0:
+					music(2, sound_selection[1], 0)
 					if options[arrow_pos] == 'Inventory':
 						InventoryDisplay(currChar, 0, inventory)
 					elif options[arrow_pos] == 'Exit':
@@ -132,8 +392,31 @@ def display_main_menu():
 						save_menu('')
 					elif options[arrow_pos] == 'Quests':
 						display_quest()	
+					elif options[arrow_pos] == 'Options':
+						global selections
+						opts = options_menu(selections)		
+						selections = opts
+						for i in range(len(opts)):
 
-		count = 0			
+							if i == 0:
+								if opts[i] == 'Windowed':
+									screen = display.set_mode(size)
+								else:	
+									screen = display.set_mode(size, FULLSCREEN)
+									WIDTH, HEIGHT = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
+							elif i == 1:
+								if opts[i] == 'Off':
+									channels[0].set_volume(0)
+								else:
+									channels[0].set_volume(.1)
+							elif i == 2:
+								if opts[i] == 'Off':
+									channels[1].set_volume(0)	
+									channels[2].set_volume(0)	
+								else:
+									channels[1].set_volume(.5)	
+									channels[2].set_volume(.5)
+		count = 0					
 		screen.blit(screen_back, (0,0))
 		screen.blit(menu, (100,50))
 		for i in range(len(options)):
@@ -147,6 +430,59 @@ def display_main_menu():
 			screen.blit(optionName, (120, 30 + 30 * count))
 		mx, my = mouse.get_pos()
 		display.flip()
+def options_menu(selections):
+	back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))		
+	arrow_pos = 1
+	select_pos = 1
+	options = ['Screen', 'BGM', "SE"]
+	toggles = [['Windowed', 'Fullscreen'], ["On", 'Off'], ["On", 'Off']]
+	selected = selections
+	selecting = False
+	running = True
+	while running:
+		for evt in event.get():
+			if evt.type == QUIT:
+				return
+			if evt.type == KEYUP:
+				if evt.key == K_ESCAPE or evt.key == K_z:
+					return selected
+				if evt.key == K_DOWN:
+					if not selecting:
+						arrow_pos += 1
+					else:
+						select_pos += 1
+				if evt.key == K_UP:
+					if not selecting:
+						arrow_pos -= 1
+					else:
+						select_pos -= 1	
+				if evt.key == K_SPACE:
+					if selecting:
+						selected[arrow_pos - 1] = toggles[arrow_pos - 1][select_pos - 1]
+					else:
+						select_pos = 1	
+					selecting = not selecting
+		mx, my = mouse.get_pos()		
+		screen.blit(back, (0,0))
+		if arrow_pos > 3:
+			arrow_pos = 3
+		if arrow_pos < 1:
+			arrow_pos = 1
+		if select_pos < 1:
+			select_pos = 1	
+		if select_pos > 2:
+			select_pos = 2	
+		draw.circle(screen, (0,0,0), (45, 45 + 135 * (arrow_pos - 1)), 5)
+		if selecting:
+			draw.circle(screen, (0,0,0), (110, 40 + (135 * (arrow_pos - 1)) + 50 * select_pos), 5)
+		for i in range(len(options)):
+			optionName = medievalFont.render(options[i] + ':', True, (0,0,0))
+			screen.blit(optionName, (50, 30 + i * 135))
+			for n in range(len(toggles[i])):
+				toggleName = medievalFont.render(toggles[i][n], True, (0,0,0))
+				screen.blit(toggleName, (125, (80 + i * 135) + 50 * n))
+		print(selected)		
+		display.flip()			
 def save_menu(purp):
 	menu = transform.scale(image.load("img/menu/main_menu_rotated.png").convert_alpha(), (500, 200))
 	y = 45
@@ -157,13 +493,17 @@ def save_menu(purp):
 		for evt in event.get():  
 			if evt.type == KEYUP:
 				if evt.key == K_ESCAPE:
+					music(2, sound_selection[1], 0)
 					saving = False
 					return
 				if evt.key == K_DOWN:	
+					music(2, sound_selection[1], 0)
 					y = 75
 				if evt.key == K_UP:
+					music(2, sound_selection[1], 0)
 					y = 45
 				if evt.key == K_SPACE:
+					music(2, sound_selection[1], 0)
 					if y == 45:
 						mode = 'saving'
 					if y == 75:
@@ -239,16 +579,19 @@ def display_quest():
 			if evt.type == QUIT: 
 				quest_thang = False	
 			if evt.type == KEYUP:
-				if evt.key == K_ESCAPE:
+				if evt.key == K_ESCAPE or evt.key == K_z:
+					music(2, sound_selection[1], 0)
 					quest_thang = False
 					return	
 				if evt.key == K_UP:
+					music(2, sound_selection[1], 0)
 					if selectedRect.y == 0 and display_range > 0:
 						display_range -= 1
 					else:
 						if selectedRect.y > 0: 
 							selectedRect.y -= 200
 				if evt.key == K_DOWN:
+					music(2, sound_selection[1], 0)
 					if selectedRect.y == 400:
 						if len(display_txt) % 3 != 0:
 							if display_range < len(display_txt) % 3:
@@ -395,13 +738,20 @@ def display_inventory(Inventory, current_Character, mode):
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYUP:
-				if evt.key == K_ESCAPE or evt.key == K_i and mode != 'sell':
+				if evt.key == K_ESCAPE or evt.key == K_i or evt.key == K_z and mode != 'sell':
+					music(2, sound_selection[1], 0)
 					if mode == "sell":
 						global c
 						c = 'NULL'
 						return c
 					inventory_open = False
 					return
+				if evt.key == K_DOWN:
+					music(2, sound_selection[1], 0)
+				if evt.key == K_UP:
+					music(2, sound_selection[1], 0)
+				if evt.key == K_SPACE and len(inv) > 0:
+					music(2, sound_selection[1], 0)
 			if evt.type == KEYDOWN:
 				if evt.key == K_DOWN:
 					if arrow_pos == 16 and display_range < 16:	
@@ -426,7 +776,7 @@ def display_inventory(Inventory, current_Character, mode):
 						if y[1] == '1':
 							inv_dict[y[0]] = ''
 						for i in HP_items:
-							i = i.split(' ')
+							i = i.split(' // ')
 							if y[0] in i:
 								print("HP +", i[1])
 								HP_Change(i[1])
@@ -512,10 +862,10 @@ def alert_display(item, mode):
 			if evt.type == KEYDOWN:
 				if evt.key == K_z:
 					alert = False
-					return	
+					return music(2, sound_selection[1], 0)
 				if evt.key == K_ESCAPE:
 					alert = False
-					return	
+					return music(2, sound_selection[1], 0)
 		mx,my=mouse.get_pos()
 		mb=mouse.get_pressed()
 		kp = key.get_pressed()
@@ -542,12 +892,6 @@ def HP_Change(HP):
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
 	surf.blit(enemy,(187.5,0))	
-def load_dict():
-	prog_data = p.load(open("prog.dat", 'rb'))
-	crow_data = p.load(open("crow_stats.dat", 'rb'))
-	item_value = p.load(open("item_value.dat", 'rb'))
-	raven_data = p.load(open("raven_stats.dat", 'rb'))
-	return prog_data, crow_data, raven_data, item_value
 def save_dict():
 	prog_data = {"lvl": lvl,
 				 "Coords": [x_diff, y_diff],
@@ -568,19 +912,6 @@ def save_dict():
 	p.dump(crow_data, open("crow_stats.dat", "wb"))	
 	p.dump(raven_data, open("raven_stats.dat", 'wb'))
 	p.dump(item_value, open("item_value.dat", 'wb'))
-
-lvl = str(load_dict()[0]["lvl"])
-x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
-openedChests = load_dict()[0]["Chests"]
-inventory = load_dict()[0]["inv"]
-gold = load_dict()[0]["Gold"]
-npc_item = load_dict()[0]['npc_items']
-currChar = load_dict()[0]["Current Charachter"]
-quest_completion = load_dict()[0]['Quests']
-print(quest_completion)
-inv_dict = load_dict()[0]['inv_dict']
-stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
-stats[0][2] = 10000
 crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
@@ -624,12 +955,11 @@ for i in range(3):
 	ravenWalkRight.append(image.load("SPRITES/Raven/Walk/Right/%i.png" % i).convert_alpha())
 	ravenWalkDown.append(image.load("SPRITES/Raven/Walk/Down/%i.png" % i).convert_alpha())
 	ravenWalkLeft.append(image.load("SPRITES/Raven/Walk/Left/%i.png" % i).convert_alpha())
-for i in range(24):
-	battleAnimation.append(transform.scale(image.load("gif/%i.png" % i),(800,600)).convert_alpha())
+# for i in range(24):
+	# battleAnimation.append(transform.scale(image.load("gif/%i.png" % i),(800,600)).convert_alpha())
 ############################################ LOADING MAP AND SPRITES ############################################
 class Player(sprite.Sprite):
-	# sprite for the player
-	def __init__(self, x, y, s):
+	def __init__(self, x, y):
 		sprite.Sprite.__init__(self)
 		self.image = cm
 		self.x, self.y = x, y
@@ -637,12 +967,7 @@ class Player(sprite.Sprite):
 		self.rect.midbottom = (self.x,self.y)
 		self.re = False
 	def update(self):
-		if lvl != '5':
-		 self.re = False	
-		if self.re:
-			self.image = transform.scale(cm, (15,20))
-		else:	
-			self.image = cm
+		self.image = cm
 		self.rect = self.image.get_rect()
 		self.rect.x, self.rect.y = self.x, self.y - self.rect.height
 
@@ -702,6 +1027,11 @@ class NPC(sprite.Sprite):
 					if evt.type == QUIT: 
 						self.display_text = False
 						self.disp = False
+					if evt.type == KEYUP:
+						if evt.key == K_SPACE:	
+							music(2, sound_selection[1], 0)
+						if evt.key == K_z and self.prog == len(self.split) - 1:	
+							music(2, sound_selection[1], 0)
 				mx,my=mouse.get_pos()
 				mb=mouse.get_pressed()
 				kp = key.get_pressed()
@@ -715,16 +1045,16 @@ class NPC(sprite.Sprite):
 						self.sent = ''
 						self.text_y = 60
 				if kp[K_z] and self.prog == len(self.split) - 1:
-						if self.item != 'NULL' and self.name not in npc_item:
-							self.item_split = self.item.split(' // ')
-							for i in self.item_split:
-								inventory.append(i)
-								if i not in inv_dict:
-									inv_dict[i] = ''
-							npc_item[self.name] = self.name
-							InventoryDisplay(currChar, 5, self.item)
-						self.display_text = False
-						self.interact = False		
+					if self.item != 'NULL' and self.name not in npc_item:
+						self.item_split = self.item.split(' // ')
+						for i in self.item_split:
+							inventory.append(i)
+							if i not in inv_dict:
+								inv_dict[i] = ''
+						npc_item[self.name] = self.name
+						InventoryDisplay(currChar, 5, self.item)
+					self.display_text = False
+					self.interact = False		
 				if self.n == 0:
 					for i in self.split[self.prog]:
 						self.sent += i
@@ -779,6 +1109,11 @@ class Quest_NPC(sprite.Sprite):
 					if evt.type == QUIT: 
 						self.display_text = False
 						self.disp = False
+					if evt.type == KEYUP:
+						if evt.key == K_SPACE:
+							music(2, sound_selection[1], 0)
+						if evt.key == K_z and self.prog == len(self.split) - 1:	
+							music(2, sound_selection[1], 0)
 				mx,my=mouse.get_pos()
 				mb=mouse.get_pressed()
 				kp = key.get_pressed()
@@ -855,6 +1190,15 @@ class Store_Clerk(sprite.Sprite):
 		global gold
 		while self.interact:
 			for evt in event.get():  
+				if evt.type == KEYUP:
+					if evt.key == K_ESCAPE:
+						music(2, sound_selection[1], 0)
+					if evt.key == K_UP:
+						music(2, sound_selection[1], 0)
+					if evt.key == K_DOWN:
+						music(2, sound_selection[1], 0)
+					if evt.key == K_SPACE:
+						music(2, sound_selection[1], 0)
 				if evt.type == KEYDOWN:
 					if evt.key == K_ESCAPE:
 						self.interact = False
@@ -912,6 +1256,7 @@ class Chest(sprite.Sprite):
 		global chest_open
 		self.rect.topleft = self.x + x_diff, self.y + y_diff
 		if self.image == self.prev_image and self.opened and kp[K_SPACE]:
+			music(2, sound_selection[1], 0)
 			self.image = self.images[1]
 			self.split = self.item.split(' // ')
 			openedChests.append(self.name)
@@ -925,14 +1270,20 @@ chests = sprite.Group()
 portals = sprite.Group()
 clerks = sprite.Group()
 npcs = sprite.Group()
-player = Player(WIDTH / 2, HEIGHT / 2 + 50, speed)
+player = Player(WIDTH / 2, HEIGHT / 2 + 50)
 all_sprites.add(player)
 fname = levelSelect(lvl, chests, walls, portals)[0]
 tops = levelSelect(lvl, chests, walls, portals)[1]
 load_object(fname, chests, walls, portals)
-print("PRESS B TO INITIATE BATTLE ; Q TO RESET (PRESS Q THEN RERUN THE PROGRAM) ; PRESS I TO PRINT YOUR INVENTORY ; PRESS SPACE TO INTERACT WITH CHESTS ; M&N TO TOGGLE MAP ; O&P TOGGLE MUSIC ; J TO PRINT GOLD")			
 running = True
 key.set_repeat(100,100)
+channels[0].fadeout(5000)
+playing = True
+while playing:
+	if not channels[0].get_busy():
+		channels[0].set_volume(.1)
+		music(0, music_selection[0], -1)
+		playing = False
 while running:
 	print(x_diff, y_diff)
 	for evt in event.get():  
@@ -973,27 +1324,6 @@ while running:
 					load_object(fname, chests, walls, portals)
 					print("reload")
 					time.wait(100)
-				if evt.key == K_j:
-					# if currChar == 'Crow':
-					# 	stats[0][2] += 100 	
-					# 	print(stats[0][2])
-					# if currChar == 'Raven':
-					# 	stats[1][2] += 100 	
-					# 	print(stats[1][2])
-					# print(stats)
-					# print(inv_dict)
-					print(quest_completion)
-				if evt.key==K_a:
-					if stage>0:
-						stage-=1
-				if evt.key==K_h:
-					stats[currNum][2]=30
-				if evt.key==K_x:
-					rec = not rec
-				if evt.key==K_n:
-					stage=10	
-				if evt.key == K_r:
-					mode = 0		
 				if evt.key == K_m:
 					if pressed == "UP":
 						cm = cf[0]
@@ -1005,15 +1335,6 @@ while running:
 						cm = cr[0]
 					screen_back = screen.copy()	
 					display_main_menu()
-			if evt.key==K_a:
-				if stage>0:
-					stage-=1
-			if evt.key==K_h:
-				stats[currNum][2]=30
-			if evt.key==K_n:
-				stage=10	
-			if evt.key == K_r:
-				mode = 0	
 		if evt.type==MOUSEBUTTONUP:
 			if stage==1:
 				battle=True		
@@ -1021,10 +1342,6 @@ while running:
 	mb=mouse.get_pressed()
 	kp = key.get_pressed()
 	U = R = D = L = moving = False
-	# xp+=10
-	print(openedChests)
-	# screen.fill((255,255,255))
-	# screen.blit(image.load("pvw1854.png"),(WIDTH//4,HEIGHT//3))
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
@@ -1033,8 +1350,6 @@ while running:
 	# 	step_counter = 0
 	# 	mode = 1
 	# print(step_counter)	
-	if rec:
-		draw.rect(screen, (0,0,0), player.rect)
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = stats[0][2]
@@ -1087,16 +1402,18 @@ while running:
 		# check to see if the mob hit the player
 		clerk_Interact = sprite.spritecollide(player, clerks, False)
 		if clerk_Interact and kp[K_SPACE]:
+			music(2, sound_selection[1], 0)
 			clerk_Interact[0].interact = True
 			clerk_Interact[0].open_store()
 
 		npc_interact = sprite.spritecollide(player, npcs, False)	
 		if npc_interact and kp[K_SPACE]:
+			music(2, sound_selection[1], 0)
 			npc_interact[0].display_speech(True, True)
 		hit = sprite.spritecollide(player, walls, False)
 		if hit:
 			if player.rect.colliderect(hit[0].rect):
-				channels[2].set_volume(.5)
+				# channels[2].set_volume(.5)
 				if moving:
 					if not channels[2].get_busy():
 						music(2, sound_selection[0], 0)
@@ -1113,6 +1430,7 @@ while running:
 				clerks.update()
 		tel = sprite.spritecollide(player, portals, False)
 		if tel: #and kp[K_SPACE]:
+			music(2, sound_selection[2], 0)
 			lvl = tel[0].type
 			x_diff, y_diff = int(tel[0].xd), int(tel[0].yd)
 			fname, tops = levelSelect(lvl, chests, walls, portals)

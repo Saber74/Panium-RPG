@@ -90,7 +90,8 @@ print(quest_completion)
 inv_dict = load_dict()[0]['inv_dict']
 stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
 stats[0][2] = 10000
-selections = ['Windowed', "On", 'On']
+selections = load_dict()[0]['settings']
+# selections = ['Windowed', "On", 'On']
 def introscreen():
 	firsttime=True
 	# intromix=mixer.Sound("Music/bgm/Starting.wav") ###creating a sound object that can be played in the channel ##this only works with wav and of something
@@ -235,7 +236,7 @@ def introscreen():
 					go=False
 		display.flip()
 				########################################################################################
-# introscreen()
+introscreen()
 if quit_stat == 'quit':
 	running = False
 def poop(list1,num,currlevel):
@@ -397,7 +398,6 @@ def display_main_menu():
 						opts = options_menu(selections)		
 						selections = opts
 						for i in range(len(opts)):
-
 							if i == 0:
 								if opts[i] == 'Windowed':
 									screen = display.set_mode(size)
@@ -445,18 +445,22 @@ def options_menu(selections):
 				return
 			if evt.type == KEYUP:
 				if evt.key == K_ESCAPE or evt.key == K_z:
+					music(2, sound_selection[1], 0)
 					return selected
 				if evt.key == K_DOWN:
+					music(2, sound_selection[1], 0)
 					if not selecting:
 						arrow_pos += 1
 					else:
 						select_pos += 1
 				if evt.key == K_UP:
+					music(2, sound_selection[1], 0)
 					if not selecting:
 						arrow_pos -= 1
 					else:
 						select_pos -= 1	
 				if evt.key == K_SPACE:
+					music(2, sound_selection[1], 0)
 					if selecting:
 						selected[arrow_pos - 1] = toggles[arrow_pos - 1][select_pos - 1]
 					else:
@@ -472,6 +476,11 @@ def options_menu(selections):
 			select_pos = 1	
 		if select_pos > 2:
 			select_pos = 2	
+		current_settings = medievalFont.render('Current Settings:', True, (0,0,0))	
+		screen.blit(current_settings, (460, 30))	
+		for i in range(len(selected)):
+			setting = medievalFont.render(options[i] + ': ' + selected[i], True, (0,0,0))
+			screen.blit(setting, (460, 60 + 30 * i))
 		draw.circle(screen, (0,0,0), (45, 45 + 135 * (arrow_pos - 1)), 5)
 		if selecting:
 			draw.circle(screen, (0,0,0), (110, 40 + (135 * (arrow_pos - 1)) + 50 * select_pos), 5)
@@ -481,7 +490,7 @@ def options_menu(selections):
 			for n in range(len(toggles[i])):
 				toggleName = medievalFont.render(toggles[i][n], True, (0,0,0))
 				screen.blit(toggleName, (125, (80 + i * 135) + 50 * n))
-		print(selected)		
+		print(mx, my)		
 		display.flip()			
 def save_menu(purp):
 	menu = transform.scale(image.load("img/menu/main_menu_rotated.png").convert_alpha(), (500, 200))
@@ -746,23 +755,20 @@ def display_inventory(Inventory, current_Character, mode):
 						return c
 					inventory_open = False
 					return
-				if evt.key == K_DOWN:
-					music(2, sound_selection[1], 0)
-				if evt.key == K_UP:
-					music(2, sound_selection[1], 0)
 				if evt.key == K_SPACE and len(inv) > 0:
 					music(2, sound_selection[1], 0)
 			if evt.type == KEYDOWN:
 				if evt.key == K_DOWN:
+					music(2, sound_selection[1], 0)
 					if arrow_pos == 16 and display_range < 16:	
 						if display_range < len(inv) - 17:
 							display_range += 1
-						# display_range += 1
 					if arrow_pos < 16:
 						arrow_pos += 1
 					if counter < len(inv):	
 						counter += 1
 				if evt.key == K_UP:
+					music(2, sound_selection[1], 0)
 					if arrow_pos == 0 and display_range > 0:
 						display_range -= 1	
 					if arrow_pos > 0:
@@ -901,7 +907,8 @@ def save_dict():
 				 "npc_items": npc_item,
 				 "Current Charachter": currChar,
 				 "Quests": quest_completion,
-				 "inv_dict": inv_dict}
+				 "inv_dict": inv_dict,
+				 "settings": selections}
 	item_value = {'Potion': 75,
 				  'Elixer': 50,
 				  'Sword': 25,
@@ -1284,6 +1291,25 @@ while playing:
 		channels[0].set_volume(.1)
 		music(0, music_selection[0], -1)
 		playing = False
+for i in range(len(selections)):
+	if i == 0:
+		if selections[i] == 'Windowed':
+			screen = display.set_mode(size)
+		else:	
+			screen = display.set_mode(size, FULLSCREEN)
+			WIDTH, HEIGHT = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
+	elif i == 1:
+		if selections[i] == 'Off':
+			channels[0].set_volume(0)
+		else:
+			channels[0].set_volume(.1)
+	elif i == 2:
+		if selections[i] == 'Off':
+			channels[1].set_volume(0)	
+			channels[2].set_volume(0)	
+		else:
+			channels[1].set_volume(.5)	
+			channels[2].set_volume(.5)		
 while running:
 	print(x_diff, y_diff)
 	for evt in event.get():  
@@ -1312,6 +1338,7 @@ while running:
 				mixer.music.play()		
 			if mode == 0:	
 				if evt.key == K_i:
+					music(2, sound_selection[1], 0)
 					InventoryDisplay(currChar, 0, inventory)	
 				if evt.key == K_q:
 					inventory = []
@@ -1320,11 +1347,13 @@ while running:
 					quest_completion = {}
 					inv_dict = {}
 				if evt.key == K_l:
+					music(2, sound_selection[1], 0)
 					fname, tops = levelSelect(lvl, chests, walls, portals)
 					load_object(fname, chests, walls, portals)
 					print("reload")
 					time.wait(100)
 				if evt.key == K_m:
+					music(2, sound_selection[1], 0)
 					if pressed == "UP":
 						cm = cf[0]
 					elif pressed == "DOWN":

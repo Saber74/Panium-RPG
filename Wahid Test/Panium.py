@@ -59,6 +59,23 @@ font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
 medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
 fancyFont=font.Font("FONTS/Friedolin.ttf", 95)
+
+enemy1=image.load("img/enemies/Irongiant.png")
+enemy2=image.load("img/enemies/Spider.png")
+enemy3=image.load("img/enemies/Death.png")
+enemy4=image.load("img/enemies/Demon.png")
+enemy5=image.load("img/enemies/Dragon.png")
+enemy6=image.load("img/enemies/Earthspirit.png")
+enemy7=image.load("img/enemies/Ghost.png")
+enemy8=image.load("img/enemies/Gargoyle.png")
+enemy9=image.load("img/enemies/Gazer.png")
+enemy10=image.load("img/enemies/Lamia.png")
+enemy11=image.load("img/enemies/Ogre.png")
+enemy12=image.load("img/enemies/Skeleton.png")
+enemy13=image.load("img/enemies/Minotaur.png")
+enemy14=image.load("img/enemies/Sahuagin.png")
+enemy15=image.load("img/enemies/Plant.png")
+enemylist=[enemy1,enemy2,enemy3,enemy4,enemy5,enemy6,enemy7,enemy8,enemy9,enemy10,enemy11,enemy12,enemy13,enemy14,enemy15]
 ##################################################### MUSIC #####################################################
 def music(channel, music, length):
 	channels[channel].play(music, length)
@@ -66,11 +83,11 @@ mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is act
 mixer.init() 
 mixer.set_num_channels(4) ###setting number of channels up
 channels = [mixer.Channel(0), mixer.Channel(1), mixer.Channel(2)]
-music_selection = [mixer.Sound("Music/bgm/Village.wav"), mixer.Sound("Music/bgm/Castle.wav"), mixer.Sound("Music/bgm/Starting.wav")]
+music_selection = [mixer.Sound("Music/bgm/Village.wav"), mixer.Sound("Music/bgm/Castle.wav"), mixer.Sound("Music/bgm/Starting.wav"), mixer.Sound("Music/bgm/Boss fight.wav")]
 sound_selection = [mixer.Sound("Music/se/The Greatest Pokemon Sound Effects (1).wav"), mixer.Sound("Music/se/GUI sel decision.ogg"), mixer.Sound("music/se/Door exit.ogg")]
 channels[0].set_volume(.1)
 channels[1].set_volume(.2)
-channels[2].set_volume(.5)
+channels[2].set_volume(2)
 ##################################################### MUSIC #####################################################
 def load_dict():
 	prog_data = p.load(open("prog.dat", 'rb'))
@@ -89,7 +106,7 @@ quest_completion = load_dict()[0]['Quests']
 print(quest_completion)
 inv_dict = load_dict()[0]['inv_dict']
 stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
-stats[0][2] = 10000
+stats=[0,0,30,7,5]
 selections = load_dict()[0]['settings']
 # selections = ['Windowed', "On", 'On']
 def introscreen():
@@ -236,7 +253,7 @@ def introscreen():
 					go=False
 		display.flip()
 				########################################################################################
-introscreen()
+# introscreen()
 if quit_stat == 'quit':
 	running = False
 def poop(list1,num,currlevel):
@@ -853,9 +870,7 @@ def display_inventory(Inventory, current_Character, mode):
 			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
 		mx, my = mouse.get_pos()
 		display.flip()
-
 	arrow_pos = 0
-
 def alert_display(item, mode):
 	item = item
 	n = 0
@@ -883,7 +898,6 @@ def alert_display(item, mode):
 				del split[split.index('')]
 			for i in range(len(split)):
 				screen.blit(timesNewRomanFont.render(split[i], True, (150,150,150)), (45, text_y + 30 * i))
-				# time.wait(100)
 				display.flip()
 			n = 1	
 		display.flip() 
@@ -1284,7 +1298,7 @@ tops = levelSelect(lvl, chests, walls, portals)[1]
 load_object(fname, chests, walls, portals)
 running = True
 key.set_repeat(100,100)
-channels[0].fadeout(5000)
+channels[0].fadeout(1000)
 playing = True
 while playing:
 	if not channels[0].get_busy():
@@ -1374,11 +1388,11 @@ while running:
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
-	# encounter_steps = r(10,80)	
-	# if int(step_counter) == encounter_steps:
-	# 	step_counter = 0
-	# 	mode = 1
-	# print(step_counter)	
+	encounter_steps = r(10,80)	
+	if int(step_counter) == encounter_steps:
+		step_counter = 0
+		mode = 1
+	print(step_counter)	
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = stats[0][2]
@@ -1507,10 +1521,20 @@ while running:
 	else:
 		pass
 		if mode == 1:
+			# BossFight=mixer.Sound("Music/Boss fight.wav") 
+			# channel1.play(BossFight,-1) 
+			music(0, music_selection[3], -1)
+			enemystatnum1=r(1,4)
+			enemystatnum2=r(0,3)
+			enemystatnum3=r(2,4)
+			# enemystats=[50+enemystatnum1*stats[currNum][2]//2,3+enemystatnum2*stats[currNum][3]//3,enemystatnum3*stats[currNum][4]//2]
+			enemystats=[50+enemystatnum1*stats[currNum][2]//2,3+enemystatnum2*stats[currNum][3]//3,enemystatnum3*stats[currNum][4]//2]
+			num=r(0,14)
+			enemy = enemylist[num]
 			turn = "Player"		
 			used = False
 			print(turn,"GOES FIRST!!!")	
-			Enemy_HP = 100
+			enemystats[0] = 100
 			print("PRESS SPACE TO ATTACK")
 			for i in battleAnimation:
 				screen.blit(i,(0,0))
@@ -1518,10 +1542,8 @@ while running:
 				display.flip() 
 			mode = 2	
 		battleBack = transform.scale(image.load("img/battlebacks1/DarkSpace.png"), (WIDTH, HEIGHT))	
-		enemy = image.load("img/enemies/Chimera.png")
 		FIGHTANIMATION(screen, enemy, battleBack)
 		draw.rect(screen,(46,50,128),attackRect,0)
-		draw.rect(screen,(255,255,255),defenseRect,0)
 		draw.rect(screen,(210,75,146),itemRect,0)
 		for i in range(stats[currNum][2]//2):
 			# INSERT
@@ -1531,19 +1553,19 @@ while running:
 		hpText=str("Player HP:"+str(stats[currNum][2]))
 		hpEdit=fireFont.render(hpText,True,(0,200,0))
 		screen.blit(hpEdit,(0,round(HEIGHT*6/8-40,0)))
-		for i in range(stats[currNum][5]//2):
+		for i in range(stats[currNum][-1]//2):
 			draw.rect(screen,(0,0,255),Rect(x,round(HEIGHT*6/8+50),10,15))
 			x+=13
 		x=0
-		manaText=str("Player Mana: "+str(stats[currNum][5]))
+		manaText=str("Player Mana: "+str(stats[currNum][-1]))
 		manaEdit=fireFont.render(manaText,True,(0,200,0))
 		screen.blit(manaEdit,(0,round(HEIGHT*6/8+20)))
-		enemyhp=str("name of enemy HP: "+str(Enemy_HP))
+		enemyhp=str("name of enemy HP: "+str(enemystats[0]))
 		enemyhpEdit=fireFont.render(enemyhp,True,(0,200,0))
 		screen.blit(enemyhpEdit,(0,0))
 		count=0
 		y=round(HEIGHT*1/8)
-		for i in range(Enemy_HP//2):
+		for i in range(enemystats[0]//2):
 			draw.rect(screen,(255,0,0),Rect(x,y,10,15))
 			x+=12
 			count+=1
@@ -1553,25 +1575,20 @@ while running:
 		x=0
 		if stage==0:
 			text=str("Attack Skills")
-			text2=str("Defencive Skills")
 			text3=str("Items")
 			edit1=fireFont.render(text,True,(0,0,200))
-			edit2=fireFont.render(text2,True,(0,0,200))
 			edit3=fireFont.render(text3,True,(0,0,200))
 			screen.blit(edit1,(50,round(HEIGHT*7/8+15,0)))
-			screen.blit(edit2,(round(50+WIDTH*1/3,0),round(HEIGHT*7/8+15,0)))
 			screen.blit(edit3,(round(50+WIDTH*2/3,0),round(HEIGHT*7/8+15,0)))
 
 			if mb[0]:
-				if attackRect.collidepoint(mx,my):
+				if attackRect.collidepoint(mx,my) or kp[K_z]:
 					stage=1
-				elif defenseRect.collidepoint(mx,my):
-					stage=2
-				elif itemRect.collidepoint(mx,my):
+				elif itemRect.collidepoint(mx,my) or kp[K_c]:
 					stage=3
 		########################################## ATTACK SELECTION ##########################################
 		if stage==1:
-
+			draw.rect(screen,(255,255,255),defenseRect,0)
 			text=str("Attack1")
 			text2=str("Attack2")
 			text3=str("Attack3")
@@ -1582,13 +1599,13 @@ while running:
 			screen.blit(edit2,(round(50+WIDTH*1/3,0),round(HEIGHT*7/8+15,0)))
 			screen.blit(edit3,(round(WIDTH*2/3+50,0),round(HEIGHT*7/8+15,0)))
 			if attackRect.collidepoint(mx,my):
-				Attack_DMG = stats[currNum][1]*4
+				Attack_DMG = stats[currNum][3]*4
 				print("Your attack will do",Attack_DMG,"damage to the enemy!!")	###[1 is dmg][3 is magic dmg]
 			elif defenseRect.collidepoint(mx,my):
-				Attack_DMG = stats[currNum][3]*5
+				Attack_DMG = stats[currNum][4]*5
 				print("Your attack will do",Attack_DMG,"damage to the enemy!!") ###[1 is dmg][3 is magic dmg]	
 			elif itemRect.collidepoint(mx,my):
-				Attack_DMG = stats[currNum][3]*3+stats[currNum][1]*3	###[1 is dmg][3 is magic dmg]	
+				Attack_DMG = stats[currNum][3]*3+stats[currNum][4]*3	###[1 is dmg][3 is magic dmg]	
 				print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
 		########################################## ATTACK SELECTION ##########################################
 
@@ -1603,7 +1620,7 @@ while running:
 						screen.blit(i,(300,100))
 						time.wait(50)
 						display.flip()
-					Enemy_HP -= Attack_DMG
+					enemystats[0] -= Attack_DMG
 					turn = "Enemy"
 					stage=0
 					battle=False
@@ -1614,7 +1631,7 @@ while running:
 						time.wait(50)
 						display.flip()
 					stats[currNum][-1]-=10
-					Enemy_HP -= Attack_DMG
+					enemystats[0] -= Attack_DMG
 					turn = "Enemy"
 					stage=0
 				elif battle and mb[0] and itemRect.collidepoint(mx,my) or kp[K_c] and stats[currNum][-1]>=5:
@@ -1623,37 +1640,37 @@ while running:
 						screen.blit(i,(300,100))
 						time.wait(50)
 						display.flip()
-					stats[currNum][-1]
-					Enemy_HP -= Attack_DMG
+					stats[currNum][-1]-=5
+					enemystats[0] -= Attack_DMG
 					turn = "Enemy"
 					stage=0
 				# elif stage==2: ####for defencive items or other stuff??? idk we can decide on it later
 			elif stage==3 and len(inventory) > 0:
 				if used == False:
-					InventoryDisplay(currChar, 3, inventory)
-					stage = 1	
+					InventoryDisplay(currChar, 3)
+					stage = 0
 				else:
 					print("You Have Already Used An Item!")	
 
-		if turn == "Enemy" and Enemy_HP > 0:
+		if turn == "Enemy" and enemystats[0] > 0:
 			used = False
 			time.wait(100)
 			print(turn + "'s turn to attack!!")
 			# stats[currNum][2] -= stats[currNum][1]*3//stats[currNum][2] ###20 is enemy damage and must be changed soon
-			stats[currNum][2] -= 100 ###20 is enemy damage and must be changed soon
+			stats[currNum][2] -= enemystats[1] ###20 is enemy damage and must be changed soon
 			print("Player HP:",stats[currNum][2])	
 			turn = "Player"
-		if stats[currNum][2] <= 0 or Enemy_HP <= 0:	
+		if stats[currNum][2] <= 0 or enemystats[0] <= 0:	
 			if stats[currNum][2] <= 0:
 				print("YOU LOST!!")		
-			elif Enemy_HP <= 0:	
+			elif enemystats[0] <= 0:	
 				print("YOU WON!!")	
-			elif stats[currNum][2] <= 0 and Enemy_HP <= 0:
-				print("YOU LOST!!")		
+			elif stats[currNum][2] <= 0 and enemystats[0] <= 0:
+				print("YOU LOST!!")	
+			
 			mode = 0	
-		print(used)
+		
 		############################################### BATTLE ###############################################
-	# DRAW / RENDER
 	display.flip()
 	myClock.tick(FPS)
 quit()

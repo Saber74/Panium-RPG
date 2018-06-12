@@ -57,7 +57,8 @@ Defence_items = ["Leather Armour // 4", "Iron Armour // 7", "Diamond Armour // 9
 
 font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
-medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
+medievalFont = font.SysFont("Times New Roman", 24)
+# medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
 fancyFont=font.Font("FONTS/Friedolin.ttf", 95)
 
 enemy1=image.load("img/enemies/Irongiant.png")
@@ -99,14 +100,15 @@ lvl = str(load_dict()[0]["lvl"])
 x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
 openedChests = load_dict()[0]["Chests"]
 inventory = load_dict()[0]["inv"]
-gold = load_dict()[0]["Gold"]
+# gold = load_dict()[0]["Gold"]
+gold = 100000
 npc_item = load_dict()[0]['npc_items']
 currChar = load_dict()[0]["Current Charachter"]
 quest_completion = load_dict()[0]['Quests']
 print(quest_completion)
 inv_dict = load_dict()[0]['inv_dict']
 stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
-stats=[[0,0,30,7,5], [0,0,30,7,5]]
+stats=[[0,0,30,7,5,5,5,5,100], [0,0,30,7,5,5,5,5,100]]
 selections = load_dict()[0]['settings']
 # selections = ['Windowed', "On", 'On']
 def introscreen():
@@ -282,13 +284,15 @@ def poop(list1,num,currlevel):
 	downarrowRect=Rect(75,HEIGHT//2,132,65)
 	uparrowRect=Rect(75,HEIGHT//2-HEIGHT//7,132,65)
 	backlevel=transform.scale(image.load("img/battlebacks1/Translucent.png"), (WIDTH, HEIGHT))	
-	numFont=font.Font("Carta_Magna-line-demo-FFP.ttf",85)
+	# numFont=font.Font("Carta_Magna-line-demo-FFP.ttf",85)
 	levelup=False
 	while running:
 		for evt in event.get():  
 			if evt.type == QUIT: 
 				running = False
 			if evt.type==KEYDOWN:
+				if evt.key == K_ESCAPE:
+					quit()
 				if evt.key == K_k:
 					levelup = not levelup
 				if levelup:
@@ -316,64 +320,69 @@ def poop(list1,num,currlevel):
 		if mode==2:
 			# charlevel,xp=levelup(7,xp)
 			draw.rect(screen,(211,211,211),Rect(WIDTH//4,HEIGHT//2,WIDTH//2,HEIGHT//20))
-			for i in range(xp//10):
-				draw.rect(screen,(18,107,60),Rect(WIDTH//4+x,HEIGHT//2,WIDTH//2//10,HEIGHT//20))
-				x=WIDTH//2//10*i
-				time.wait(100)
+			if not levelup:
+				for i in range(xp//10):
+					draw.rect(screen,(18,107,60),Rect(WIDTH//4+x,HEIGHT//2,WIDTH//2//10,HEIGHT//20))
+					x=WIDTH//2//10*i
+					time.wait(100)
+					display.flip()
+			if i>=10 and not levelup:
+				xp-=100
+				currlevel+=1
+				levelup = True
+				time.wait(1000)		
+				selected=selectionList[selecnum]
+				# screen.fill((255,255,255))
+			if levelup:
+				selected=selectionList[selecnum]
+				screen.blit(backlevel,(0,0))
+				attackstat=timesNewRomanFont.render(str(list1[num][3]),True,(0,0,0))
+				hpstat=timesNewRomanFont.render(str(list1[num][2]),True,(0,0,0))
+				defencestat=timesNewRomanFont.render(str(list1[num][4]),True,(0,0,0))
+				magicstat=timesNewRomanFont.render(str(list1[num][5]),True,(0,0,0))
+				magicdefstat=timesNewRomanFont.render(str(list1[num][6]),True,(0,0,0))
+				manastat=timesNewRomanFont.render(str(list1[num][7]),True,(0,0,0))
+				screen.blit(uparrow,(75,HEIGHT//2-HEIGHT//7))
+				screen.blit(downarrow,(75,HEIGHT//2))
+				draw.rect(screen,(150,220,255),levelattackRect,0)
+				draw.rect(screen,(150,220,255),leveldefenseRect,0)
+				draw.rect(screen,(150,220,255),levelmagicRect,0)
+				draw.rect(screen,(150,220,255),levelmagicdefenseRect,0)
+				draw.rect(screen,(150,220,255),levelhealthRect,0)
+				draw.rect(screen,(150,220,255),levelmanaRect,0)
+				screen.blit(attackstat,(138,100))
+				screen.blit(defencestat,(275,100))
+				screen.blit(magicstat,(138,175))
+				screen.blit(magicdefstat,(275,175))
+				screen.blit(hpstat,(138,250))
+				screen.blit(manastat,(275,250))
+				if selected=="attack":
+					draw.rect(screen,(140, 82, 150),levelattackRect,0)	
+					upgrade=list1[num][3]		
+				elif selected=="defense":
+					draw.rect(screen,(140, 82, 150),leveldefenseRect,0)
+					upgrade=list1[num][4]
+				elif selected=="magic":
+					draw.rect(screen,(140, 82, 150),levelmagicRect,0)
+					upgrade=list1[num][5]
+				elif selected=="magicdefense":
+					draw.rect(screen,(140, 82, 150),levelmagicdefenseRect,0)
+					upgrade=list1[num][6]
+				elif selected=="health":
+					draw.rect(screen,(140, 82, 150),levelhealthRect,0)
+					upgrade=list1[num][2]
+				elif selected=="mana":
+					draw.rect(screen,(140, 82, 150),levelmanaRect,0)
+					upgrade=list1[num][7]
+				if arrowselected=="up":
+					screen.blit(uparrowclicked,(75,HEIGHT//2-HEIGHT//7))
+				elif arrowselected=="down":
+					screen.blit(downarrowclicked,(75,HEIGHT//2))
 				display.flip()
-				if i>=10:
-					xp-=100
-					currlevel+=1
-					levelup=True
-					time.wait(1000)		
-					selected=selectionList[selecnum]
-					# screen.fill((255,255,255))
-					attackstat=numFont.render(str(list1[num][3]),True,(255,0,0))
-					hpstat=numFont.render(str(list1[num][2]),True,(255,0,0))
-					defencestat=numFont.render(str(list1[num][4]),True,(255,0,0))
-					magicstat=numFont.render(str(list1[num][5]),True,(255,0,0))
-					magicdefstat=numFont.render(str(list1[num][6]),True,(255,0,0))
-					manastat=numFont.render(str(list1[num][7]),True,(255,0,0))
-					screen.blit(uparrow,(75,HEIGHT//2-HEIGHT//7))
-					screen.blit(downarrow,(75,HEIGHT//2))
-					draw.rect(screen,(150,220,255),levelattackRect,0)
-					draw.rect(screen,(150,220,255),leveldefenseRect,0)
-					draw.rect(screen,(150,220,255),levelmagicRect,0)
-					draw.rect(screen,(150,220,255),levelmagicdefenseRect,0)
-					draw.rect(screen,(150,220,255),levelhealthRect,0)
-					draw.rect(screen,(150,220,255),levelmanaRect,0)
-					if selected=="attack":
-						draw.rect(screen,(140, 82, 150),levelattackRect,0)	
-						upgrade=list1[num][3]		
-					elif selected=="defense":
-						draw.rect(screen,(140, 82, 150),leveldefenseRect,0)
-						upgrade=list1[num][4]
-					elif selected=="magic":
-						draw.rect(screen,(140, 82, 150),levelmagicRect,0)
-						upgrade=list1[num][5]
-					elif selected=="magicdefense":
-						draw.rect(screen,(140, 82, 150),levelmagicdefenseRect,0)
-						upgrade=list1[num][6]
-					elif selected=="health":
-						draw.rect(screen,(140, 82, 150),levelhealthRect,0)
-						upgrade=list1[num][2]
-					elif selected=="mana":
-						draw.rect(screen,(140, 82, 150),levelmanaRect,0)
-						upgrade=list1[num][7]
-					if arrowselected=="up":
-						screen.blit(uparrowclicked,(75,HEIGHT//2-HEIGHT//7))
-					elif arrowselected=="down":
-						screen.blit(downarrowclicked,(75,HEIGHT//2))
-					screen.blit(attackstat,(138,100))
-					screen.blit(defencestat,(275,100))
-					screen.blit(magicstat,(138,175))
-					screen.blit(magicdefstat,(275,175))
-					screen.blit(hpstat,(138,250))
-					screen.blit(manastat,(275,250))
-					screen.blit(backlevel,(0,0))
-					print(upgrade)	
+				print(selecnum, selected)	
 	display.flip() 
 	quit()	
+poop(stats, 1, stats[1][1])	
 def display_main_menu():
 	# screen_back = screen.copy()
 	global screen, size, WIDTH, HEIGHT 
@@ -803,8 +812,8 @@ def display_inventory(Inventory, current_Character, mode):
 							i = i.split(' // ')
 							if y[0] in i:
 								print("HP +", i[1])
-								mes = medievalFont.render("HP + " + i[1], True, (0,0,0))
-								mes = medievalFont.render('', True, (0,0,0))
+								mes = timesNewRomanFont.render(i[1] + ' added to HP!', True, (0,0,0))
+								mes2 = medievalFont.render('', True, (0,0,0))
 								display_bool = True
 								HP_Change(i[1])
 						del inv[counter]	
@@ -924,7 +933,8 @@ def HP_Change(HP):
 		stats[1][2] += int(HP)
 def FIGHTANIMATION(surf, enemy, battleBack):
 	surf.blit(battleBack,(0,0))
-	surf.blit(enemy,(187.5,0))	
+	rect = enemy.get_rect()
+	surf.blit(enemy,(WIDTH / 2 - rect.width / 2, HEIGHT / 2 - rect.height / 2))	
 def save_dict():
 	prog_data = {"lvl": lvl,
 				 "Coords": [x_diff, y_diff],
@@ -1372,6 +1382,8 @@ while running:
 					i.stop()
 			if evt.key == K_p:
 				mixer.music.play()		
+			if evt.key == K_r:
+				poop(stats, 1, stats[1][1])	
 			if mode == 0:	
 				if evt.key == K_i:
 					music(2, sound_selection[1], 0)
@@ -1410,11 +1422,11 @@ while running:
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
-	# encounter_steps = r(10,80)	
-	# if int(step_counter) == encounter_steps:
-	# 	step_counter = 0
-	# 	mode = 1
-	# print(step_counter)	
+	encounter_steps = r(10,80)	
+	if int(step_counter) == encounter_steps:
+		step_counter = 0
+		mode = 1
+	print(step_counter)	
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = stats[0][2]

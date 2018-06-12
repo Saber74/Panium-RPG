@@ -106,7 +106,7 @@ quest_completion = load_dict()[0]['Quests']
 print(quest_completion)
 inv_dict = load_dict()[0]['inv_dict']
 stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
-stats=[0,0,30,7,5]
+stats=[[0,0,30,7,5], [0,0,30,7,5]]
 selections = load_dict()[0]['settings']
 # selections = ['Windowed', "On", 'On']
 def introscreen():
@@ -757,6 +757,7 @@ def display_inventory(Inventory, current_Character, mode):
 	display_range = 0
 	tmp_inv = []
 	counter = 0
+	display_bool = False
 	Inventory = Inventory
 	for i in Inventory:
 		if inv_dict[i] != '':
@@ -797,11 +798,14 @@ def display_inventory(Inventory, current_Character, mode):
 						x = inv_dict[inv[counter]]
 						y = x.split(" x")
 						if y[1] == '1':
-							inv_dict[y[0]] = ''
+							inv_dict[y[0]] = '' # 
 						for i in HP_items:
 							i = i.split(' // ')
 							if y[0] in i:
 								print("HP +", i[1])
+								mes = medievalFont.render("HP + " + i[1], True, (0,0,0))
+								mes = medievalFont.render('', True, (0,0,0))
+								display_bool = True
 								HP_Change(i[1])
 						del inv[counter]	
 						del inventory[inventory.index(y[0])]
@@ -819,9 +823,13 @@ def display_inventory(Inventory, current_Character, mode):
 						try:
 							gold += load_dict()[3][y[0]]
 							print("You have gained", str(load_dict()[3][y[0]]), "gold!! Now you have", str(gold), "gold in total!!")
+							mes = medievalFont.render("You have gained " + str(load_dict()[3][y[0]]) + " gold!!", True, (0,0,0))
+							mes2 = medievalFont.render("Now you have " + str(gold) + " gold in total!!", True, (0,0,0))
 						except:
 							gold += 100
 							print("You have gained", str(100), "gold!! Now you have", str(gold), "gold in total!!")
+							mes = medievalFont.render("You have gained " + str(100) + " gold!!", True, (0,0,0))
+							mes2 = medievalFont.render("Now you have " + str(100) + " gold in total!!", True, (0,0,0))
 						del inv[counter]	
 						del inventory[inventory.index(y[0])]
 						tmp = InventoryDisplay(current_Character, 1, inventory)
@@ -829,6 +837,7 @@ def display_inventory(Inventory, current_Character, mode):
 						for i in tmp:
 							if inv_dict[i] != '':
 								inv.append(i)
+						display_bool = True		
 					if mode == 'battle':
 						global used
 						x = inv[counter]
@@ -845,6 +854,9 @@ def display_inventory(Inventory, current_Character, mode):
 		count = 0			
 		screen.blit(menu_base, (0,0))
 		tmp_inv = []	
+		if display_bool:
+			screen.blit(mes, (30,255))
+			screen.blit(mes2, (30,285))
 		for i in range(display_range, len(inv)):
 			tmp_inv.append(inv[i])	
 		if arrow_pos > len(inv):
@@ -869,6 +881,7 @@ def display_inventory(Inventory, current_Character, mode):
 		elif current_Character == "Raven":
 			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
 		mx, my = mouse.get_pos()
+		print(mx,my)
 		display.flip()
 	arrow_pos = 0
 def alert_display(item, mode):
@@ -1199,6 +1212,7 @@ class Store_Clerk(sprite.Sprite):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff	
 	def open_store(self):
 		self.selection = self.s1
+		self.display = False
 		if self.tier == '1':
 			self.selection = self.s1
 		elif self.tier == '2':
@@ -1233,11 +1247,14 @@ class Store_Clerk(sprite.Sprite):
 							x = self.selection[arrow_pos]
 							y = x.split(" " * 88)
 							if int(y[1]) <= gold:
+								mes = medievalFont.render("You have bought a " + y[0] + ' for ' + y[1] + '!! You have ' + str(gold) + ' gold left!!', True, (0,0,0))
 								print("You have bought a " + y[0] + '!!')
 								inventory.append(y[0])
 								gold -= int(y[1])
 							if int(y[1]) > gold:
+								mes = medievalFont.render("You don't have enough money!!", True, (0,0,0))
 								print("You don't have enough money!!")
+							self.display = True	
 					if evt.key == K_b:
 						self.event = 'buy'		
 					if evt.key == K_s:
@@ -1245,7 +1262,11 @@ class Store_Clerk(sprite.Sprite):
 			if self.event == 'buy' or self.event == 'NULL':			
 				screen.blit(self.back, (0,0))
 				ShopName = fancyFont.render("Shop Number 1", True, (0,0,0))
-				screen.blit(ShopName, (185,0))
+				Gold = medievalFont.render('Gold: ' + str(gold), True, (0,0,0))
+				screen.blit(ShopName, (100,0))
+				screen.blit(Gold, (575,0))
+				if self.display:
+					screen.blit(mes, (55,275))
 				for i in range(len(self.selection)):
 					if arrow_pos == len(self.selection):
 						arrow_pos -= 1
@@ -1258,6 +1279,7 @@ class Store_Clerk(sprite.Sprite):
 				InventoryDisplay(currChar, 2, inventory)
 				self.event = c
 			mx, my = mouse.get_pos()
+			print(mx, my)
 			display.flip()	
 
 class Chest(sprite.Sprite):
@@ -1388,11 +1410,11 @@ while running:
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
-	encounter_steps = r(10,80)	
-	if int(step_counter) == encounter_steps:
-		step_counter = 0
-		mode = 1
-	print(step_counter)	
+	# encounter_steps = r(10,80)	
+	# if int(step_counter) == encounter_steps:
+	# 	step_counter = 0
+	# 	mode = 1
+	# print(step_counter)	
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = stats[0][2]

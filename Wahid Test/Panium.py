@@ -148,7 +148,7 @@ def introscreen():
 			for i in range(3):
 				for i in range(0,16):
 					# screen.fill((37,34,39))
-					screen.blit(image.load("ezgif-4-9108664653-gif-im/%i.gif"%i),(100,75))
+					screen.blit(image.load("img/ezgif-4-9108664653-gif-im/%i.gif"%i),(100,75))
 					display.update()
 					time.wait(50)
 			firsttime=False
@@ -277,10 +277,10 @@ def poop(list1,num,currlevel):
 	levelmanaRect=Rect(550,500,200,50)
 	running = True
 	x=0
-	uparrow=image.load("sortup.png")
-	downarrow=image.load("sortdown.png")
-	uparrowclicked=image.load("sortupclicked.png")
-	downarrowclicked=image.load("sortdownclicked.png")
+	uparrow=image.load("img/XP/sortup.png")
+	downarrow=image.load("img/XP/sortdown.png")
+	uparrowclicked=image.load("img/XP/sortupclicked.png")
+	downarrowclicked=image.load("img/XP/sortdownclicked.png")
 	downarrowRect=Rect(75,HEIGHT//2,132,65)
 	uparrowRect=Rect(75,HEIGHT//2-HEIGHT//7,132,65)
 	backlevel=transform.scale(image.load("img/battlebacks1/Translucent.png"), (WIDTH, HEIGHT))	
@@ -292,7 +292,9 @@ def poop(list1,num,currlevel):
 				running = False
 			if evt.type==KEYDOWN:
 				if evt.key == K_ESCAPE:
-					quit()
+					global quit_stat
+					quit_stat = 'quit'
+					return
 				if evt.key == K_k:
 					levelup = not levelup
 				if levelup:
@@ -382,9 +384,7 @@ def poop(list1,num,currlevel):
 				print(selecnum, selected)	
 	display.flip() 
 	quit()	
-poop(stats, 1, stats[1][1])	
 def display_main_menu():
-	# screen_back = screen.copy()
 	global screen, size, WIDTH, HEIGHT 
 	menu = transform.scale(image.load("img/menu/main_menu.png").convert_alpha(), (200, 500))
 	screen.blit(screen_back, (0,0))

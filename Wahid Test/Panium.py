@@ -13,6 +13,7 @@ screen = display.set_mode(size)
 ########################################## USE IN FINAL PRODUCT ##########################################
 battle = False # used to check if you are attacking
 #####################################fonts##################################
+font.init()
 fireFont = font.Font("FONTS/Breathe Fire.otf",30)
 #######################################fonts##############################
 #############battle variables
@@ -147,10 +148,10 @@ def introscreen():
 		###########################################################
 
 		###############################################graphics for the intro screen including text and pictures########################
-		screen.blit(transform.scale(image.load("olga-antonenko-monolith-final.jpg"),(WIDTH,HEIGHT)),(0,0))
-		titleFontcont=font.Font("Carta_Magna-line-demo-FFP.ttf",85)
-		smalltextFont=font.Font("Carta_Magna-line-demo-FFP.ttf",50)
-		quitFont=font.Font("Carta_Magna-line-demo-FFP.ttf",40)
+		screen.blit(transform.scale(image.load("img/backs/olga-antonenko-monolith-final.jpg"),(WIDTH,HEIGHT)),(0,0))
+		titleFontcont=font.Font("FONTS/Carta_Magna-line-demo-FFP.ttf",85)
+		smalltextFont=font.Font("FONTS/Carta_Magna-line-demo-FFP.ttf",50)
+		quitFont=font.Font("FONTS/Carta_Magna-line-demo-FFP.ttf",40)
 		newGametext=str("New Game")
 		continueGameText=str("Continue Game")
 		titlecont=str("PANIUM")
@@ -430,30 +431,32 @@ def display_main_menu():
 								else:
 									channels[1].set_volume(.5)	
 									channels[2].set_volume(.5)
-		# count is for how the coordinates of what i blit will be.							
+		# count is for how the coordinates of what I blit will be.							
 		count = 0					
 		screen.blit(screen_back, (0,0))
 		screen.blit(menu, (100,50))
 		for i in range(len(options)):
 			count += 1
 			optionName = medievalFont.render(options[i], True, (0,0,0))
-			# limits asd0m
+			# limits the scrolling
 			if arrow_pos == len(options):
 				arrow_pos -= 1
 			if arrow_pos < 0:
 				arrow_pos += 1	
-			draw.circle(screen, (0,0,0), (110,75 + 30 * arrow_pos), 6)
-			screen.blit(optionName, (120, 30 + 30 * count))
+			draw.circle(screen, (0,0,0), (110,75 + 30 * arrow_pos), 6) # draws the selection circle
+			screen.blit(optionName, (120, 30 + 30 * count)) # draws the animation
 		mx, my = mouse.get_pos()
 		display.flip()
 def options_menu(selections):
 	back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))		
+	# sets default positions for the arrow pos and selection
 	arrow_pos = 1
 	select_pos = 1
+	# defines the options and their toggles
 	options = ['Screen', 'BGM', "SE"]
 	toggles = [['Windowed', 'Fullscreen'], ["On", 'Off'], ["On", 'Off']]
-	selected = selections
-	selecting = False
+	selected = selections # this will load in the saved options
+	selecting = False # this will check if you are selecting one of the toggle options
 	running = True
 	while running:
 		for evt in event.get():
@@ -461,15 +464,17 @@ def options_menu(selections):
 				return
 			if evt.type == KEYUP:
 				if evt.key == K_ESCAPE or evt.key == K_z:
-					music(2, sound_selection[1], 0)
-					return selected
+					music(2, sound_selection[1], 0) # loads in the sound effects
+					return selected # returns all the changed options or not changed options
 				if evt.key == K_DOWN:
 					music(2, sound_selection[1], 0)
+					# this will change the selections and the arrow_pos
 					if not selecting:
 						arrow_pos += 1
 					else:
 						select_pos += 1
 				if evt.key == K_UP:
+					# this will change the selections and the arrow_pos
 					music(2, sound_selection[1], 0)
 					if not selecting:
 						arrow_pos -= 1
@@ -477,13 +482,15 @@ def options_menu(selections):
 						select_pos -= 1	
 				if evt.key == K_SPACE:
 					music(2, sound_selection[1], 0)
+					# this will fetch the selected option
 					if selecting:
 						selected[arrow_pos - 1] = toggles[arrow_pos - 1][select_pos - 1]
 					else:
 						select_pos = 1	
-					selecting = not selecting
+					selecting = not selecting # this will switch then status of selecting bool
 		mx, my = mouse.get_pos()		
 		screen.blit(back, (0,0))
+		# the following parameters sets the maximum boundaries for the positions
 		if arrow_pos > 3:
 			arrow_pos = 3
 		if arrow_pos < 1:
@@ -492,6 +499,10 @@ def options_menu(selections):
 			select_pos = 1	
 		if select_pos > 2:
 			select_pos = 2	
+		# the reset is just playing with positions and blitting items on to the screen	
+		# basically the circle position is set on to the option you are toggling and
+		# when you press space, another circle will appear leaving the first circle at the option name
+		# then you will be able to change the toggles
 		current_settings = medievalFont.render('Current Settings:', True, (0,0,0))	
 		screen.blit(current_settings, (460, 30))	
 		for i in range(len(selected)):
@@ -506,13 +517,12 @@ def options_menu(selections):
 			for n in range(len(toggles[i])):
 				toggleName = medievalFont.render(toggles[i][n], True, (0,0,0))
 				screen.blit(toggleName, (125, (80 + i * 135) + 50 * n))
-		print(mx, my)		
 		display.flip()			
 def save_menu(purp):
 	menu = transform.scale(image.load("img/menu/main_menu_rotated.png").convert_alpha(), (500, 200))
-	y = 45
-	arrow_pos = 0
-	mode = 'save_select'
+	y = 45 # sets default position for the circle / select icon thing
+	arrow_pos = 0 # for selection
+	mode = 'save_select' # what mode you are using whether
 	saving = True
 	while saving:
 		for evt in event.get():  
@@ -529,12 +539,15 @@ def save_menu(purp):
 					y = 45
 				if evt.key == K_SPACE:
 					music(2, sound_selection[1], 0)
+					# according to the y, the game will either save or will just quit and close
 					if y == 45:
 						mode = 'saving'
 					if y == 75:
 						saving = False
 						return	
-		if mode == 'save_select':				
+		if mode == 'save_select':	
+			# this will allow the player to select whether or not the player wants to save			
+			# and depending on the purp variable it will ask you if you want to save before quitting
 			screen.blit(screen_back, (0,0))
 			screen.blit(menu, (0,0))
 			if purp == 'Quit':
@@ -545,6 +558,7 @@ def save_menu(purp):
 			screen.blit(medievalFont.render('No?', True, (0,0,0)), (20, 60))
 			draw.circle(screen, (0,0,0), (10,y), 6)
 		elif mode == 'saving':
+			# if the player decides to save, it will show a little "animation"
 			screen.blit(menu, (0,0))
 			saving_txt = 'Saving.....'
 			saved_txt = 'Saved'
@@ -566,16 +580,19 @@ def save_menu(purp):
 		display.flip()		
 def display_quest():
 	back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
-	selectedRect = Rect(0,0,800,200)
-	display_range = 0
-	quest_dict = {}
-	display_txt = []
+	selectedRect = Rect(0,0,800,200) # this will highlight the quest that the player is looking at
+	display_range = 0 # this will control the scrolling of the quests of there are more than 3
+	quest_dict = {} # This will store all the quests
+	display_txt = [] # this will hold the text to be displayed on screen corresponding with quest_dict
 
-	prog_dict = {}
-	prog_txt = []
+	prog_dict = {} # this will record your progress that you have made to complete the quest
+	prog_txt = [] # this will store the progress text corresponding with the prog_dict
 	
-	rec_dict = {}
-	rec_txt = []
+	rec_dict = {} # this will determine whether or not the player received the item for
+				  # completing the quest
+	rec_txt = [] # this is the text that corresponds with the rec_dict
+	# this right here will check the quest_completion to display on screen the progress of your quest
+	# it will display on screen your progress and will tell the steps to do so and who to go to
 	for i in quest_completion:
 		if quest_completion[i][0] == 'true' and quest_completion[i][-1] == 'false':
 			quest_dict[i] = quest_completion[i][1] + ' with ' + quest_completion[i][2]
@@ -588,20 +605,21 @@ def display_quest():
 				rec_dict[i] = 'Quest Completion: Talk to ' + i + ' to complete your quest!'
 			else:
 				rec_dict[i] = "Quest Completion: You haven't completed the quest yet!"
+	# renders all the text that will be displayed on screen			
 	for i in quest_dict:
 		t = timesNewRomanFont.render('Quest: ' + quest_dict[i], True, (0,0,0))
-		display_txt.append(t)	
+		display_txt.append(t)
 	for i in prog_dict:
 		t = timesNewRomanFont.render(prog_dict[i], True, (0,0,0))
-		prog_txt.append(t)	
+		prog_txt.append(t)
 	for i in rec_dict:
 		t = timesNewRomanFont.render(rec_dict[i], True, (0,0,0))
-		rec_txt.append(t)	
+		rec_txt.append(t)
 	counter = 0
 	quest_thang = True
 	while quest_thang:
-		for evt in event.get():  
-			if evt.type == QUIT: 
+		for evt in event.get():
+			if evt.type == QUIT:
 				quest_thang = False	
 			if evt.type == KEYUP:
 				if evt.key == K_ESCAPE or evt.key == K_z:
@@ -610,6 +628,7 @@ def display_quest():
 					return	
 				if evt.key == K_UP:
 					music(2, sound_selection[1], 0)
+					# will set restrictions and will allow the user to move their selections box
 					if selectedRect.y == 0 and display_range > 0:
 						display_range -= 1
 					else:
@@ -617,6 +636,7 @@ def display_quest():
 							selectedRect.y -= 200
 				if evt.key == K_DOWN:
 					music(2, sound_selection[1], 0)
+					# controls scrolling and will also allow you to change the display_range for scrolling
 					if selectedRect.y == 400:
 						if len(display_txt) % 3 != 0:
 							if display_range < len(display_txt) % 3:
@@ -633,6 +653,7 @@ def display_quest():
 		mb=mouse.get_pressed()
 		screen.blit(back, (0,0))
 		draw.rect(screen, (0,0,0), selectedRect, 5)
+		# sets restrictions
 		if len(display_txt) <= 3 and display_range > 0:
 			display_range = 0
 		for i in range(display_range, len(display_txt)):
@@ -1415,11 +1436,11 @@ while running:
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
-	encounter_steps = r(10,80)	
-	if int(step_counter) >= encounter_steps and stats[1][2] > 0:
-		step_counter = 0
-		mode = 1
-	print(step_counter)	
+	# encounter_steps = r(10,80)	
+	# if int(step_counter) >= encounter_steps and stats[1][2] > 0:
+	# 	step_counter = 0
+	# 	mode = 1
+	# print(step_counter)	
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = stats[0][2]

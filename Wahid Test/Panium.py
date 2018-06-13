@@ -1,10 +1,9 @@
-from pygame import *
-from pytmx import *
-from random import randint as r
+from pygame import * # used for literally everything
+from pytmx import * # used for loading TMX files in python
+from random import random as r
 import os
-import pickle as p
+import pickle as p # used for saving all game data in encrypted incorporations
 WIDTH, HEIGHT = 800, 600 
-# WIDTH, HEIGHT = 1366, 768
 size=(WIDTH, HEIGHT)
 os.environ['SDL_VIDEO_WINDOW_POS'] = '0,10'
 screen = display.set_mode(size)
@@ -12,45 +11,43 @@ screen = display.set_mode(size)
 # screen = display.set_mode(size, FULLSCREEN)
 # width, height = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
 ########################################## USE IN FINAL PRODUCT ##########################################
-battle = False
+battle = False # used to check if you are attacking
 #####################################fonts##################################
-font.init()
 fireFont = font.Font("FONTS/Breathe Fire.otf",30)
 #######################################fonts##############################
 #############battle variables
-Enemy_HP = 100
-xp = 0
-charNum = 0
-stage = 0
+Enemy_HP = 100 # sets base enemy hp
+xp = 0 # sets base xp
+charNum = 0 # sets base character
+stage = 0 # used for the stages of battle
 currNum = 0
 ######################################### Fighting Screen ################################################
-attackRect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0))
-attack1Rect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0))
-attack3Rect=Rect(round(WIDTH*2/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
-attack2Rect=Rect(round(WIDTH*1/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
-defenseRect=Rect(round(WIDTH*1/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
-itemRect=Rect(round(WIDTH*2/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0))
+attackRect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0)) # creates rects for battle
+attack1Rect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0)) # creates rects for battle
+attack3Rect=Rect(round(WIDTH*2/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0)) # creates rects for battle
+attack2Rect=Rect(round(WIDTH*1/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0)) # creates rects for battle
+defenseRect=Rect(round(WIDTH*1/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0)) # creates rects for battle
+itemRect=Rect(round(WIDTH*2/3,0),round(HEIGHT*7/8,0),round(WIDTH*1/3),HEIGHT-round(HEIGHT*7/8,0)) # creates rects for battle
 ###############################################
-myClock = time.Clock()
-FPS = 60
-Player_HP = 100
-battleAnimation = []
-pressed = "NULL"
-frame = 0
-counter = 0
-x_diff = y_diff = 0
-pan = 1
-mode = 0
-gold = 100
-s = 5
-step_counter = 0
-npc_item = {}
-c = 'NULL'
-quit_stat = ''
+myClock = time.Clock() # creates a clock
+FPS = 60 # sets the frames per seconc
+Player_HP = 100 # sets base player health
+battleAnimation = [] # creates an empty list that stores the animations for battle
+pressed = "NULL" # Stores the last direction the character was in
+frame = 0 # frame is the animation frame for the character animation
+counter = 0 # counter that will time out the rate at which the frame is added to
+x_diff = y_diff = 0 # these are the offsets for the actual map as the characters don't move
+pan = 1 # pan is the rate at which the offset is increased or decreased
+mode = 0 # your mode determines whether you are in battle or in normal mode
+s = 5 # s is your speed at which you move and the speed at which the animation is completed
+step_counter = 0 # step_counter is the variable that counts how many steps you take until you are forced into battle
+npc_item = {} # npc_item stores whether you have received an item from an NPC or not
+c = 'NULL' # will check whether the player is in buy or sell mode in the various stores
+quit_stat = '' # will checck whether the player is quitting or not
 menu_base = transform.scale(image.load("img/menu/selection.png").convert_alpha(),(WIDTH, HEIGHT))
 dialogue_box = transform.scale(image.load("img/dialogue boxes/Dialog_Box.png").convert_alpha(), (WIDTH, int(HEIGHT / 3.25)))
-currChar = "Crow"
-
+currChar = "Crow" # stores which character is in play and which character will be used in battle
+# the following lists store what specific items do to a specific stats
 HP_items = ["Potion // 50", "Meat // 100", "Poison // -50", "Chilli // 100"]
 Attack_items = ["Wood Sword // 2", "Stone Sword // 3", "Iron Sword // 5", "Diamond Sword // 8", 'Adamantium Sword // 10']
 Defence_items = ["Leather Armour // 4", "Iron Armour // 7", "Diamond Armour // 9", "Adamantium Armour 12"]
@@ -58,9 +55,8 @@ Defence_items = ["Leather Armour // 4", "Iron Armour // 7", "Diamond Armour // 9
 font.init()
 timesNewRomanFont = font.SysFont("Times New Roman", 24)
 medievalFont = font.SysFont("Times New Roman", 24)
-# medievalFont=font.Font("FONTS/DUKEPLUS.TTF", 24)
 fancyFont=font.Font("FONTS/Friedolin.ttf", 95)
-
+# Load the enemys and then adds them to a list
 enemy1=image.load("img/enemies/Irongiant.png")
 enemy2=image.load("img/enemies/Spider.png")
 enemy3=image.load("img/enemies/Death.png")
@@ -79,49 +75,46 @@ enemy15=image.load("img/enemies/Plant.png")
 enemylist=[enemy1,enemy2,enemy3,enemy4,enemy5,enemy6,enemy7,enemy8,enemy9,enemy10,enemy11,enemy12,enemy13,enemy14,enemy15]
 ##################################################### MUSIC #####################################################
 def music(channel, music, length):
+	# this function allows us to have any channel play any track for any amount of time / loops
 	channels[channel].play(music, length)
 mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is actually initialized
 mixer.init() 
 mixer.set_num_channels(4) ###setting number of channels up
-channels = [mixer.Channel(0), mixer.Channel(1), mixer.Channel(2)]
+channels = [mixer.Channel(0), mixer.Channel(1), mixer.Channel(2)] # adds the channels to a list
+# music and sound selection will add the sound tracks to a list for easier access
 music_selection = [mixer.Sound("Music/bgm/Village.wav"), mixer.Sound("Music/bgm/Castle.wav"), mixer.Sound("Music/bgm/Starting.wav"), mixer.Sound("Music/bgm/Boss fight.wav")]
 sound_selection = [mixer.Sound("Music/se/The Greatest Pokemon Sound Effects (1).wav"), mixer.Sound("Music/se/GUI sel decision.ogg"), mixer.Sound("music/se/Door exit.ogg")]
+# sets channel volume to specific values
 channels[0].set_volume(.1)
 channels[1].set_volume(.2)
 channels[2].set_volume(2)
 ##################################################### MUSIC #####################################################
 def load_dict():
+	# this will load data from the .dat files
 	prog_data = p.load(open("prog.dat", 'rb'))
 	crow_data = p.load(open("crow_stats.dat", 'rb'))
 	item_value = p.load(open("item_value.dat", 'rb'))
 	raven_data = p.load(open("raven_stats.dat", 'rb'))
 	return prog_data, crow_data, raven_data, item_value
-lvl = str(load_dict()[0]["lvl"])
-x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1]
-openedChests = load_dict()[0]["Chests"]
-inventory = load_dict()[0]["inv"]
-# gold = load_dict()[0]["Gold"]
-gold = 100000
-npc_item = load_dict()[0]['npc_items']
-currChar = load_dict()[0]["Current Charachter"]
-quest_completion = load_dict()[0]['Quests']
-print(quest_completion)
-inv_dict = load_dict()[0]['inv_dict']
-stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]]
-stats=[[0,0,30,7,5,5,5,5,100], [0,0,30,7,5,5,5,5,100]]
-selections = load_dict()[0]['settings']
+lvl = str(load_dict()[0]["lvl"]) # this will store which map is the current map
+x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1] # this will store the coordinates/offset of the map
+openedChests = load_dict()[0]["Chests"] # stores which chests have been opened
+inventory = load_dict()[0]["inv"] # will store the inventory of the player
+gold = load_dict()[0]["Gold"] # the amount of gold the player has
+# gold = 100000
+npc_item = load_dict()[0]['npc_items'] # the npcs that have given there held items to the player
+currChar = load_dict()[0]["Current Charachter"] # the current character being used
+quest_completion = load_dict()[0]['Quests'] # this keeps track of the progress of the quests
+inv_dict = load_dict()[0]['inv_dict'] # this will store the order of which items were received. This is used in the inventory for scrolling
+stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]] # this stores the stats of the two characters
+# stats=[[0,0,30,7,5,5,5,5,100], [0,0,30,7,5,5,5,5,100]]
+selections = load_dict()[0]['settings'] # this will load saved settings such as screen mode, BGM, and SE
 # selections = ['Windowed', "On", 'On']
 def introscreen():
-	firsttime=True
-	# intromix=mixer.Sound("Music/bgm/Starting.wav") ###creating a sound object that can be played in the channel ##this only works with wav and of something
-	# channel1.play(intromix,-1) ###playing the actual "Sound" the number is the loop which is infinity
-	music(0, music_selection[2], -1)
-
+	# this loads the introscreen before the player starts to play the game
+	firsttime=True # this boolean will run the starting animation
+	music(0, music_selection[2], -1) # loads in the music
 	channels[0].set_volume(0.7) ##to set volume for things so you don't get deaf
-	# yes=image.load("yes_notclicked.png")
-	# yes_clicked=image.load("yes_clicked.png")
-	# no=image.load("no_notclicked.png")
-	# no_clicked=image.load("no_clicked.png")
 	######################################rects###################
 	yesRect=Rect(180,255,200,120)
 	noRect=Rect(470,255,170,120)
@@ -147,7 +140,6 @@ def introscreen():
 		if firsttime==True:
 			for i in range(3):
 				for i in range(0,16):
-					# screen.fill((37,34,39))
 					screen.blit(image.load("img/ezgif-4-9108664653-gif-im/%i.gif"%i),(100,75))
 					display.update()
 					time.wait(50)
@@ -156,24 +148,17 @@ def introscreen():
 
 		###############################################graphics for the intro screen including text and pictures########################
 		screen.blit(transform.scale(image.load("olga-antonenko-monolith-final.jpg"),(WIDTH,HEIGHT)),(0,0))
-		# draw.rect(screen,(216, 163, 149),newGameRect,0)
-		# draw.rect(screen,(216,163,149),continueGameRect,0)
-		# draw.rect(screen,(100,100,100),quitRect,10)
-		# titleFont=font.Font("Carta_Magna-line-demo-FFP.ttf",45)
 		titleFontcont=font.Font("Carta_Magna-line-demo-FFP.ttf",85)
 		smalltextFont=font.Font("Carta_Magna-line-demo-FFP.ttf",50)
 		quitFont=font.Font("Carta_Magna-line-demo-FFP.ttf",40)
 		newGametext=str("New Game")
 		continueGameText=str("Continue Game")
-		# title=str("The battle of")
 		titlecont=str("PANIUM")
 		quitText=str("QUIT")
 		quitEdit=quitFont.render(quitText,True,(255,0,0))
-		# titleEdit=titleFont.render(title,True,(125,44,23))
 		titleEditcont=titleFontcont.render(titlecont,True,(255,99,71))
 		newGameEdit=smalltextFont.render(newGametext,True,(255,163,149))
 		continueGameEdit=smalltextFont.render(continueGameText,True,(255,163,149))
-		# screen.blit(titleEdit,(430,0))
 		screen.blit(titleEditcont,(60,-10))
 		screen.blit(newGameEdit,(380,400))
 		screen.blit(continueGameEdit,(470,470))
@@ -186,6 +171,7 @@ def introscreen():
 			newGameEdit=smalltextFont.render(newGametext,True,(255,31,80))
 			screen.blit(newGameEdit,(380,400))
 			if mb[0]:
+				# if the player selects the new game options then the game will load in the default data
 				global x_diff, y_diff, openedChests, inventory, gold, npc_item, currChar, quest_completion, inv_dict, stats, lvl
 				lvl = '5'
 				x_diff, y_diff = 90, -15
@@ -208,6 +194,7 @@ def introscreen():
 			continueGameEdit=smalltextFont.render(continueGameText,True,(255,31,80))	
 			screen.blit(continueGameEdit,(470,470))
 			if mb[0]:
+				# if they decide to continue then the game will continue as usual
 				for i in range(255):
 					time.wait(10)
 					surf.fill((0,0,0,i))
@@ -222,10 +209,6 @@ def introscreen():
 
 		if go:	####are you sure you want to quit###############################################################3
 			screen.blit(transform.scale(image.load("olga-antonenko-monolith-final.jpg"),(WIDTH,HEIGHT)),(0,0))
-			# draw.rect(screen,(255,9,99),noRect,10)
-			# draw.rect(screen,(255,9,99),yesRect,10)
-			# screen.blit(yes,(100,300))
-			# screen.blit(no,(600,300))
 			confirmquit=font.Font("Something Strange.ttf",110)
 			yesnoFont=font.Font("Something Strange.ttf",130)
 			text=str("Are you a coward?")
@@ -241,42 +224,41 @@ def introscreen():
 			if yesRect.collidepoint((mx,my)):
 				yesInfo=yesnoFont.render(yesText,True,(255,0,0))
 				screen.blit(yesInfo,(200,250))
-				# screen.blit(yes_clicked,(100,300))
 				if mb[0]:
-					# quit()
 					quit_stat = 'quit'
 					return
 			elif noRect.collidepoint((mx,my)):
 				noInfo=yesnoFont.render(noText,True,(255,0,0))
 				screen.blit(noInfo,(500,250))
-				# screen.blit(no_clicked,(600,300))
 				if mb[0]:
-					# screen.blit(copy,(0,0))
 					go=False
 		display.flip()
 				########################################################################################
-# introscreen()
+introscreen()
 if quit_stat == 'quit':
+	# it will quit the game
 	running = False
 def poop(list1,num,currlevel):
-	# init()
-	mode=1
-	xp=110
-	statuspgrade=0
-	upgrade=0
-	selecnum=0
-	point=5
-	stablepoint=5
-	selectionList=["attack","defense","magic","magicdefense","health","mana"]
-	arrowselected=""
+	mode=1 # the process of the xp increase
+	xp=110 # the xp
+	statuspgrade=0 # how much was added to the stat
+	upgrade=0# the number of available points to allocate the points to stats
+	selecnum=0 # which stat is currently selected
+	point=5 # will see at which point you are at on the stat selection
+	stablepoint=5 # the max for the max amount of movement
+	selectionList=["attack","defense","magic","magicdefense","health","mana"] # stores stat names
+	arrowselected="" # to see what picture will be displayed for the arrows
+	# creates the rects for stats
 	levelattackRect=Rect(275,200,200,50)
 	leveldefenseRect=Rect(550,200,200,50)
 	levelmagicRect=Rect(275,350,200,50)
 	levelmagicdefenseRect=Rect(550,350,200,50)
 	levelhealthRect=Rect(275,500,200,50)
 	levelmanaRect=Rect(550,500,200,50)
+	# creates the rects for stats
 	running = True
 	x=0
+	# loads images
 	uparrow=image.load("img/XP/sortup.png")
 	downarrow=image.load("img/XP/sortdown.png")
 	uparrowclicked=image.load("img/XP/sortupclicked.png")
@@ -284,20 +266,19 @@ def poop(list1,num,currlevel):
 	downarrowRect=Rect(75,HEIGHT//2,132,65)
 	uparrowRect=Rect(75,HEIGHT//2-HEIGHT//7,132,65)
 	backlevel=transform.scale(image.load("img/battlebacks1/Translucent.png"), (WIDTH, HEIGHT))	
-	# numFont=font.Font("Carta_Magna-line-demo-FFP.ttf",85)
-	levelup=False
+	levelup=False # bool that stores whether or not that a level up had occurred
 	while running:
 		for evt in event.get():  
 			if evt.type == QUIT: 
 				running = False
 			if evt.type==KEYDOWN:
 				if evt.key == K_ESCAPE:
+					# will quit
 					global quit_stat
 					quit_stat = 'quit'
 					return
-				if evt.key == K_k:
-					levelup = not levelup
 				if levelup:
+					# will determine the limits of the selection
 					if evt.key==K_UP:
 						arrowselected="up"
 						if point>0:
@@ -315,29 +296,26 @@ def poop(list1,num,currlevel):
 						if selecnum!=len(selectionList)-1:
 							selecnum+=1
 		mode=2
-		mx,my=mouse.get_pos()
-		mb=mouse.get_pressed()
-		# screen.fill((255,255,255))
-		# screen.blit
 		if mode==2:
-			# charlevel,xp=levelup(7,xp)
 			draw.rect(screen,(211,211,211),Rect(WIDTH//4,HEIGHT//2,WIDTH//2,HEIGHT//20))
 			if not levelup:
+				# this will draw the xp bar
 				for i in range(xp//10):
 					draw.rect(screen,(18,107,60),Rect(WIDTH//4+x,HEIGHT//2,WIDTH//2//10,HEIGHT//20))
 					x=WIDTH//2//10*i
 					time.wait(100)
 					display.flip()
 			if i>=10 and not levelup:
+				# this will reset the xp and will add to the level of the character and levelup becomes true
 				xp-=100
 				currlevel+=1
 				levelup = True
 				time.wait(1000)		
 				selected=selectionList[selecnum]
-				# screen.fill((255,255,255))
 			if levelup:
 				selected=selectionList[selecnum]
 				screen.blit(backlevel,(0,0))
+				# renders font and draws them and other items
 				attackstat=timesNewRomanFont.render(str(list1[num][3]),True,(0,0,0))
 				hpstat=timesNewRomanFont.render(str(list1[num][2]),True,(0,0,0))
 				defencestat=timesNewRomanFont.render(str(list1[num][4]),True,(0,0,0))
@@ -358,6 +336,7 @@ def poop(list1,num,currlevel):
 				screen.blit(magicdefstat,(275,175))
 				screen.blit(hpstat,(138,250))
 				screen.blit(manastat,(275,250))
+				# will change the colour of each rectangle when it is selected
 				if selected=="attack":
 					draw.rect(screen,(140, 82, 150),levelattackRect,0)	
 					upgrade=list1[num][3]		
@@ -376,6 +355,7 @@ def poop(list1,num,currlevel):
 				elif selected=="mana":
 					draw.rect(screen,(140, 82, 150),levelmanaRect,0)
 					upgrade=list1[num][7]
+				# will change arrow colours	
 				if arrowselected=="up":
 					screen.blit(uparrowclicked,(75,HEIGHT//2-HEIGHT//7))
 				elif arrowselected=="down":
@@ -385,16 +365,19 @@ def poop(list1,num,currlevel):
 	display.flip() 
 	quit()	
 def display_main_menu():
+	# displays the main menu
 	global screen, size, WIDTH, HEIGHT 
 	menu = transform.scale(image.load("img/menu/main_menu.png").convert_alpha(), (200, 500))
 	screen.blit(screen_back, (0,0))
 	screen.blit(menu, (100,50))
+	# arrow_pos will be referring to the index of options, it will be able to tell which option is being selected
 	arrow_pos = 0
 	options = ['Inventory', 'Statistics', 'Quests', 'Save', "Options", 'Exit', 'Quit']
 	main = True
 	while main:
 		for evt in event.get():  
 			if evt.type == KEYUP:
+				# these key presses are for sound effects
 				if evt.key == K_ESCAPE or evt.key == K_z:
 					music(2, sound_selection[1], 0)
 					return
@@ -407,21 +390,26 @@ def display_main_menu():
 				if evt.key == K_SPACE and len(options) > 0:
 					music(2, sound_selection[1], 0)
 					if options[arrow_pos] == 'Inventory':
+						# calls the inventory function
 						InventoryDisplay(currChar, 0, inventory)
 					elif options[arrow_pos] == 'Exit':
+						# exits the function
 						return
 					elif options[arrow_pos] == 'Quit':
+						# will run the save function first and then will close the program
 						save_menu('Quit')
 						global quit_stat
 						quit_stat = 'quit'
 						return
 					elif options[arrow_pos] == 'Save':
+						# This will be called when the player just wants to save their progress and continue playing
 						save_menu('')
 					elif options[arrow_pos] == 'Quests':
 						display_quest()	
 					elif options[arrow_pos] == 'Options':
+						# This will call the options menu and will also update whatever settings are changed
 						global selections
-						opts = options_menu(selections)		
+						opts = options_menu(selections)
 						selections = opts
 						for i in range(len(opts)):
 							if i == 0:
@@ -442,12 +430,14 @@ def display_main_menu():
 								else:
 									channels[1].set_volume(.5)	
 									channels[2].set_volume(.5)
+		# count is for how the coordinates of what i blit will be.							
 		count = 0					
 		screen.blit(screen_back, (0,0))
 		screen.blit(menu, (100,50))
 		for i in range(len(options)):
 			count += 1
 			optionName = medievalFont.render(options[i], True, (0,0,0))
+			# limits asd0m
 			if arrow_pos == len(options):
 				arrow_pos -= 1
 			if arrow_pos < 0:
@@ -1335,27 +1325,27 @@ playing = True
 while playing:
 	if not channels[0].get_busy():
 		channels[0].set_volume(.1)
+		for i in range(len(selections)):
+			if i == 0:
+				if selections[i] == 'Windowed':
+					screen = display.set_mode(size)
+				else:	
+					screen = display.set_mode(size, FULLSCREEN)
+					WIDTH, HEIGHT = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
+			elif i == 1:
+				if selections[i] == 'Off':
+					channels[0].set_volume(0)
+				else:
+					channels[0].set_volume(.1)
+			elif i == 2:
+				if selections[i] == 'Off':
+					channels[1].set_volume(0)	
+					channels[2].set_volume(0)	
+				else:
+					channels[1].set_volume(.5)	
+					channels[2].set_volume(.5)		
 		music(0, music_selection[0], -1)
 		playing = False
-for i in range(len(selections)):
-	if i == 0:
-		if selections[i] == 'Windowed':
-			screen = display.set_mode(size)
-		else:	
-			screen = display.set_mode(size, FULLSCREEN)
-			WIDTH, HEIGHT = size = (min(1920,display.Info().current_w), min(1080,display.Info().current_h))
-	elif i == 1:
-		if selections[i] == 'Off':
-			channels[0].set_volume(0)
-		else:
-			channels[0].set_volume(.1)
-	elif i == 2:
-		if selections[i] == 'Off':
-			channels[1].set_volume(0)	
-			channels[2].set_volume(0)	
-		else:
-			channels[1].set_volume(.5)	
-			channels[2].set_volume(.5)		
 while running:
 	print(x_diff, y_diff)
 	for evt in event.get():  
@@ -1383,7 +1373,10 @@ while running:
 			if evt.key == K_p:
 				mixer.music.play()		
 			if evt.key == K_r:
-				poop(stats, 1, stats[1][1])	
+				# poop(stats, 1, stats[1][1])	
+				mode = 0
+				# print(stats[0][2])
+				# time.wait(1000)
 			if mode == 0:	
 				if evt.key == K_i:
 					music(2, sound_selection[1], 0)
@@ -1423,7 +1416,7 @@ while running:
 	if quit_stat == 'quit':
 		running = False
 	encounter_steps = r(10,80)	
-	if int(step_counter) == encounter_steps:
+	if int(step_counter) >= encounter_steps and stats[1][2] > 0:
 		step_counter = 0
 		mode = 1
 	print(step_counter)	
@@ -1651,7 +1644,8 @@ while running:
 					print(turn + "'s turn to attack!!")
 					for i in CrowZ:
 						FIGHTANIMATION(screen, enemy, battleBack)	
-						screen.blit(i,(300,100))
+						enemyrect = i.get_rect()
+						screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
 						time.wait(50)
 						display.flip()
 					enemystats[0] -= Attack_DMG
@@ -1661,7 +1655,8 @@ while running:
 				elif battle and mb[0] and defenseRect.collidepoint(mx,my) or kp[K_x] and stats[currNum][-1]>=10:
 					for i in CrowX:
 						FIGHTANIMATION(screen, enemy, battleBack)	
-						screen.blit(i,(300,100))
+						enemyrect = i.get_rect()
+						screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
 						time.wait(50)
 						display.flip()
 					stats[currNum][-1]-=10
@@ -1671,7 +1666,8 @@ while running:
 				elif battle and mb[0] and itemRect.collidepoint(mx,my) or kp[K_c] and stats[currNum][-1]>=5:
 					for i in CrowC:
 						FIGHTANIMATION(screen, enemy, battleBack)	
-						screen.blit(i,(300,100))
+						enemyrect = i.get_rect()
+						screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
 						time.wait(50)
 						display.flip()
 					stats[currNum][-1]-=5

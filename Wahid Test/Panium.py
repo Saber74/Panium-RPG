@@ -82,6 +82,7 @@ mixer.pre_init(44100, -16, 1, 512)# initializes the music mixer before it is act
 mixer.init() 
 mixer.set_num_channels(4) ###setting number of channels up
 channels = [mixer.Channel(0), mixer.Channel(1), mixer.Channel(2)] # adds the channels to a list
+
 # music and sound selection will add the sound tracks to a list for easier access
 music_selection = [mixer.Sound("Music/bgm/Village.wav"), mixer.Sound("Music/bgm/Castle.wav"), mixer.Sound("Music/bgm/Starting.wav"),
 				   mixer.Sound("Music/bgm/Boss fight.wav")]
@@ -921,74 +922,86 @@ def display_inventory(Inventory, current_Character, mode):
 			screen.blit(mes2, (30,285))
 		for i in range(display_range, len(inv)):
 			# this will blit from the display range to the length of inv
-			tmp_inv.append(inv[i])	
+			tmp_inv.append(inv[i])
+		# this would set restrictions on arrow_pos and the display_range 	
 		if arrow_pos > len(inv):
 			arrow_pos = len(inv)
 		if counter >= len(inv) - 1:	
 			counter = len(inv) - 1
+		# whenever you see -17 it is because there are only 17 objects allowed on screen at a time
+		# when the 17 objects are added they are treated as null. Meaning that they are treated as 
+		# if they don't exist. 	
 		if len(inv) > 16:	
 			if len(inv) - 17 < display_range:
 				display_range = len(inv) - 17
 		for i in range(len(tmp_inv)):
+			# basically blitting the items on screen while going through the tmp_inv 
 			if i <= 16:
 				count += 1
 				ItemName = medievalFont.render(inv_dict[tmp_inv[i]], True, (0,0,0))
 				screen.blit(ItemName, (470, 20 + 30 * count))
+				# more restrictiions
 				if arrow_pos == len(inv):
 					arrow_pos -= 1
 				if arrow_pos < 0:
 					arrow_pos += 1	
+				# it draws the circle that is highlighting the item to be selected	
 				draw.circle(screen, (0,0,0), (455,65 + 30 * arrow_pos), 6)
+		# this is responsible for selecting the image of the current character that is being blit on screen		
 		if current_Character == "Crow":
 			screen.blit(transform.scale(image.load("img/faces/crow.png").convert_alpha(), (130,185)),(30,35))			
 		elif current_Character == "Raven":
 			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
-		mx, my = mouse.get_pos()
 		display.flip()
 	arrow_pos = 0
 def alert_display(item, mode):
-	item = item
-	n = 0
-	text_y = 60
+	# alert_display's main purpose is to tell the player which items they have required
+	# either from npcs or chests
+	item = item # item is the string of items received
+	n = 0 # n is to limit the loop to running only one time
+	text_y = 60 # this is the initial position of the text
 	alert = True
 	while alert:
 		for evt in event.get():  
 			if evt.type == QUIT: 
 				alert = False
 			if evt.type == KEYDOWN:
+				# again, for sound effects
 				if evt.key == K_z:
 					alert = False
 					return music(2, sound_selection[1], 0)
 				if evt.key == K_ESCAPE:
 					alert = False
 					return music(2, sound_selection[1], 0)
-		mx,my=mouse.get_pos()
-		mb=mouse.get_pressed()
 		kp = key.get_pressed()
 		if n == 0:
 			screen.blit(dialogue_box, (0,0))
 			screen.blit(timesNewRomanFont.render('You have received the following items:', True, (150,150,150)), (45, 30))
-			split = item.split(' // ')
-			if '' in split:
+			split = item.split(' // ') # this splits the item string
+			if '' in split: # this will delete the empty space and will delete it
 				del split[split.index('')]
-			for i in range(len(split)):
+			for i in range(len(split)): # this will blit the items received on to the screen
 				screen.blit(timesNewRomanFont.render(split[i], True, (150,150,150)), (45, text_y + 30 * i))
 				display.flip()
-			n = 1	
+			n = 1 # stops the loop from running again
 		display.flip() 
 	quit()
-
 def HP_Change(HP):
 	global stats
+	# adds the number given to the current character's HP
 	if currChar == 'Crow':
 		stats[0][2] += int(HP)
 	if currChar == 'Raven':
 		stats[1][2] += int(HP)
 def FIGHTANIMATION(surf, enemy, battleBack):
+	# fight animation blits the background and the enemy for battle
 	surf.blit(battleBack,(0,0))
 	rect = enemy.get_rect()
+	# the enemy is blit so that is centered on the screen
 	surf.blit(enemy,(WIDTH / 2 - rect.width / 2, HEIGHT / 2 - rect.height / 2))	
 def save_dict():
+	# these are dictionaries which save the progress of the players
+	# it will also save other native information of the game
 	prog_data = {"lvl": lvl,
 				 "Coords": [x_diff, y_diff],
 				 "Chests": openedChests,
@@ -1005,16 +1018,18 @@ def save_dict():
 				  'Shield': 25}  	 			  
 	crow_data = {"Stats": stats[0]}	  	 
 	raven_data = {"Stats": stats[1]}	  	 
+	# I use pickle to dump the encrypted dictionaries into a .dat file
 	p.dump(prog_data, open("prog.dat", "wb"))
 	p.dump(crow_data, open("crow_stats.dat", "wb"))	
 	p.dump(raven_data, open("raven_stats.dat", 'wb'))
 	p.dump(item_value, open("item_value.dat", 'wb'))
-crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], []
+crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft = [], [], [], [] # these are for player animations
 ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft = [], [], [], []
 cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 cm = image.load("SPRITES/Crow/Walk/Up/0.png").convert_alpha()
 chest_open = []
 ############################################### ATTACK ANIMATIONS ###############################################
+# the following are the attack animations for each of the characters
 CrowZ = []
 CrowX=[]
 CrowC=[]
@@ -1035,6 +1050,7 @@ for i in range(22):
 	CrowZ.append(image.load("SPRITES/Crow Attacks/CrowZ/%i.png" % i).convert_alpha())	
 ############################################### ATTACK ANIMATIONS ###############################################
 ############################################ LOADING MAP AND SPRITES ############################################
+# this loads the sprite animation for both the characters ; their walking animations
 for i in range(3):
 	crowWalkForward.append(image.load("SPRITES/Crow/Walk/Up/%i.png" % i).convert_alpha())
 	crowWalkRight.append(image.load("SPRITES/Crow/Walk/Right/%i.png" % i).convert_alpha())	
@@ -1051,64 +1067,65 @@ for i in range(3):
 class Player(sprite.Sprite):
 	def __init__(self, x, y):
 		sprite.Sprite.__init__(self)
-		self.image = cm
-		self.x, self.y = x, y
-		self.rect = self.image.get_rect()
-		self.rect.midbottom = (self.x,self.y)
-		self.re = False
+		self.image = cm # cm is the animation of the character
+		self.x, self.y = x, y # x and y variable assigned
+		self.rect = self.image.get_rect() # creates the rect
+		# self.rect.midbottom = (self.x,self.y) # sets the midbottom
 	def update(self):
-		self.image = cm
-		self.rect = self.image.get_rect()
-		self.rect.x, self.rect.y = self.x, self.y - self.rect.height
-
+		self.image = cm # this will update the image of the character to create animation
+		self.rect = self.image.get_rect() # it is always creating the rect because the size
+										  # of the image is always changing
+		self.rect.x, self.rect.y = self.x, self.y - self.rect.height # sets the rect.x and rect.y
 class Obstacle(sprite.Sprite):
 	def __init__(self, x, y, w, h):
 		sprite.Sprite.__init__(self)
-		self.rect = Rect(x, y, w, h)
-		self.x, self.y = x, y
+		self.rect = Rect(x, y, w, h) # the x,y,w,h are passed in to make the rect objects for the walls
+		self.x, self.y = x, y 
 	def update(self):
-		self.rect.topleft = self.x + x_diff, self.y + y_diff
-
+		self.rect.topleft = self.x + x_diff, self.y + y_diff # this updates the position according to the offsets for the map
 class Portal(sprite.Sprite):
 	def __init__(self, x, y, w, h, location, xd, yd):
 		sprite.Sprite.__init__(self)
-		self.rect = Rect(x, y, w, h)
+		self.rect = Rect(x, y, w, h) # creates rect objects for portalllllls
 		self.x, self.y = x, y
-		self.xd, self.yd = xd, yd
-		self.type = location
+		self.xd, self.yd = xd, yd # this is for the destination of the player on the new map
+		self.type = location # this is for the map that the player will be teleported to
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff		
-
 class NPC(sprite.Sprite):
 	def __init__(self, x, y, importance, speech, item, name, width, height):
 		sprite.Sprite.__init__(self)
 		global inv_dict
-		self.type = importance
-		self.speech = speech
-		self.item = item
-		self.name = name
+		self.type = importance # nothing to do with importance, just to select sprite
+		self.speech = speech # this is the list that stores what the npc will say to you
+		self.item = item # this is the item that the npc could give to you
+		self.name = name # this is the name of the NPC
 		self.width, self.height = width, height
-		if self.type != '00':
+		if self.type != '00': # for inanimate objects I have a blank picture that will be strecthed to the size of the npc box in the tmx file
 			self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
-			self.rect = self.image.get_rect()
+			self.rect = self.image.get_rect() # this will create the rect object
 		else:
+			# essentially the same thing as above except there is an actual image on the screen
 			self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
 			self.image = transform.scale(self.image, (int(self.width), int(self.height)))
 			self.rect = self.image.get_rect()
-		self.interact = False
-		self.display_text = False
+		self.interact = False # this will become true if the player talks with the NPC
+		self.display_text = False # this will be for thw while loop for displaying text
 		self.x, self.y = x, y
 	def update(self):
-		self.rect.topleft = self.x + x_diff, self.y + y_diff
+		self.rect.topleft = self.x + x_diff, self.y + y_diff # updating according to offset of map
 	def display_speech(self, interact, display_text):
-		self.interact = interact
-		self.display_text = display_text
-		self.prog = 0
-		self.sent = ''
-		self.n = 0
-		self.s = 100
-		self.text_y = 60
+		self.interact = interact # this willbe true if the player actually trys to talk to npc
+		self.display_text = display_text # this will be true 
+		self.prog = 0 # this is the progress for each different "slide" of text
+		self.sent = '' # this will be the text being displayed on screen
+		self.n = 0 # To stop it from running infinitely
+		self.s = 100 # It causes a buffering effect for the text when a new line is started as
+					 # the position of the text would start more to the left and not be centered
+		self.text_y = 60 # sets default position of the text to start
 		for i in quest_completion:
+			# This will check if the character is in a certain character is involved in a quest or not
+			# if it is it will set it tp true and will continue the players quest progression
 			if quest_completion[i][2] == self.name and quest_completion[i][3] == 'false' and quest_completion[i][0] == 'true':
 				quest_completion[i][3] = 'true'
 		if self.interact:
@@ -1118,24 +1135,27 @@ class NPC(sprite.Sprite):
 						self.display_text = False
 						self.disp = False
 					if evt.type == KEYUP:
+						# sound effects
 						if evt.key == K_SPACE:	
 							music(2, sound_selection[1], 0)
 						if evt.key == K_z and self.prog == len(self.split) - 1:	
 							music(2, sound_selection[1], 0)
-				mx,my=mouse.get_pos()
-				mb=mouse.get_pressed()
 				kp = key.get_pressed()
 				screen.blit(dialogue_box, (0,0))
+				# this will put the npcs name on screen
 				screen.blit(timesNewRomanFont.render(self.name + ':', True, (150,150,150)), (45,30))
-				self.split = self.speech[0].split(' // ')
+				self.split = self.speech[0].split(' // ') # this will get the seperate "slides" of text and will save them in a list
 				if kp[K_SPACE]:
 					if self.prog < len(self.split) - 1 and self.n == 1:
+						# this will continue to blit to the next slide and will allow the loop to show text on the screen
 						self.prog += 1	
 						self.n = 0
 						self.sent = ''
 						self.text_y = 60
 				if kp[K_z] and self.prog == len(self.split) - 1:
 					if self.item != 'NULL' and self.name not in npc_item:
+						# if the npc is holding an item and the npc isn't in npc_item
+						# then the item will be given to us and will call the alert_display function through the InventoryDisplay function
 						self.item_split = self.item.split(' // ')
 						for i in self.item_split:
 							inventory.append(i)
@@ -1143,12 +1163,14 @@ class NPC(sprite.Sprite):
 								inv_dict[i] = ''
 						npc_item[self.name] = self.name
 						InventoryDisplay(currChar, 5, self.item)
+					# ends the loop	
 					self.display_text = False
 					self.interact = False		
 				if self.n == 0:
 					for i in self.split[self.prog]:
-						self.sent += i
-						if i == '#':
+						# this will loop through the string for the npc
+						self.sent += i # this will add it to self.sent and that will be blit on screen
+						if i == '#': # this is for the text to start another line
 							self.sent = ''
 							self.s = 0	
 							self.text_y += 30

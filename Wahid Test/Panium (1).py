@@ -83,10 +83,8 @@ mixer.init()
 mixer.set_num_channels(4) ###setting number of channels up
 channels = [mixer.Channel(0), mixer.Channel(1), mixer.Channel(2)] # adds the channels to a list
 # music and sound selection will add the sound tracks to a list for easier access
-music_selection = [mixer.Sound("Music/bgm/Village.wav"), mixer.Sound("Music/bgm/Castle.wav"), mixer.Sound("Music/bgm/Starting.wav"),
-				   mixer.Sound("Music/bgm/Boss fight.wav")]
-sound_selection = [mixer.Sound("Music/se/The Greatest Pokemon Sound Effects (1).wav"),
-				   mixer.Sound("Music/se/GUI sel decision.ogg"), mixer.Sound("music/se/Door exit.ogg")]
+music_selection = [mixer.Sound("Music/bgm/Village.wav"), mixer.Sound("Music/bgm/Castle.wav"), mixer.Sound("Music/bgm/Starting.wav"), mixer.Sound("Music/bgm/Boss fight.wav")]
+sound_selection = [mixer.Sound("Music/se/The Greatest Pokemon Sound Effects (1).wav"), mixer.Sound("Music/se/GUI sel decision.ogg"), mixer.Sound("music/se/Door exit.ogg")]
 # sets channel volume to specific values
 channels[0].set_volume(.1)
 channels[1].set_volume(.2)
@@ -237,6 +235,7 @@ def introscreen():
 					go=False
 		display.flip()
 				########################################################################################
+
 introscreen()
 if quit_stat == 'quit':
 	# it will quit the game
@@ -671,7 +670,7 @@ def display_quest():
 		mb=mouse.get_pressed()
 		screen.blit(back, (0,0))
 		draw.rect(screen, (0,0,0), selectedRect, 5)
-		# sets restrictions for the display_range and the blitting of the information on the screen
+		# sets restrictions
 		if len(display_txt) <= 3 and display_range > 0:
 			display_range = 0
 		for i in range(display_range, len(display_txt)):
@@ -679,13 +678,11 @@ def display_quest():
 			screen.blit(prog_txt[i], (10, 25 + 200 * counter))
 			screen.blit(rec_txt[i], (10, 50 + 200 * counter))
 			counter += 1
-		counter = 0
+		counter = 0	
 		display.flip()
 def load_object(fname, chests, walls, portals):
-	global quest_completion # I global quest_completion just to add the quests from the quest npcs
+	global quest_completion
 	for tile_object in fname.objects:
-		# basically this just goes through the tmx file and it reads all the object names. According to the object name,
-		# these if statements will do different things. For example the wall objects will call the wall class and so on and so forth
 		if tile_object.name == 'wall':
 			obs = Obstacle(tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 			walls.add(obs)
@@ -703,18 +700,14 @@ def load_object(fname, chests, walls, portals):
 			npcs.add(npc)
 		elif tile_object.name == 'Quest_NPC':
 			quest_npc = Quest_NPC(tile_object.x, tile_object.y, tile_object.type, [tile_object.Dialogue, tile_object.DialogueQuest, tile_object.DialogueFinish], tile_object.item, tile_object.Name, tile_object.Quest)	
-			# for every new quest npc i add the quest will be added to quest completion with all the requirements
 			if tile_object.Name not in quest_completion:
 				quest_completion[tile_object.Name] = [tile_object.Quest, tile_object.Key, tile_object.Goal, tile_object.Complete, tile_object.Received]
 			npcs.add(quest_npc)
 def levelSelect(lvl, chests, walls, portals):
-	# the first part here basically goes through all my sprite group =s and deletes / ills all sprites from them
 	kill = [chests, walls, portals, clerks, npcs]
 	for i in kill:
 		for n in i:
 			n.kill()	
-	# according to the level attached to the portal I hit, the lvl will assign a certain map to fname and tops
-	# which will be loaded later using the MapLoad function.		
 	if lvl == '0':
 		fname = load_pygame("Maps/STORE.tmx")
 		tops = load_pygame("Maps/blank.tmx")
@@ -733,6 +726,7 @@ def levelSelect(lvl, chests, walls, portals):
 	elif lvl == '5':
 		fname = load_pygame("Maps/house1.tmx")
 		tops = load_pygame("Maps/blank.tmx")
+		# player.re = True
 	elif lvl == '6':
 		fname = load_pygame('Maps/house2.tmx')	
 		tops = load_pygame("Maps/blank.tmx")
@@ -742,48 +736,44 @@ def levelSelect(lvl, chests, walls, portals):
 	elif lvl == '8':
 		fname = load_pygame('Maps/goodhouse1.tmx')	
 		tops = load_pygame("Maps/blank.tmx")
+		
 	return fname, tops		
 def MapLoad(Map_Name):
-	for layer in Map_Name.visible_layers: # this loop goes through all the visivle layers in the map
-		if isinstance(layer, TiledTileLayer): # if the layer and the tiled layer exist then it will go throught with this statement
-			for x, y, gid in layer: # this for loop gets the x, y and the global identification
-				tile = Map_Name.get_tile_image_by_gid(gid) # then theis command will fetch the corresponding image according to the gif
-				if tile: # if the tile is not empty then the tile will be blit on to the screen
-					# the reason that the x_diff and y_diff is added to x and y respectively is because the offset of the map is what changes
-					# the character stays on one spot on the screen and the map moves
+	for layer in Map_Name.visible_layers:
+		if isinstance(layer, TiledTileLayer):
+			for x, y, gid in layer:
+				tile = Map_Name.get_tile_image_by_gid(gid)
+				if tile:
 					screen.blit(tile, ((x * Map_Name.tilewidth) + x_diff, (y * Map_Name.tileheight) + y_diff))
 def InventoryDisplay(current_Character, num, inventory):
-	# this function is used for creating the strings that are displayed on screen for the incventory menu and the item received pop up
-	global inv_dict # this makes the 
-	inv = '' # inv stores the series of strings of the item names and there numbers next to them
-	inventory = inventory # inventory lisst is assigned to another variable or the items received 
+	global inv_dict
+	inv = ''
+	inventory = inventory
 	if num != 5:
-		for i in inventory: # this will go through the list
-			number = 0 # This will count the number of recurring items to count the total number of them in the list
-			for n in inventory:# once you have your item then I run through the list again and add to count the matching ones
+		for i in inventory:
+			number = 0
+			for n in inventory:
 				if i == n:
 					number += 1
-			inv += i + ' ' + 'x' + str(number) + ', ' # this creates a string seperated by a comma inbetween
-		split = inv.split(', ') # this will split the list by the commas now
-		del split[split.index('')] # this will delete the empty space within the list
-		for i in split: # now I loop through the list
-			s1 = i.split(' x') # i split it by ' x' to get the name of the item
-			if s1[0] not in inventory: # if the item is not in the inventory then the item will be added to inv_dict which will
-									   # allow me to blit the items in the inventory menu in the same order to keep scrolling working
+			inv += i + ' ' + 'x' + str(number) + ', '
+		split = inv.split(', ')
+		del split[split.index('')]
+		for i in split:
+			s1 = i.split(' x')
+			if s1[0] not in inventory:
 				inv_dict[s1[0]] = ''
 			else:
 				inv_dict[s1[0]] = i
 	else:
-		# this else statement basically says that this is for the items received in the alert_display function
-		split = inventory.split(' // ') # this will take the string and split all the items  
-		for i in split: # this will now go through the list
-			number = 0 # this is a counter for reocurrences
-			for n in split: # this will now count the reocurrences and add them to count
+		split = inventory.split(' // ')
+		for i in split:
+			number = 0
+			for n in split:
 				if i == n:
 					number += 1
-			if i + ' ' + 'x' + str(number) not in inv: # this will add it to inv as long as it is not in there already		
-				inv += i + ' ' + 'x' + str(number) + ' // ' # i dont delete ' // ' because it is just a blank being blit on the screen
-	# this num variable is used to call a certain function or to return a variable
+			if i + ' ' + 'x' + str(number) not in inv:		
+				inv += i + ' ' + 'x' + str(number) + ' // '
+
 	if num == 0:
 		display_inventory(inv_dict, current_Character, 'inventory')	
 	elif num == 1:
@@ -800,43 +790,36 @@ def display_inventory(Inventory, current_Character, mode):
 	screen.blit(menu_base, (0,0))
 	arrow_pos = 0
 	inventory_open = True
-	inv = [] # this is what the string items will be added to
-	display_range = 0 # this will be used for scrolling
-	tmp_inv = [] # this is the list that will only store from items from the inventory according to the display_range 
-	counter = 0 # counter is for the indexing of the full list
-	display_bool = False # This will be used to show the effect of whatever item you use
-	Inventory = Inventory # and inventory list is assigned to inventory variable
-	# this will go through the list and add to inv the items as long as they aren't empty
+	inv = []
+	display_range = 0
+	tmp_inv = []
+	counter = 0
+	display_bool = False
+	Inventory = Inventory
 	for i in Inventory:
 		if inv_dict[i] != '':
 			inv.append(i)
 	while inventory_open:
 		for evt in event.get():  
 			if evt.type == KEYUP:
-				# this is used for sound effects
 				if evt.key == K_ESCAPE or evt.key == K_i or evt.key == K_z and mode != 'sell':
 					music(2, sound_selection[1], 0)
-					# if the mode is sell it will return c to open the buying menu and will close this menu
 					if mode == "sell":
 						global c
 						c = 'NULL'
 						return c
 					inventory_open = False
-					# if not sell then it will just exit out
 					return
 				if evt.key == K_SPACE and len(inv) > 0:
-					# for sound effect
 					music(2, sound_selection[1], 0)
 			if evt.type == KEYDOWN:
 				if evt.key == K_DOWN:
 					music(2, sound_selection[1], 0)
-					# this is for controlling the display range and the arrow pos
 					if arrow_pos == 16 and display_range < 16:	
 						if display_range < len(inv) - 17:
 							display_range += 1
 					if arrow_pos < 16:
 						arrow_pos += 1
-						# counter also increases
 					if counter < len(inv):	
 						counter += 1
 				if evt.key == K_UP:
@@ -849,13 +832,11 @@ def display_inventory(Inventory, current_Character, mode):
 						counter -= 1
 				if evt.key == K_SPACE and len(inv) > 0:
 					if mode == 'inventory':
-						# if you press space and the mode is inventory then string will be split
-						x = inv_dict[inv[counter]] # x will be the item in the full list according to the counter
+						x = inv_dict[inv[counter]]
 						y = x.split(" x")
-						if y[1] == '1': # if a certain item is at 1 total items then the item will be erased or made blank
-							inv_dict[y[0]] = '' 
-						for i in HP_items: # this will go through the HP_items list and it will get the hp a certain item adds
-										   # to your characters health. It will also create a text render with the effects
+						if y[1] == '1':
+							inv_dict[y[0]] = '' # 
+						for i in HP_items:
 							i = i.split(' // ')
 							if y[0] in i:
 								print("HP +", i[1])
@@ -863,31 +844,27 @@ def display_inventory(Inventory, current_Character, mode):
 								mes2 = medievalFont.render('', True, (0,0,0))
 								display_bool = True
 								HP_Change(i[1])
-						del inv[counter] # this will delete the item so that it can be updated
-						del inventory[inventory.index(y[0])] # this will delete the item from the inventory list
-						tmp = InventoryDisplay(current_Character, 1, inventory) # this will create the list again just like it was 
-																				# done above but instead to update it.
+						del inv[counter]	
+						del inventory[inventory.index(y[0])]
+						tmp = InventoryDisplay(current_Character, 1, inventory)
 						inv = []
 						for i in tmp:
 							if inv_dict[i] != '':
 								inv.append(i)
 					if mode == 'sell':
-						# if you press space on an item and you are selling
 						global gold
-						# it will get the name of the item the same way it does above
-						x = inv_dict[inv[counter]] 
+						x = inv_dict[inv[counter]]
 						y = x.split(" x")
 						if y[1] == '1':
 							inv_dict[y[0]] = ''
-						# I did a try except statement be cause I was too lazy to create an if statement checking if the item was in the item_value dictionary	
 						try:
-							# this would add to gold the amount that the item was worth
 							gold += load_dict()[3][y[0]]
+							print("You have gained", str(load_dict()[3][y[0]]), "gold!! Now you have", str(gold), "gold in total!!")
 							mes = medievalFont.render("You have gained " + str(load_dict()[3][y[0]]) + " gold!!", True, (0,0,0))
 							mes2 = medievalFont.render("Now you have " + str(gold) + " gold in total!!", True, (0,0,0))
 						except:
-							# if the item did not have a predetermined selling value then it will automatically give you 100 gold for it
 							gold += 100
+							print("You have gained", str(100), "gold!! Now you have", str(gold), "gold in total!!")
 							mes = medievalFont.render("You have gained " + str(100) + " gold!!", True, (0,0,0))
 							mes2 = medievalFont.render("Now you have " + str(100) + " gold in total!!", True, (0,0,0))
 						del inv[counter]	
@@ -900,7 +877,6 @@ def display_inventory(Inventory, current_Character, mode):
 						display_bool = True		
 					if mode == 'battle':
 						global used
-						# if the mode is battle it will only be able to use items for hp
 						x = inv[counter]
 						y = x.split(" x")
 						for i in HP_items:
@@ -912,15 +888,13 @@ def display_inventory(Inventory, current_Character, mode):
 						del inventory[inventory.index(y[0])]
 						used = True
 						return used
-		count = 0 # count is to manipulate the item positions on screen			
+		count = 0			
 		screen.blit(menu_base, (0,0))
-		tmp_inv = [] # this variable will store the items that are displayed on screen
+		tmp_inv = []	
 		if display_bool:
-			# this will display the effects of an item if they even have any
 			screen.blit(mes, (30,255))
 			screen.blit(mes2, (30,285))
 		for i in range(display_range, len(inv)):
-			# this will blit from the display range to the length of inv
 			tmp_inv.append(inv[i])	
 		if arrow_pos > len(inv):
 			arrow_pos = len(inv)
@@ -944,6 +918,7 @@ def display_inventory(Inventory, current_Character, mode):
 		elif current_Character == "Raven":
 			screen.blit(transform.scale(image.load("img/faces/raven.png").convert_alpha(), (130,185)),(30,35))			
 		mx, my = mouse.get_pos()
+		print(mx,my)
 		display.flip()
 	arrow_pos = 0
 def alert_display(item, mode):
@@ -1027,13 +1002,20 @@ for i in range(19):
 	CrowX.append(image.load("SPRITES/Crow Attacks/CrowX/%i.png" % i).convert_alpha())
 for i in range(22):
 	CrowZ.append(image.load("SPRITES/Crow Attacks/CrowZ/%i.png" % i).convert_alpha())
-for i in range(17):
-	CrowC.append(image.load("SPRITES/Crow Attacks/CrowC/%i.png" % i).convert_alpha())
-for i in range(19):
-	CrowX.append(image.load("SPRITES/Crow Attacks/CrowX/%i.png" % i).convert_alpha())
-for i in range(22):
-	CrowZ.append(image.load("SPRITES/Crow Attacks/CrowZ/%i.png" % i).convert_alpha())	
+for i in range(45):
+	RavenC.append(image.load("SPRITES/Raven Attacks/RavenC/%i.png" % i).convert_alpha())
+for i in range(16):
+	RavenX.append(image.load("SPRITES/Raven Attacks/RavenX/%i.png" % i).convert_alpha())
+for i in range(21):
+	RavenZ.append(image.load("SPRITES/Raven Attacks/RavenZ/%i.png" % i).convert_alpha())
 ############################################### ATTACK ANIMATIONS ###############################################
+
+############################################### ATTACK ANIMATIONS ###############################################
+Darkness1 = []
+for i in range(22):
+	Darkness1.append(image.load("SPRITES/Crow Attacks/%i.png" % i).convert_alpha())
+############################################### ATTACK ANIMATIONS ###############################################
+
 ############################################ LOADING MAP AND SPRITES ############################################
 for i in range(3):
 	crowWalkForward.append(image.load("SPRITES/Crow/Walk/Up/%i.png" % i).convert_alpha())
@@ -1415,9 +1397,11 @@ while running:
 			if evt.key == K_1:
 				cf, cd, cr, cl = crowWalkForward, crowWalkDown, crowWalkRight, crowWalkLeft
 				currChar = "Crow"
+				currNum=0
 			if evt.key == K_2:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 				currChar = "Raven"
+				currNum=1
 			if evt.key == K_3:
 				music(0, music_selection[0], -1)	
 			if evt.key == K_4:
@@ -1471,11 +1455,11 @@ while running:
 	# KEYBOARD MOVEMENT	
 	if quit_stat == 'quit':
 		running = False
-	# encounter_steps = r(10,80)	
-	# if int(step_counter) >= encounter_steps and stats[1][2] > 0:
-	# 	step_counter = 0
-	# 	mode = 1
-	# print(step_counter)	
+	encounter_steps = r(10,80)	
+	if int(step_counter) >= encounter_steps and stats[1][2] > 0:
+		step_counter = 0
+		mode = 1
+	print(step_counter)	
 	if mode == 0:
 		if currChar == "Crow":
 			Player_HP = stats[0][2]
@@ -1604,6 +1588,8 @@ while running:
 	else:
 		pass
 		if mode == 1:
+			# BossFight=mixer.Sound("Music/Boss fight.wav") 
+			# channel1.play(BossFight,-1) 
 			music(0, music_selection[3], -1)
 			enemystatnum1=r(1,4)
 			enemystatnum2=r(0,3)
@@ -1696,34 +1682,57 @@ while running:
 			if stage==1:
 				if battle and mb[0]and attackRect.collidepoint(mx,my) or kp[K_z]:
 					print(turn + "'s turn to attack!!")
-					for i in CrowZ:
-						FIGHTANIMATION(screen, enemy, battleBack)	
-						enemyrect = i.get_rect()
-						screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
-						time.wait(50)
-						display.flip()
+					if currNum==0:
+						for i in CrowZ:
+							FIGHTANIMATION(screen, enemy, battleBack)	
+							enemyrect = i.get_rect()
+							screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
+							time.wait(50)
+							display.flip()
+					elif currNum==1:
+						for i in RavenZ:
+							FIGHTANIMATION(screen, enemy, battleBack)	
+							enemyrect = i.get_rect()
+							screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
+							time.wait(50)
+							display.flip()
 					enemystats[0] -= Attack_DMG
 					turn = "Enemy"
 					stage=0
 					battle=False
 				elif battle and mb[0] and defenseRect.collidepoint(mx,my) or kp[K_x] and stats[currNum][-1]>=10:
-					for i in CrowX:
-						FIGHTANIMATION(screen, enemy, battleBack)	
-						enemyrect = i.get_rect()
-						screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
-						time.wait(50)
-						display.flip()
+					if currNum==0:
+						for i in CrowX:
+							FIGHTANIMATION(screen, enemy, battleBack)	
+							enemyrect = i.get_rect()
+							screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
+							time.wait(50)
+							display.flip()
+					elif currNum==1:
+						for i in RavenX:
+							FIGHTANIMATION(screen, enemy, battleBack)	
+							enemyrect = i.get_rect()
+							screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
+							time.wait(50)
+							display.flip()
 					stats[currNum][-1]-=10
 					enemystats[0] -= Attack_DMG
 					turn = "Enemy"
 					stage=0
 				elif battle and mb[0] and itemRect.collidepoint(mx,my) or kp[K_c] and stats[currNum][-1]>=5:
-					for i in CrowC:
-						FIGHTANIMATION(screen, enemy, battleBack)	
-						enemyrect = i.get_rect()
-						screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
-						time.wait(50)
-						display.flip()
+					if currNum==0:
+						for i in CrowC:
+							FIGHTANIMATION(screen, enemy, battleBack)	
+							enemyrect = i.get_rect()
+							screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
+							time.wait(50)
+							display.flip()
+					elif currNum==1:
+							FIGHTANIMATION(screen, enemy, battleBack)	
+							enemyrect = i.get_rect()
+							screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
+							time.wait(50)
+							display.flip()
 					stats[currNum][-1]-=5
 					enemystats[0] -= Attack_DMG
 					turn = "Enemy"

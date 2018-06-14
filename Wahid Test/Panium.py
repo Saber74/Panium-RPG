@@ -1102,11 +1102,11 @@ class NPC(sprite.Sprite):
 		self.name = name # this is the name of the NPC
 		self.width, self.height = width, height
 		if self.type != '00': # for inanimate objects I have a blank picture that will be strecthed to the size of the npc box in the tmx file
-			self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
+			self.image = image.load("img/NPCs/" + self.type + ".png").convert_alpha()
 			self.rect = self.image.get_rect() # this will create the rect object
 		else:
 			# essentially the same thing as above except there is an actual image on the screen
-			self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
+			self.image = image.load("img/NPCs/" + self.type + ".png").convert_alpha()
 			self.image = transform.scale(self.image, (int(self.width), int(self.height)))
 			self.rect = self.image.get_rect()
 		self.interact = False # this will become true if the player talks with the NPC
@@ -1173,13 +1173,14 @@ class NPC(sprite.Sprite):
 						if i == '#': # this is for the text to start another line
 							self.sent = ''
 							self.s = 0	
-							self.text_y += 30
-							time.wait(650)
+							self.text_y += 30 # increases position
+							time.wait(650) # adds a delay
 						if self.s <= 1:
-							self.s += 1
+							self.s += 1 # this will be like a buffer
 							self.sent = ''	
 						else:	
 							self.s = 100
+						# the below blits the letters in a one by one animation	
 						screen.blit(timesNewRomanFont.render(self.sent, True, (150,150,150)), (45,self.text_y))
 						display.flip()
 						time.wait(35)
@@ -1189,14 +1190,14 @@ class Quest_NPC(sprite.Sprite):
 	def __init__(self, x, y, importance, speech, item, name, quest):
 		sprite.Sprite.__init__(self)
 		global inv_dict
-		self.type = importance
-		self.speech = speech
-		self.item = item
-		self.name = name
-		self.quest = quest
-		self.quest_speech = 0
-		self.image = image.load("img/NPCs/" + self.type + ".png")#.convert_alpha()
-		self.rect = self.image.get_rect()
+		self.type = importance # this is for character sprite
+		self.speech = speech # this is for speech of the character
+		self.item = item # this is for the item(s) that you are going to be given
+		self.name = name # this is the name of the character
+		self.quest = quest # this is the quest the npc wants you to do
+		self.quest_speech = 0 # this is the index for the list of speech for each step of the quest process
+		self.image = image.load("img/NPCs/" + self.type + ".png").convert_alpha() # this is the image
+		self.rect = self.image.get_rect() # this creates the rect based on the image
 		self.interact = False
 		self.display_text = False
 		self.x, self.y = x, y
@@ -1211,10 +1212,13 @@ class Quest_NPC(sprite.Sprite):
 		self.s = 100
 		self.text_y = 60
 		if self.name in quest_completion and quest_completion[self.name][0] == 'true':
+			# this will check if you have already acquired this quest and it will go to the next part of the text
 			self.quest_speech = 1
 		if 	quest_completion[self.name][3] == 'true':
-			quest_completion[self.name][4] = 'true'
-			self.quest_speech = 2
+			# this will check if you have completed the objective of the quest or not
+			# (Not to be confused with completing the quest)
+			quest_completion[self.name][4] = 'true' # this sets the quest itself to be complete
+			self.quest_speech = 2 # goes to the next stage of text
 		if self.interact:
 			while self.display_text:
 				for evt in event.get():  
@@ -1232,6 +1236,7 @@ class Quest_NPC(sprite.Sprite):
 				screen.blit(dialogue_box, (0,0))
 				screen.blit(timesNewRomanFont.render(self.name + ':', True, (150,150,150)), (45,30))
 				self.split = self.speech[self.quest_speech].split(' // ')
+				# this is the same as in the NPC class
 				if kp[K_SPACE]:
 					if self.prog < len(self.split) - 1 and self.n == 1:
 						if self.prog < len(self.split) - 1:
@@ -1240,6 +1245,7 @@ class Quest_NPC(sprite.Sprite):
 							self.sent = ''
 							self.text_y = 60
 				if kp[K_z] and self.prog == len(self.split) - 1:
+					# the main difference is that this will also check if the quest is completed
 					if self.name in quest_completion and quest_completion[self.name][0] == 'false':
 						quest_completion[self.name][0] = 'true'
 						self.quest_speech = 1
@@ -1268,24 +1274,25 @@ class Quest_NPC(sprite.Sprite):
 							self.s = 100
 						screen.blit(timesNewRomanFont.render(self.sent, True, (150,150,150)), (45,self.text_y))
 						display.flip()
-						# time.wait(70)
 						time.wait(35)
 					self.n = 1
 
 class Store_Clerk(sprite.Sprite):
 	def __init__(self, x, y, tier):
 		sprite.Sprite.__init__(self)
-		self.tier = tier
+		self.tier = tier # this will determine which items will be sold
+		# the following are the items that can be sold
 		self.s1 = ['Potion' + " " * 88 + '100', 'Elixer' + " " * 88 + '75', 'Sword' + " " * 88 + '50', 'Shield' + " " * 88 + '50']
 		self.s2 = ['Potion' + " " * 88 + '100', 'Elixer' + " " * 88 + '75', 'Sword' + " " * 88 + '50', 'Shield' + " " * 88 + '50']
 		self.s3 = ['Potion' + " " * 88 + '100', 'Elixer' + " " * 88 + '75', 'Sword' + " " * 88 + '50', 'Shield' + " " * 88 + '50']
 		self.s4 = ['Potion' + " " * 88 + '100', 'Elixer' + " " * 88 + '75', 'Sword' + " " * 88 + '50', 'Shield' + " " * 88 + '50']
+		# the image of the store clerk according to type
 		self.image = image.load("img/Store Clerks/Clerk" + self.tier + ".png").convert_alpha()
-		self.rect = self.image.get_rect()
+		self.rect = self.image.get_rect() # creates the rect
 		self.x, self.y = x, y
 		self.interact = False
 		self.back = transform.scale(image.load("img/menu/parchment.png").convert_alpha(), (WIDTH, HEIGHT))
-		self.event = "NULL"
+		self.event = "buy" # to see if you are buying or selling
 	def update(self):
 		self.rect.topleft = self.x + x_diff, self.y + y_diff	
 	def open_store(self):
@@ -1298,12 +1305,13 @@ class Store_Clerk(sprite.Sprite):
 		elif self.tier == '3':
 			self.selection = self.s3
 		elif self.tier == '4':
-			self.selection = self.s4		
+			self.selection = self.s4
 		arrow_pos = 0	
 		global gold
 		while self.interact:
 			for evt in event.get():  
 				if evt.type == KEYUP:
+					# sound effects
 					if evt.key == K_ESCAPE:
 						music(2, sound_selection[1], 0)
 					if evt.key == K_UP:
@@ -1451,7 +1459,7 @@ while running:
 			if evt.key == K_p:
 				mixer.music.play()		
 			if evt.key == K_r:
-				poop(stats, 1, stats[1][1])	
+				poop(stats, 1, stats[1][0])	
 				mode = 0
 				# print(stats[0][2])
 				# time.wait(1000)

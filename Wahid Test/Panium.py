@@ -22,6 +22,7 @@ xp = 0 # sets base xp
 charNum = 0 # sets base character
 stage = 0 # used for the stages of battle
 currNum = 0
+Z = X = C = False # this is for using buttons for battle
 ######################################### Fighting Screen ################################################
 attackRect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0)) # creates rects for battle
 attack1Rect=Rect(0,round(HEIGHT*7/8,0),round(WIDTH*1/3,0),HEIGHT-round(HEIGHT*7/8,0)) # creates rects for battle
@@ -902,17 +903,17 @@ def display_inventory(Inventory, current_Character, mode):
 					if mode == 'battle':
 						global used
 						# if the mode is battle it will only be able to use items for hp
-						x = inv[counter]
+						x = inv_dict[inv[counter]] # x will be the item in the full list according to the counter
 						y = x.split(" x")
-						for i in HP_items:
-							i = i.split(' ')
+						if y[1] == '1': # if a certain item is at 1 total items then the item will be erased or made blank
+							inv_dict[y[0]] = '' 
+						for i in HP_items: # this will go through the HP_items list and it will get the hp a certain item adds
+										   # to your characters health. It will also create a text render with the effects
+							i = i.split(' // ')
 							if y[0] in i:
-								print("HP +", i[1])
 								HP_Change(i[1])
 						del inv[counter]	
 						del inventory[inventory.index(y[0])]
-						used = True
-						return used
 		count = 0 # count is to manipulate the item positions on screen			
 		screen.blit(menu_base, (0,0))
 		tmp_inv = [] # this variable will store the items that are displayed on screen
@@ -989,6 +990,7 @@ def alert_display(item, mode):
 def HP_Change(HP):
 	global stats
 	# adds the number given to the current character's HP
+	print(HP)
 	if currChar == 'Crow':
 		stats[0][2] += int(HP)
 	if currChar == 'Raven':
@@ -1042,12 +1044,12 @@ for i in range(19):
 	CrowX.append(image.load("SPRITES/Crow Attacks/CrowX/%i.png" % i).convert_alpha())
 for i in range(22):
 	CrowZ.append(image.load("SPRITES/Crow Attacks/CrowZ/%i.png" % i).convert_alpha())
-for i in range(17):
-	CrowC.append(image.load("SPRITES/Crow Attacks/CrowC/%i.png" % i).convert_alpha())
-for i in range(19):
-	CrowX.append(image.load("SPRITES/Crow Attacks/CrowX/%i.png" % i).convert_alpha())
-for i in range(22):
-	CrowZ.append(image.load("SPRITES/Crow Attacks/CrowZ/%i.png" % i).convert_alpha())	
+for i in range(45):
+	RavenC.append(image.load("SPRITES/Raven Attacks/RavenC/%i.png" % i).convert_alpha())
+for i in range(16):
+	RavenX.append(image.load("SPRITES/Raven Attacks/RavenX/%i.png" % i).convert_alpha())
+for i in range(21):
+	RavenZ.append(image.load("SPRITES/Raven Attacks/RavenZ/%i.png" % i).convert_alpha())	
 ############################################### ATTACK ANIMATIONS ###############################################
 ############################################ LOADING MAP AND SPRITES ############################################
 # this loads the sprite animation for both the characters ; their walking animations
@@ -1465,7 +1467,7 @@ while running:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 				currChar = "Raven"
 			if evt.key == K_r:
-				poop(stats, 1, stats[currNum][1])
+				poop(stats,stats[currNum][0],stats[currNum][1])
 				mode = 0
 			if evt.key == K_n:
 				lvl = str(load_dict()[0]["lvl"]) # this will store which map is the current map
@@ -1497,6 +1499,13 @@ while running:
 					cm = cr[0]
 				screen_back = screen.copy()	
 				display_main_menu()
+			if mode != 0:
+				if evt.key == K_z:
+					Z = True	
+				if evt.key == K_x:
+					X = True
+				if evt.key == K_c:
+					C = True			
 		if evt.type==MOUSEBUTTONUP:
 			if stage==1:
 				battle=True		
@@ -1699,10 +1708,12 @@ while running:
 			edit3=fireFont.render(text3,True,(0,0,200))
 			screen.blit(edit1,(50,round(HEIGHT*7/8+15,0)))
 			screen.blit(edit3,(round(50+WIDTH*2/3,0),round(HEIGHT*7/8+15,0)))
-			if mb[0]:
-				if attackRect.collidepoint(mx,my) or kp[K_z]:
-					stage=1
-				elif itemRect.collidepoint(mx,my) or kp[K_c]:
+			if attackRect.collidepoint(mx,my) and mb[0] or Z:
+				Z = not Z
+				stage = 1
+			if len(inventory) > 0:	
+				if itemRect.collidepoint(mx,my) and mb[0] or C:
+					C = not C
 					stage=3
 		########################################## ATTACK SELECTION ##########################################
 		if stage==1:
@@ -1731,7 +1742,8 @@ while running:
 		# used = False
 		if turn == "Player" and stats[currNum][2] > 0 :
 			if stage==1:
-				if battle and mb[0]and attackRect.collidepoint(mx,my) or kp[K_z]:
+				if battle and mb[0]and attackRect.collidepoint(mx,my) or Z:
+					Z = not Z
 					if currNum==0:
 						for i in CrowZ:
 							FIGHTANIMATION(screen, enemy, battleBack)	
@@ -1746,11 +1758,13 @@ while running:
 							screen.blit(i,(WIDTH / 2 - enemyrect.width / 2, HEIGHT / 2 - enemyrect.height / 2))
 							time.wait(50)
 							display.flip()
+					print(Attack_DMG)		
 					enemystats[0] -= Attack_DMG
 					turn = "Enemy"
 					stage=0
 					battle=False
-				elif battle and mb[0] and defenseRect.collidepoint(mx,my) or kp[K_x] and stats[currNum][-1]>=10:
+				elif battle and mb[0] and defenseRect.collidepoint(mx,my) or X and stats[currNum][-1]>=10:
+					X = not X
 					if currNum==0:
 						for i in CrowX:
 							FIGHTANIMATION(screen, enemy, battleBack)	
@@ -1769,7 +1783,8 @@ while running:
 					enemystats[0] -= Attack_DMG
 					turn = "Enemy"
 					stage=0
-				elif battle and mb[0] and itemRect.collidepoint(mx,my) or kp[K_c] and stats[currNum][-1]>=5:
+				elif battle and mb[0] and itemRect.collidepoint(mx,my) or C and stats[currNum][-1]>=5:
+					C = not C
 					if currNum==0:
 						for i in CrowC:
 							FIGHTANIMATION(screen, enemy, battleBack)	
@@ -1791,10 +1806,11 @@ while running:
 				# elif stage==2: ####for defencive items or other stuff??? idk we can decide on it later
 			elif stage==3 and len(inventory) > 0:
 				if used == False:
-					InventoryDisplay(currChar, 3)
+					print(InventoryDisplay(currChar, 3, inventory))
 					stage = 0
-				else:
-					print("You Have Already Used An Item!")	
+					used = True
+			else:
+				X = Z = C = False		
 
 		if turn == "Enemy" and enemystats[0] > 0:
 			used = False
@@ -1811,9 +1827,7 @@ while running:
 				print("YOU WON!!")	
 			elif stats[currNum][2] <= 0 and enemystats[0] <= 0:
 				print("YOU LOST!!")	
-			
 			mode = 0
-		
 		############################################### BATTLE ###############################################
 	display.flip()
 	myClock.tick(FPS)

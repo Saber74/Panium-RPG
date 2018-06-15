@@ -914,6 +914,8 @@ def display_inventory(Inventory, current_Character, mode):
 								HP_Change(i[1])
 						del inv[counter]	
 						del inventory[inventory.index(y[0])]
+						used = True
+						return
 		count = 0 # count is to manipulate the item positions on screen			
 		screen.blit(menu_base, (0,0))
 		tmp_inv = [] # this variable will store the items that are displayed on screen
@@ -993,8 +995,12 @@ def HP_Change(HP):
 	print(HP)
 	if currChar == 'Crow':
 		stats[0][2] += int(HP)
+		if stats[0][2] > 100:
+			stats[0][2] = 100
 	if currChar == 'Raven':
 		stats[1][2] += int(HP)
+		if stats[1][2] > 100:
+			stats[1][2] = 100
 def FIGHTANIMATION(surf, enemy, battleBack):
 	# fight animation blits the background and the enemy for battle
 	surf.blit(battleBack,(0,0))
@@ -1799,9 +1805,9 @@ while running:
 				# elif stage==2: ####for defencive items or other stuff??? idk we can decide on it later
 			elif stage==3 and len(inventory) > 0:
 				if used == False:
-					print(InventoryDisplay(currChar, 3, inventory))
+					InventoryDisplay(currChar, 3, inventory)
 					stage = 0
-					used = True
+				stage = 0
 			else:
 				X = Z = C = False		
 
@@ -1840,7 +1846,8 @@ while running:
 				stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]] # this stores the stats of the two characters
 				selections = load_dict()[0]['settings'] # this will load saved settings such as screen mode, BGM, and SE	
 			elif enemystats[0] <= 0:	
-				print("YOU WON!!")	
+				stats[currNum][0] += r(5,40)
+				poop(stats,stats[currNum][0],stats[currNum][1])
 			elif stats[currNum][2] <= 0 and enemystats[0] <= 0:
 				print("YOU LOST!!")	
 			mode = 0

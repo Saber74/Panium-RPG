@@ -1468,19 +1468,7 @@ while running:
 				currChar = "Raven"
 			if evt.key == K_r:
 				poop(stats,stats[currNum][0],stats[currNum][1])
-				mode = 0
-			if evt.key == K_n:
-				lvl = str(load_dict()[0]["lvl"]) # this will store which map is the current map
-				x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1] # this will store the coordinates/offset of the map
-				openedChests = load_dict()[0]["Chests"] # stores which chests have been opened
-				inventory = load_dict()[0]["inv"] # will store the inventory of the player
-				gold = load_dict()[0]["Gold"] # the amount of gold the player has
-				npc_item = load_dict()[0]['npc_items'] # the npcs that have given there held items to the player
-				currChar = load_dict()[0]["Current Charachter"] # the current character being used
-				quest_completion = load_dict()[0]['Quests'] # this keeps track of the progress of the quests
-				inv_dict = load_dict()[0]['inv_dict'] # this will store the order of which items were received. This is used in the inventory for scrolling
-				stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]] # this stores the stats of the two characters
-				selections = load_dict()[0]['settings'] # this will load saved settings such as screen mode, BGM, and SE	
+				mode = 0	
 			if evt.key == K_l:
 				music(2, sound_selection[1], 0)
 				fname, tops = levelSelect(lvl, chests, walls, portals)
@@ -1499,6 +1487,8 @@ while running:
 					cm = cr[0]
 				screen_back = screen.copy()	
 				display_main_menu()
+			if evt.key == K_l:
+				stats[currNum][2] = 100	
 			if mode != 0:
 				if evt.key == K_z:
 					Z = True	
@@ -1506,6 +1496,8 @@ while running:
 					X = True
 				if evt.key == K_c:
 					C = True			
+				if evt.key == K_k:
+					stats[currNum][2] = 0	
 		if evt.type==MOUSEBUTTONUP:
 			if stage==1:
 				battle=True		
@@ -1519,6 +1511,7 @@ while running:
 	if int(step_counter) >= encounter_steps and stats[1][2] > 0:
 		step_counter = 0 # will reset steps counter
 		mode = 1 # this will make it mode 1 which is the mode for battle
+	print(step_counter)	
 	if mode == 0: # this is to check if the game is in normal mode
 		if currChar == "Crow":
 			# this will set the currNum and the animations
@@ -1727,13 +1720,13 @@ while running:
 			screen.blit(edit1,(50,round(HEIGHT*7/8+15,0)))
 			screen.blit(edit2,(round(50+WIDTH*1/3,0),round(HEIGHT*7/8+15,0)))
 			screen.blit(edit3,(round(WIDTH*2/3+50,0),round(HEIGHT*7/8+15,0)))
-			if attackRect.collidepoint(mx,my):
+			if attackRect.collidepoint(mx,my) or Z:
 				Attack_DMG = stats[currNum][3]*4
 				print("Your attack will do",Attack_DMG,"damage to the enemy!!")	###[1 is dmg][3 is magic dmg]
-			elif defenseRect.collidepoint(mx,my):
+			elif defenseRect.collidepoint(mx,my) or X:
 				Attack_DMG = stats[currNum][4]*5
 				print("Your attack will do",Attack_DMG,"damage to the enemy!!") ###[1 is dmg][3 is magic dmg]	
-			elif itemRect.collidepoint(mx,my):
+			elif itemRect.collidepoint(mx,my) or C:
 				Attack_DMG = stats[currNum][3]*3+stats[currNum][4]*3	###[1 is dmg][3 is magic dmg]	
 				print("Your attack will do",Attack_DMG,"damage to the enemy!!")	
 		########################################## ATTACK SELECTION ##########################################
@@ -1823,6 +1816,29 @@ while running:
 		if stats[currNum][2] <= 0 or enemystats[0] <= 0:	
 			if stats[currNum][2] <= 0:
 				print("YOU LOST!!")		
+				surf = Surface((800,600), SRCALPHA)
+				for i in range(255):
+					surf.fill((0,0,0,i))
+					screen.blit(surf, (0,0))
+					display.flip()	
+					time.wait(10)
+				for i in range(255):
+					screen.blit(transform.scale(image.load('img/Screens/GameOver.png'), (WIDTH, HEIGHT)), (0,0))
+					surf.fill((0,0,0, 255 - i))
+					screen.blit(surf, (0,0))
+					display.flip()	
+					time.wait(10)	
+				lvl = str(load_dict()[0]["lvl"]) # this will store which map is the current map
+				x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1] # this will store the coordinates/offset of the map
+				openedChests = load_dict()[0]["Chests"] # stores which chests have been opened
+				inventory = load_dict()[0]["inv"] # will store the inventory of the player
+				gold = load_dict()[0]["Gold"] # the amount of gold the player has
+				npc_item = load_dict()[0]['npc_items'] # the npcs that have given there held items to the player
+				currChar = load_dict()[0]["Current Charachter"] # the current character being used
+				quest_completion = load_dict()[0]['Quests'] # this keeps track of the progress of the quests
+				inv_dict = load_dict()[0]['inv_dict'] # this will store the order of which items were received. This is used in the inventory for scrolling
+				stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]] # this stores the stats of the two characters
+				selections = load_dict()[0]['settings'] # this will load saved settings such as screen mode, BGM, and SE	
 			elif enemystats[0] <= 0:	
 				print("YOU WON!!")	
 			elif stats[currNum][2] <= 0 and enemystats[0] <= 0:

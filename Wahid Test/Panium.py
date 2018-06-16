@@ -149,6 +149,9 @@ def introscreen():
 					display.update()
 					time.wait(50)
 			firsttime=False
+			screen.blit(transform.scale(image.load("img/Screens/Publication1.png"), (WIDTH, HEIGHT)), (0,0))
+			display.flip()
+			time.wait(5000)
 		###########################################################
 
 		###############################################graphics for the intro screen including text and pictures########################
@@ -243,11 +246,11 @@ introscreen()
 if quit_stat == 'quit':
 	# it will quit the game
 	running = False
-def levleup(list1,num,currlevel, xp):
+def levleup(list1,num,currlevel):
 	screen.fill((150,220,255))
 	timesNewRomanFont = font.SysFont("Times New Roman", 32)
 	mode=1 # the process of the xp increase
-	xp=xp # the xp
+	xp = stats[currNum][0] # the xp
 	statuspgrade=0 # how much was added to the stat
 	upgrade=0# the number of available points to allocate the points to stats
 	selecnum=0 # which stat is currently selected
@@ -308,8 +311,9 @@ def levleup(list1,num,currlevel, xp):
 				for i in range(xp//10):
 					draw.rect(screen,(18,107,60),Rect(WIDTH//4+x,HEIGHT//2,WIDTH//2//10,HEIGHT//20))
 					x=WIDTH//2//10*i
+					time.wait(100)
 					display.flip()
-					time.wait(3500)
+				time.wait(3500)
 			if i>=10 and not levelup:
 				# this will reset the xp and will add to the level of the character and levelup becomes true
 				xp-=100
@@ -383,6 +387,17 @@ def levleup(list1,num,currlevel, xp):
 				print(selecnum, selected)	
 	display.flip() 
 	quit()		
+def instructions():
+	running = True
+	while running:
+		for evt in event.get():
+			if evt.type == QUIT:
+				running = False
+			if evt.type == KEYDOWN:
+				if evt.key == K_ESCAPE or evt.key == K_z:
+					running = False	
+		screen.blit(transform.scale(image.load('img/Screens/pub2.png').convert_alpha(), (WIDTH, HEIGHT)), (0,0))			
+		display.flip()				
 def display_main_menu():
 	# displays the main menu
 	global screen, size, WIDTH, HEIGHT 
@@ -391,7 +406,7 @@ def display_main_menu():
 	screen.blit(menu, (100,50))
 	# arrow_pos will be referring to the index of options, it will be able to tell which option is being selected
 	arrow_pos = 0
-	options = ['Inventory', 'Statistics', 'Quests', 'Save', "Options", 'Exit', 'Quit']
+	options = ['Inventory', 'Quests', 'Save', "Options", "Instructions", 'Exit', 'Quit']
 	main = True
 	while main:
 		for evt in event.get():  
@@ -425,6 +440,8 @@ def display_main_menu():
 						save_menu('')
 					elif options[arrow_pos] == 'Quests':
 						display_quest()	
+					elif options[arrow_pos] == 'Instructions':
+						instructions()
 					elif options[arrow_pos] == 'Options':
 						# This will call the options menu and will also update whatever settings are changed
 						global selections
@@ -1510,7 +1527,7 @@ while running:
 	U = R = D = L = moving = False # this is to check if the player is moving and in which direction using booleans
 	if quit_stat == 'quit':
 		running = False
-	encounter_steps = r(10,80) # this will select a random number between 10 and 80 repetitively	
+	encounter_steps = r(100,150) # this will select a random number between 10 and 80 repetitively	
 	if int(step_counter) >= encounter_steps and stats[1][2] > 0:
 		step_counter = 0 # will reset steps counter
 		mode = 1 # this will make it mode 1 which is the mode for battle
@@ -1844,9 +1861,9 @@ while running:
 				stats = [load_dict()[1]["Stats"], load_dict()[2]["Stats"]] # this stores the stats of the two characters
 				selections = load_dict()[0]['settings'] # this will load saved settings such as screen mode, BGM, and SE	
 			elif enemystats[0] <= 0:	
-				stats[currNum][0] += r(5,40)
+				stats[currNum][0] += 50
 				print(stats[currNum][0])
-				levleup(stats,currNum,stats[currNum][1], stats[currNum][0])
+				levleup(stats,currNum,stats[currNum][1])
 			elif stats[currNum][2] <= 0 and enemystats[0] <= 0:
 				print("YOU LOST!!")	
 			mode = 0

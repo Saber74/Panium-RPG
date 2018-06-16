@@ -122,9 +122,9 @@
   <object id="57" name="wall" x="237.418" y="477.584" width="20" height="30"/>
   <object id="58" name="NPC" type="2" x="234.582" y="476.417" width="20" height="30">
    <properties>
-    <property name="Dialogue" value="Put something here! # Why are you so lazy!"/>
-    <property name="Name" value="Someone"/>
-    <property name="item" value="NULL"/>
+    <property name="Dialogue" value="Protect yerself boi!"/>
+    <property name="Name" value="David"/>
+    <property name="item" value="Shield"/>
    </properties>
   </object>
  </objectgroup>

@@ -239,12 +239,12 @@
   <object id="195" name="Quest_NPC" type="2" x="248" y="781" width="20" height="30">
    <properties>
     <property name="Complete" type="bool" value="false"/>
-    <property name="Dialogue" value="I have a quest for you. # Find the hidden boy and your mission will be complete."/>
-    <property name="DialogueFinish" value="Good job child. You have done well."/>
-    <property name="DialogueQuest" value="Go on! What are you waiting for? Find the Hidden Boy."/>
+    <property name="Dialogue" value="QUICK!! I need some help! # Find the Hidden Boy! # He has what I need!"/>
+    <property name="DialogueFinish" value="Thank you so much!!! # Let me do my work now"/>
+    <property name="DialogueQuest" value="Go on! What are you waiting for! Find the Hidden Boy."/>
     <property name="Goal" value="Hidden Boy"/>
     <property name="Key" value="Talk"/>
-    <property name="Name" value="Quest Tester"/>
+    <property name="Name" value="FSE Boy"/>
     <property name="Quest" type="bool" value="false"/>
     <property name="Received" type="bool" value="false"/>
     <property name="item" value="Secret Journal"/>

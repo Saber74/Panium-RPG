@@ -239,7 +239,7 @@ def introscreen():
 					go=False
 		display.flip()
 				########################################################################################
-# introscreen()
+introscreen()
 if quit_stat == 'quit':
 	# it will quit the game
 	running = False
@@ -315,10 +315,10 @@ def levleup(list1,num,currlevel, xp):
 				xp-=100
 				currlevel+=1
 				levelup = True
-				time.wait(1000)		
+				time.wait(100)		
 				selected=selectionList[selecnum]
 			else:
-				return	
+				return
 			if levelup:
 				selected=selectionList[selecnum]
 				screen.blit(backlevel,(0,0))
@@ -1471,7 +1471,6 @@ while running:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 				currChar = "Raven"
 			if evt.key == K_r:
-				levleup(stats,stats[currNum][0],stats[currNum][1], 110)
 				mode = 0	
 			if evt.key == K_l:
 				music(2, sound_selection[1], 0)
@@ -1832,6 +1831,7 @@ while running:
 					screen.blit(surf, (0,0))
 					display.flip()	
 					time.wait(10)	
+				music(0, music_selection[0], -1)	
 				lvl = str(load_dict()[0]["lvl"]) # this will store which map is the current map
 				x_diff, y_diff = load_dict()[0]['Coords'][0], load_dict()[0]['Coords'][1] # this will store the coordinates/offset of the map
 				openedChests = load_dict()[0]["Chests"] # stores which chests have been opened

@@ -243,11 +243,11 @@ def introscreen():
 if quit_stat == 'quit':
 	# it will quit the game
 	running = False
-def poop(list1,num,currlevel):
+def levleup(list1,num,currlevel, xp):
 	screen.fill((150,220,255))
 	timesNewRomanFont = font.SysFont("Times New Roman", 32)
 	mode=1 # the process of the xp increase
-	xp=110 # the xp
+	xp=xp # the xp
 	statuspgrade=0 # how much was added to the stat
 	upgrade=0# the number of available points to allocate the points to stats
 	selecnum=0 # which stat is currently selected
@@ -280,9 +280,6 @@ def poop(list1,num,currlevel):
 				running = False
 			if evt.type==KEYDOWN:
 				if evt.key == K_ESCAPE:
-					# will quit
-					global quit_stat
-					quit_stat = 'quit'
 					return
 				if levelup:
 					# will determine the limits of the selection
@@ -311,8 +308,8 @@ def poop(list1,num,currlevel):
 				for i in range(xp//10):
 					draw.rect(screen,(18,107,60),Rect(WIDTH//4+x,HEIGHT//2,WIDTH//2//10,HEIGHT//20))
 					x=WIDTH//2//10*i
-					time.wait(100)
 					display.flip()
+					time.wait(3500)
 			if i>=10 and not levelup:
 				# this will reset the xp and will add to the level of the character and levelup becomes true
 				xp-=100
@@ -320,11 +317,12 @@ def poop(list1,num,currlevel):
 				levelup = True
 				time.wait(1000)		
 				selected=selectionList[selecnum]
+			else:
+				return	
 			if levelup:
 				selected=selectionList[selecnum]
 				screen.blit(backlevel,(0,0))
 				# renders font and draws them and other items
-				# Font=font.Font("FONTS/Carta_Magna-line-demo-FFP.ttf",40)
 				attackstat=timesNewRomanFont.render(str(list1[num][3]),True,(0,0,0))
 				attacktext=timesNewRomanFont.render(str("Attack"),True,(0,0,0))
 				hpstat=timesNewRomanFont.render(str(list1[num][2]),True,(0,0,0))
@@ -1473,7 +1471,7 @@ while running:
 				cf, cd, cr, cl = ravenWalkForward, ravenWalkDown, ravenWalkRight, ravenWalkLeft
 				currChar = "Raven"
 			if evt.key == K_r:
-				poop(stats,stats[currNum][0],stats[currNum][1])
+				levleup(stats,stats[currNum][0],stats[currNum][1], 110)
 				mode = 0	
 			if evt.key == K_l:
 				music(2, sound_selection[1], 0)
@@ -1847,7 +1845,8 @@ while running:
 				selections = load_dict()[0]['settings'] # this will load saved settings such as screen mode, BGM, and SE	
 			elif enemystats[0] <= 0:	
 				stats[currNum][0] += r(5,40)
-				poop(stats,stats[currNum][0],stats[currNum][1])
+				print(stats[currNum][0])
+				levleup(stats,currNum,stats[currNum][1], stats[currNum][0])
 			elif stats[currNum][2] <= 0 and enemystats[0] <= 0:
 				print("YOU LOST!!")	
 			mode = 0

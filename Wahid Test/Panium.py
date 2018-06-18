@@ -242,7 +242,7 @@ def introscreen():
 					go=False
 		display.flip()
 				########################################################################################
-# introscreen()
+introscreen()
 if quit_stat == 'quit':
 	# it will quit the game
 	running = False

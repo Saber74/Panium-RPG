@@ -1864,6 +1864,7 @@ while running:
 				stats[currNum][0] += 50
 				print(stats[currNum][0])
 				levleup(stats,currNum,stats[currNum][1])
+				music(0, music_selection[0], -1)	
 			elif stats[currNum][2] <= 0 and enemystats[0] <= 0:
 				print("YOU LOST!!")	
 			mode = 0

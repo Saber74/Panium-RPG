@@ -190,8 +190,7 @@ def introscreen():
 				currChar = "Raven"
 				quest_completion = {}
 				inv_dict = {}
-				stats = [[3, 3, 3, 3, 3, 3, 3, 3], [3, 3, 3, 3, 3, 3, 3, 3]]
-				stats[1][2] = 10000
+				stats=[[0,0,30,7,5,5,5,5,100], [0,0,30,7,5,5,5,5,100]]
 				for i in range(255):
 					time.wait(10)
 					surf.fill((0,0,0,i))
